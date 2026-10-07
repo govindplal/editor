@@ -1,0 +1,4 @@
+node_modules/
+runs/
+.open-edit-prefs.json
+qa/
