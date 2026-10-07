@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# usage: editkit/bin/hfrender <key> [--quality draft|looks|delivery]
+#  Renders the HyperFrames project runs/<key>/hf (its <video> is muted) and muxes the SOURCE audio stream
+#  untouched (stream copy, no re-encode) -> runs/<key>/out/<key>.mp4, then publishes the project to videos/<key>/.
+set -euo pipefail
+. "$(dirname "$0")/_common.sh"
+KEY=$1; shift; RUN=$ROOT/runs/$KEY; Q=delivery
+[ "${1:-}" = --quality ] && Q=$2
+[ -f "$RUN/hf/index.html" ] || die "no runs/$KEY/hf/index.html"
+SRC=$RUN/$(meta "$RUN/meta.json" source); FPS=$(meta "$RUN/meta.json" fps); mkdir -p "$RUN/out"
+(cd "$RUN/hf" && npx hyperframes render --output "$RUN/out/silent.mp4" --fps "$FPS" --quality "$Q" 2>&1 | grep -vE "^\s*$" | tail -6)
+[ -f "$RUN/out/silent.mp4" ] || die "render failed"
+OUT=$RUN/out/$KEY.mp4
+ffmpeg -v error -y -i "$RUN/out/silent.mp4" -i "$SRC" -map 0:v:0 -map 1:a:0 -c copy -shortest -movflags +faststart "$OUT"
+echo "[hfrender] $OUT ($(( $(stat -c %s "$OUT") / 1000000 )) MB), audio = source stream copied"
+PUB=$ROOT/videos/$KEY; mkdir -p "$PUB/hf"
+(cd "$RUN/hf" && tar cf - --exclude=./snapshots --exclude=./renders --exclude='./assets/source.*' --exclude=./CLAUDE.md --exclude=./AGENTS.md .) | (cd "$PUB/hf" && tar xf -)
+cp "$RUN"/{meta.json,shots.json} "$PUB"/; for f in words.json transcript.txt; do [ -f "$RUN/$f" ] && cp "$RUN/$f" "$PUB"/; done
+[ "$(stat -c %s "$SRC")" -lt 50000000 ] && cp "$SRC" "$PUB"/
+[ "$(stat -c %s "$OUT")" -lt 95000000 ] && cp "$OUT" "$PUB/$KEY.mp4"
+echo "[hfrender] published: videos/$KEY/  send-to-user: videos/$KEY/$KEY.mp4"
