@@ -1,0 +1,392 @@
+{
+  "text": "It might be surprising for most of our viewers also. World most renowned derby. Did you know it was in India? Where in India? It is because purely because of the geography. Very city in two different continents. 12th man of Manchester United. 180,000 attendees. Flaflu. Flaflu. World and Atom Best Derby. Best Derby.",
+  "chunks": [
+    {
+      "text": "It might be surprising for most of our viewers also. World most renowned derby. Did you know it was in India? Where in India? It is because purely because of the geography. Very city in two different continents. 12th man of Manchester United. 180,000 attendees. Flaflu. Flaflu. World and Atom Best Derby. Best Derby.",
+      "timestamp": [
+        0.32,
+        31.28
+      ],
+      "words": [
+        {
+          "text": "It",
+          "timestamp": [
+            0.32,
+            0.48
+          ]
+        },
+        {
+          "text": "might",
+          "timestamp": [
+            0.48,
+            0.72
+          ]
+        },
+        {
+          "text": "be",
+          "timestamp": [
+            0.72,
+            0.96
+          ]
+        },
+        {
+          "text": "surprising",
+          "timestamp": [
+            0.96,
+            1.6
+          ]
+        },
+        {
+          "text": "for",
+          "timestamp": [
+            1.6,
+            1.76
+          ]
+        },
+        {
+          "text": "most",
+          "timestamp": [
+            1.76,
+            2
+          ]
+        },
+        {
+          "text": "of",
+          "timestamp": [
+            2,
+            2.16
+          ]
+        },
+        {
+          "text": "our",
+          "timestamp": [
+            2.16,
+            2.4
+          ]
+        },
+        {
+          "text": "viewers",
+          "timestamp": [
+            2.64,
+            3.04
+          ]
+        },
+        {
+          "text": "also.",
+          "timestamp": [
+            3.12,
+            3.36
+          ]
+        },
+        {
+          "text": "World",
+          "timestamp": [
+            4.08,
+            4.32
+          ]
+        },
+        {
+          "text": "most",
+          "timestamp": [
+            5.2,
+            5.36
+          ]
+        },
+        {
+          "text": "renowned",
+          "timestamp": [
+            5.52,
+            6.08
+          ]
+        },
+        {
+          "text": "derby.",
+          "timestamp": [
+            6.08,
+            7.52
+          ]
+        },
+        {
+          "text": "Did",
+          "timestamp": [
+            7.68,
+            7.84
+          ]
+        },
+        {
+          "text": "you",
+          "timestamp": [
+            7.84,
+            7.92
+          ]
+        },
+        {
+          "text": "know",
+          "timestamp": [
+            7.92,
+            8.08
+          ]
+        },
+        {
+          "text": "it",
+          "timestamp": [
+            8.08,
+            8.16
+          ]
+        },
+        {
+          "text": "was",
+          "timestamp": [
+            8.16,
+            8.32
+          ]
+        },
+        {
+          "text": "in",
+          "timestamp": [
+            8.32,
+            8.48
+          ]
+        },
+        {
+          "text": "India?",
+          "timestamp": [
+            8.48,
+            9.36
+          ]
+        },
+        {
+          "text": "Where",
+          "timestamp": [
+            10.56,
+            10.72
+          ]
+        },
+        {
+          "text": "in",
+          "timestamp": [
+            10.72,
+            10.88
+          ]
+        },
+        {
+          "text": "India?",
+          "timestamp": [
+            10.88,
+            11.12
+          ]
+        },
+        {
+          "text": "It",
+          "timestamp": [
+            11.28,
+            11.36
+          ]
+        },
+        {
+          "text": "is",
+          "timestamp": [
+            11.36,
+            11.52
+          ]
+        },
+        {
+          "text": "because",
+          "timestamp": [
+            11.52,
+            11.68
+          ]
+        },
+        {
+          "text": "purely",
+          "timestamp": [
+            11.84,
+            12.16
+          ]
+        },
+        {
+          "text": "because",
+          "timestamp": [
+            12.16,
+            12.32
+          ]
+        },
+        {
+          "text": "of",
+          "timestamp": [
+            12.32,
+            12.4
+          ]
+        },
+        {
+          "text": "the",
+          "timestamp": [
+            12.4,
+            12.48
+          ]
+        },
+        {
+          "text": "geography.",
+          "timestamp": [
+            12.48,
+            13.04
+          ]
+        },
+        {
+          "text": "Very",
+          "timestamp": [
+            13.28,
+            13.52
+          ]
+        },
+        {
+          "text": "city",
+          "timestamp": [
+            13.6,
+            13.92
+          ]
+        },
+        {
+          "text": "in",
+          "timestamp": [
+            14.56,
+            14.8
+          ]
+        },
+        {
+          "text": "two",
+          "timestamp": [
+            14.8,
+            15.04
+          ]
+        },
+        {
+          "text": "different",
+          "timestamp": [
+            15.04,
+            15.28
+          ]
+        },
+        {
+          "text": "continents.",
+          "timestamp": [
+            15.28,
+            15.92
+          ]
+        },
+        {
+          "text": "12th",
+          "timestamp": [
+            16.4,
+            16.8
+          ]
+        },
+        {
+          "text": "man",
+          "timestamp": [
+            16.8,
+            16.88
+          ]
+        },
+        {
+          "text": "of",
+          "timestamp": [
+            16.96,
+            17.04
+          ]
+        },
+        {
+          "text": "Manchester",
+          "timestamp": [
+            17.04,
+            17.44
+          ]
+        },
+        {
+          "text": "United.",
+          "timestamp": [
+            17.44,
+            19.28
+          ]
+        },
+        {
+          "text": "180,000",
+          "timestamp": [
+            19.52,
+            20.96
+          ]
+        },
+        {
+          "text": "attendees.",
+          "timestamp": [
+            20.96,
+            21.84
+          ]
+        },
+        {
+          "text": "Flaflu.",
+          "timestamp": [
+            25.04,
+            25.52
+          ]
+        },
+        {
+          "text": "Flaflu.",
+          "timestamp": [
+            25.6,
+            26.08
+          ]
+        },
+        {
+          "text": "World",
+          "timestamp": [
+            26.32,
+            26.48
+          ]
+        },
+        {
+          "text": "and",
+          "timestamp": [
+            26.88,
+            26.96
+          ]
+        },
+        {
+          "text": "Atom",
+          "timestamp": [
+            27.44,
+            27.76
+          ]
+        },
+        {
+          "text": "Best",
+          "timestamp": [
+            28,
+            28.24
+          ]
+        },
+        {
+          "text": "Derby.",
+          "timestamp": [
+            28.32,
+            28.72
+          ]
+        },
+        {
+          "text": "Best",
+          "timestamp": [
+            30,
+            30.24
+          ]
+        },
+        {
+          "text": "Derby.",
+          "timestamp": [
+            30.4,
+            31.28
+          ]
+        }
+      ]
+    }
+  ]
+}
