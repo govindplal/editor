@@ -70,6 +70,21 @@
       #g-ad .movies { font-size: 60px; margin: 16px 0 0 6px; }
       #g-ad svg { position: absolute; right: 30px; top: -250px; width: 230px; height: 230px; }
 
+      /* b-roll photo cards: duotone print in the show's yellow, halftone, slow push inside the frame */
+      #root .bcard { position: absolute; left: 64px; top: 958px; width: 340px; padding: 12px 12px 0; background: var(--paper); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55); }
+      #root .bcard .ph { position: relative; width: 316px; height: 244px; overflow: hidden; background: var(--ink); }
+      #root .bcard img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; filter: grayscale(1) contrast(1.4) brightness(1.08); }
+      #root .bcard .duo { position: absolute; inset: 0; background: var(--y); mix-blend-mode: multiply; }
+      #root .bcard .dots { position: absolute; inset: 0; background-image: radial-gradient(rgba(13, 13, 12, 0.6) 1.1px, rgba(13, 13, 12, 0) 1.7px); background-size: 6px 6px; mix-blend-mode: soft-light; }
+      #root .bcard .nm { font-weight: 800; font-stretch: 78%; text-transform: uppercase; font-size: 40px; line-height: 0.95; color: var(--ink); padding: 10px 0 4px; }
+      #root .bcard .cr { font-family: "Martian Mono", monospace; font-size: 11px; letter-spacing: 0.02em; color: rgba(13, 13, 12, 0.6); padding: 0 0 9px; }
+      #b-mongia .bcard { left: 24px; top: 704px; transform-origin: 0 0; }
+
+      /* stickman thrown out of the audition room */
+      #g-kick svg { position: absolute; left: 26px; top: 868px; width: 400px; height: 425px; overflow: visible; }
+      #g-kick svg .ln { fill: none; stroke: var(--paper); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+      #g-kick svg .ac { fill: none; stroke: var(--y); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+
       /* 2 · Mumbai */
       #g-mumbai .pin { position: absolute; left: 70px; top: 300px; width: 420px; }
       #g-mumbai .pin svg { width: 120px; height: 160px; display: block; }
@@ -161,6 +176,10 @@
         </div>
       </div>
 
+      <div id="b-lijo" class="clip" data-start="0.9" data-duration="2.44" data-track-index="4" data-track-name="B-roll" data-label="Lijo Jose Pellissery photo">
+        <div class="bcard"><div class="ph"><img src="assets/broll/lijo.jpg" alt="" /><div class="duo"></div><div class="dots"></div></div><div class="nm">Lijo Jose Pellissery</div><div class="cr">Photo: Tachs · CC BY-SA 4.0 · Wikimedia Commons</div></div>
+      </div>
+
       <div id="g-ad" class="clip" data-start="3.38" data-duration="3.52" data-track-index="3" data-track-name="Graphics" data-label="Never an assistant director">
         <div class="plate"></div>
         <div class="box">
@@ -175,6 +194,10 @@
           <div class="cond ad"><span class="mask"><span>Assistant</span></span><span class="mask"><span>Director</span></span><div class="strike"></div></div>
           <div class="serif movies mask"><span>in any of the movies.</span></div>
         </div>
+      </div>
+
+      <div id="b-bejoy" class="clip" data-start="7.2" data-duration="2.66" data-track-index="4" data-track-name="B-roll" data-label="Bejoy Nambiar photo">
+        <div class="bcard"><div class="ph"><img src="assets/broll/bejoy.jpg" alt="" /><div class="duo"></div><div class="dots"></div></div><div class="nm">Bejoy Nambiar</div><div class="cr">Photo: Bollywood Hungama · CC BY 3.0</div></div>
       </div>
 
       <div id="g-mumbai" class="clip" data-start="10.1" data-duration="4.3" data-track-index="3" data-track-name="Graphics" data-label="Mumbai, Hindi, Bhojpuri auditions">
@@ -193,9 +216,27 @@
         <div class="box"><div class="serif qm">Q</div><div class="serif txt"><span class="mask"><span>Were you familiar</span></span><span class="mask"><span>with the language?</span></span></div></div>
       </div>
 
-      <div id="g-no" class="clip" data-start="15.8" data-duration="1.62" data-track-index="3" data-track-name="Graphics" data-label="No. No.">
+      <div id="g-no" class="clip" data-start="15.8" data-duration="0.62" data-track-index="3" data-track-name="Graphics" data-label="No. No.">
         <div class="cond no n1">No.</div>
         <div class="cond no n2">No.</div>
+      </div>
+
+      <div id="g-kick" class="clip" data-start="16.4" data-duration="1.66" data-track-index="3" data-track-name="Graphics" data-label="Thrown out (stickman)">
+        <svg viewBox="0 0 320 340" aria-hidden="true">
+          <path class="ln" d="M0 334 H316" />
+          <rect x="182" y="64" width="112" height="270" fill="#0d0d0c" stroke="#f6f3ea" stroke-width="6" />
+          <rect id="kk-door" x="186" y="68" width="104" height="262" fill="#e4e62e" />
+          <circle cx="204" cy="200" r="6" fill="#0d0d0c" />
+          <rect x="196" y="20" width="84" height="30" fill="#e4e62e" />
+          <text x="238" y="41" text-anchor="middle" font-family="Martian Mono, monospace" font-size="13" fill="#0d0d0c">AUDITION</text>
+          <path id="kk-leg" class="ac" d="M262 286 L212 300 L196 294" />
+          <g id="kk-pos"><g id="kk-man"><circle class="ln" cx="0" cy="-46" r="14" /><path class="ln" d="M0 -32 L0 8 M0 -20 L-20 -4 M0 -20 L20 -8 M0 8 L-14 38 M0 8 L14 38" /></g><g id="kk-stars"><path class="ac" d="M24 -40 l4 -8 l4 8 M64 -46 l4 -8 l4 8 M44 -58 l4 -8 l4 8" /></g></g>
+          <g id="kk-dust"><circle class="ln" cx="70" cy="326" r="8" /><circle class="ln" cx="40" cy="322" r="6" /><circle class="ln" cx="100" cy="324" r="5" /></g>
+        </svg>
+      </div>
+
+      <div id="b-mongia" class="clip" data-start="18.35" data-duration="2.68" data-track-index="4" data-track-name="B-roll" data-label="Dinesh Mongia photo">
+        <div class="bcard"><div class="ph"><img src="assets/broll/mongia.jpg" alt="" /><div class="duo"></div><div class="dots"></div></div><div class="cr" style="padding-top:8px">Photo: Argus News · CC BY 3.0</div></div>
       </div>
 
       <div id="g-mongia" class="clip" data-start="18.1" data-duration="2.98" data-track-index="3" data-track-name="Graphics" data-label="Dinesh Mongia">
@@ -277,8 +318,8 @@
     [7.2, 14.28, 1.0, 1.12, 0.6, 0.22, "none"],
     [14.28, 14.5, 1.0, 1.18, 0.48, 0.25, "power3.out"],
     [15.68, 15.84, 1.04, 1.04, 0.6, 0.22, "none"],
-    [15.84, 15.92, 1.04, 1.13, 0.6, 0.22, "power4.out"], [16.72, 16.8, 1.13, 1.25, 0.6, 0.22, "power4.out"],
-    [17.2, 18.0, 1.25, 1.06, 0.6, 0.22, "power2.inOut"], [18.0, 21.08, 1.06, 1.12, 0.6, 0.22, "none"],
+    [15.84, 15.92, 1.04, 1.13, 0.6, 0.22, "power4.out"], [16.0, 16.08, 1.13, 1.25, 0.6, 0.22, "power4.out"],
+    [16.25, 16.6, 1.25, 1.04, 0.6, 0.22, "power2.inOut"], [16.6, 21.08, 1.04, 1.12, 0.6, 0.22, "none"],
     [21.08, 21.68, 1.06, 1.08, 0.48, 0.25, "none"],
     [21.68, 24.9, 1.04, 1.14, 0.58, 0.22, "none"], [24.96, 25.06, 1.14, 1.22, 0.58, 0.22, "power4.out"],
     [25.96, 26.6, 1.08, 1.1, 0.48, 0.25, "none"],
@@ -293,16 +334,19 @@
     [49.36, 53.0, 1.0, 1.12, 0.55, 0.24, "none"],
     [53.0, 54.0, 1.05, 1.0, 0.5, 0.5, "power3.out"]
   ],
-  "shake": [[15.84, 10, 0.22], [16.72, 14, 0.26]],
-  "checks": [{"t": 6.8, "text": "6.8–9.9 s: no caption yet, words unclear"}, {"t": 17.3, "text": "17.3–18.1 s: no caption yet, words unclear"}],
+  "shake": [[15.84, 10, 0.14], [16.0, 14, 0.22]],
+  "checks": [],
   "plates": [[5.84, 7.2], [14.28, 15.68], [21.08, 21.68], [25.96, 26.6], [28.2, 29.32], [48.48, 49.36]],
   "captions": [
     {"s": 0.1, "e": 1.1, "who": "g", "text": "*Lijo* *Jose* *Pellissery*", "wt": [0.16, 0.4, 0.56]},
     {"s": 1.1, "e": 3.3, "who": "g", "text": "never worked as a…", "wt": [1.52, 1.76, 2.08, 2.32]},
     {"s": 3.44, "e": 6.8, "who": "g", "hero": "g-ad", "text": "never worked as an assistant director in any of the movies."},
-    {"s": 9.92, "e": 14.4, "who": "g", "hero": "g-mumbai", "unsure": true, "text": "(He was in) Mumbai. Hindi, Bhojpuri too, I've given auditions."},
+    {"s": 7.05, "e": 8.62, "who": "g", "text": "That's *Bejoy* *Nambiar*."},
+    {"s": 8.62, "e": 9.88, "who": "g", "unsure": true, "text": "He was a good friend of mine."},
+    {"s": 9.92, "e": 14.4, "who": "g", "hero": "g-mumbai", "text": "He was in Mumbai. Hindi, Bhojpuri too, I've given auditions."},
     {"s": 14.72, "e": 15.84, "who": "h", "hero": "g-q", "text": "Were you familiar with the language?"},
-    {"s": 15.84, "e": 17.3, "who": "g", "hero": "g-no", "text": "No. No."},
+    {"s": 15.84, "e": 16.4, "who": "g", "hero": "g-no", "text": "No. No."},
+    {"s": 16.45, "e": 18.05, "who": "g", "text": "They caught me and threw me *out* of there!"},
     {"s": 18.1, "e": 21.7, "who": "g", "text": "There was a player, *Dinesh* *Mongia*, who played for ^India.^"},
     {"s": 21.84, "e": 24.4, "who": "g", "text": "He *struggled* his way into the Indian team."},
     {"s": 24.48, "e": 25.8, "who": "g", "hero": "g-talent", "text": "He was not a naturally talented"},
@@ -312,7 +356,8 @@
     {"s": 31.7, "e": 33.84, "who": "g", "pos": "seam", "text": "the biggest thing is ^weight^ ^training.^ {db}", "wt": [31.72, 31.9, 32.1, 32.4, 32.62, 33.0, 33.3]},
     {"s": 34.35, "e": 36.11, "who": "g", "unsure": true, "text": "People who saw me,"},
     {"s": 36.49, "e": 37.91, "who": "g", "unsure": true, "text": "even the others who were there,"},
-    {"s": 38.31, "e": 40.6, "who": "g", "unsure": true, "text": "said a person *changes*, but not *this* *one.*"},
+    {"s": 38.31, "e": 39.55, "who": "g", "text": "When someone else sees it, the expression *changes*,"},
+    {"s": 39.55, "e": 40.6, "who": "g", "text": "but *he* *doesn't* *have* *that.*"},
     {"s": 41.58, "e": 43.4, "who": "g", "pos": "seam", "text": "I've maintained this *physique*", "wt": [41.58, 41.9, 42.3, 42.38]},
     {"s": 43.4, "e": 45.18, "who": "g", "pos": "seam", "text": "not because I'm an actor or a model.", "wt": [43.42, 43.74, 43.98, 44.22, 44.3, 44.54, 44.7, 44.78]},
     {"s": 45.18, "e": 46.2, "who": "g", "text": "But I wanted", "wt": [45.18, 45.82, 45.98]},
@@ -449,8 +494,33 @@
 
         // 4 · no. no.
         tl.fromTo("#g-no .n1", { scale: 1.9, opacity: 0, rotation: -14 }, { scale: 1, opacity: 1, rotation: -6, duration: 0.12, ease: "power4.in" }, 15.84);
-        tl.fromTo("#g-no .n2", { scale: 1.9, opacity: 0, rotation: 12 }, { scale: 1, opacity: 1, rotation: 5, duration: 0.12, ease: "power4.in" }, 16.72);
-        away("#g-no .no", 17.26);
+        tl.fromTo("#g-no .n2", { scale: 1.9, opacity: 0, rotation: 12 }, { scale: 1, opacity: 1, rotation: 5, duration: 0.1, ease: "power4.in" }, 16.0);
+        away("#g-no .no", 16.3);
+
+        // b-roll photo cards (Lijo Jose Pellissery, Bejoy Nambiar, Dinesh Mongia)
+        const card = (id, t0, t1, rot, sc = 1) => {
+          tl.fromTo(id + " .bcard", { y: 90, rotation: rot - 9, opacity: 0, scale: sc * 0.92 }, { y: 0, rotation: rot, opacity: 1, scale: sc, duration: 0.42, ease: "power3.out" }, t0);
+          tl.fromTo(id + " img", { scale: 1.14 }, { scale: 1, duration: t1 - t0, ease: "none" }, t0);
+          tl.to(id + " .bcard", { x: -460, rotation: rot - 10, duration: 0.28, ease: "power3.in" }, t1 - 0.28);
+        };
+        card("#b-lijo", 0.9, 3.32, -3);
+        card("#b-bejoy", 7.2, 9.84, 2.5);
+        card("#b-mongia", 18.35, 21.0, -2, 0.78);
+
+        // stickman kicked out of the audition room
+        tl.fromTo("#kk-door", { scaleX: 1, svgOrigin: "290 68" }, { scaleX: 0.12, duration: 0.14, ease: "power3.out" }, 16.42);
+        tl.fromTo("#kk-pos", { x: 238, y: 296, opacity: 0 }, { opacity: 1, duration: 0.06 }, 16.5);
+        tl.set("#kk-man", { transformOrigin: "50% 59%", rotation: 0 }, 16.5);
+        tl.fromTo("#kk-leg", { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.1, ease: "power4.out" }, 16.68);
+        qa("#kk-leg").forEach((p) => p.setAttribute("pathLength", "1"));
+        tl.to("#kk-pos", { keyframes: [{ x: 168, y: 190, duration: 0.24, ease: "power2.out" }, { x: 96, y: 318, duration: 0.26, ease: "power2.in" }] }, 16.74);
+        tl.to("#kk-man", { keyframes: [{ rotation: -140, duration: 0.24, ease: "power2.out" }, { rotation: -270, duration: 0.26, ease: "power2.in" }] }, 16.74);
+        tl.to("#kk-leg", { opacity: 0, duration: 0.08 }, 16.92);
+        tl.to("#kk-door", { scaleX: 1, duration: 0.1, ease: "power4.in" }, 17.12);
+        tl.fromTo("#kk-dust circle", { scale: 0.2, opacity: 1, transformOrigin: "50% 50%" }, { scale: 2.2, opacity: 0, duration: 0.45, ease: "power2.out", stagger: 0.04 }, 17.24);
+        tl.to("#kk-pos", { keyframes: [{ y: 304, duration: 0.12, ease: "power2.out" }, { y: 318, duration: 0.14, ease: "bounce.out" }] }, 17.26);
+        tl.fromTo("#kk-stars", { opacity: 0, rotation: 0, transformOrigin: "50% 50%" }, { opacity: 1, rotation: 180, duration: 0.5, ease: "none" }, 17.42);
+        tl.to("#g-kick svg", { opacity: 0, y: -14, duration: 0.16, ease: "power2.in" }, 17.9);
 
         // 5 · Dinesh Mongia
         up("#g-mongia .kick > span", 18.1);

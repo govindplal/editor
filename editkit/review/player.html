@@ -204,7 +204,7 @@ button { font: inherit; color: inherit; }
     $("rv-time").firstElementChild.textContent = tc(t);
     if (!composing) $("rv-notetc").textContent = tc(t);
     head.style.left = (t / DUR) * lanesW() + "px";
-    const near = notes.findIndex((n) => Math.abs(n.t - t) < 0.25);
+    const near = cur().findIndex((n) => Math.abs(n.t - t) < 0.25);
     document.querySelectorAll(".rv-note").forEach((li, i) => li.classList.toggle("is-active", i === near));
   }
   function seek(x) {
@@ -287,7 +287,7 @@ button { font: inherit; color: inherit; }
   }
   function drawPins() {
     const nl = $("rv-notelane"); if (!nl) return; nl.innerHTML = "";
-    notes.forEach((n) => { const p = document.createElement("button"); p.type = "button"; p.className = "rv-pin"; p.style.left = pct(n.t); p.title = tc(n.t) + "  " + n.text; p.dataset.s = n.t; p.setAttribute("aria-label", "Note at " + tc(n.t)); nl.appendChild(p); });
+    cur().forEach((n) => { const p = document.createElement("button"); p.type = "button"; p.className = "rv-pin"; p.style.left = pct(n.t); p.title = tc(n.t) + "  " + n.text; p.dataset.s = n.t; p.setAttribute("aria-label", "Note at " + tc(n.t)); nl.appendChild(p); });
   }
   $("rv-zoom").addEventListener("input", (e) => { zoom = +e.target.value; lanesEl.style.width = zoom * 100 + "%"; render(t); });
   // scrub
@@ -309,12 +309,15 @@ button { font: inherit; color: inherit; }
   function loadLocal() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || "[]"); } catch (e) { return []; } }
   function saveLocal() { try { localStorage.setItem(STORE_KEY, JSON.stringify(notes)); } catch (e) {} }
   function sortNotes() { notes.sort((a, b) => a.t - b.t || a.createdAt.localeCompare(b.createdAt)); }
+  const cur = () => notes.filter((n) => (n.round || 1) === META.round);
   function renderNotes() {
     sortNotes();
     const ul = $("rv-notes"); ul.innerHTML = "";
-    $("rv-count").textContent = notes.length;
-    if (!notes.length) { const li = document.createElement("li"); li.className = "rv-empty"; li.textContent = "No notes yet. Play the cut and start typing wherever something should change."; ul.appendChild(li); }
-    notes.forEach((n) => {
+    const list = cur(), past = notes.length - list.length;
+    $("rv-count").textContent = list.length;
+    if (past) { const li = document.createElement("li"); li.className = "rv-empty"; li.textContent = past + (past === 1 ? " note" : " notes") + " from earlier rounds already applied."; ul.appendChild(li); }
+    if (!list.length) { const li = document.createElement("li"); li.className = "rv-empty"; li.textContent = "No notes yet. Play the cut and start typing wherever something should change."; ul.appendChild(li); }
+    list.forEach((n) => {
       const li = document.createElement("li"); li.className = "rv-note";
       const b = document.createElement("button"); b.type = "button"; b.className = "rv-tc"; b.textContent = tc(n.t);
       b.addEventListener("click", () => { setPlaying(false); seek(n.t); });

@@ -126,7 +126,7 @@ def main():
         for it in ln.get("items", []):
             if it.get("e") is None:
                 it["e"] = DUR
-    order = data.get("laneOrder") or ["Captions", "Graphics", "Camera", "Grade", "Footage", "Audio"]
+    order = data.get("laneOrder") or ["Captions", "Graphics", "B-roll", "Camera", "Grade", "Footage", "Audio"]
     lanes.sort(key=lambda l: order.index(l["name"]) if l["name"] in order else len(order))
     title = a.title or a.key
     meta = {"key": a.key, "round": a.round, "roundLabel": f"Round {a.round}", "fps": fps, "lanes": lanes, "unsure": unsure}
