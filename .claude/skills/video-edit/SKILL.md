@@ -46,6 +46,7 @@ Restyle = change `"style"` (full re-render).
   `editkit/lib/runtime.js` (`C.<type>`) and document it in SPEC.md, so it's reusable.
 
 ## Gotchas
+- Session start installs ffmpeg, HyperFrames and the editkit env on its own; nothing to set up by hand.
 - Hugging Face is blocked here; transcription models come from GitHub (handled by the scripts, cached in
   `~/.cache/editkit`). First ingest in a session downloads ~0.7 GB (+1.7 GB with whisper): slow, not broken.
 - `runs/` is scratch (gitignored); `videos/<key>/` is the durable record.

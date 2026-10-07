@@ -13,4 +13,5 @@ Token rules
 
 Defaults: original audio is never altered (unless the user asks for cuts); captions on for the whole video;
 deliverables are committed under `videos/<key>/` on the session branch.
-Older piece `videos/govind-motion/` is a HyperFrames project (set `EDITKIT_HYPERFRAMES=1` to install its tooling).
+Session start installs node, ffmpeg, HyperFrames (skills, Chrome, whisper-cpp) and the editkit env automatically
+(`.claude/setup-editkit.sh`; set `EDITKIT_HYPERFRAMES=0` to skip HyperFrames). `videos/govind-motion/` is a HyperFrames project.
