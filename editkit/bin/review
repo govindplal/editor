@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# usage: editkit/bin/review <key> [--round N] [--title T] [--heading H]
+#  HyperFrames project runs/<key>/hf -> runs/<key>/review/index.html + assets: a timeline player for an Artifact,
+#  where the user types notes at any moment (playback pauses, note saved with its timestamp, playback resumes)
+#  and presses Done to send them to Claude. Publish: Artifact file_path=runs/<key>/review/index.html,
+#  files={assets/...} as printed, capabilities {"db":{}, "comments":{}}. Notes: ArtifactData list collection "notes".
+set -euo pipefail
+. "$(dirname "$0")/_common.sh"
+KEY=$1; shift; RUN=$ROOT/runs/$KEY
+[ -f "$RUN/hf/index.html" ] || die "no runs/$KEY/hf/index.html (HyperFrames project)"
+python3 "$KIT/py/review.py" "$RUN/hf" "$RUN/review" --key "$KEY" --video "$RUN/$(meta "$RUN/meta.json" source)" "$@"
