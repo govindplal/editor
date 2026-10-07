@@ -32,7 +32,9 @@ Token rules
 Defaults: original audio is never altered (unless the user asks for cuts, SFX or music); captions on for the whole video;
 deliverables are committed under `videos/<key>/` on the session branch.
 Session start installs node, ffmpeg, HyperFrames (skills, Chrome, whisper-cpp) and the editkit env automatically
-(`.claude/setup-editkit.sh`; set `EDITKIT_HYPERFRAMES=0` to skip HyperFrames). `videos/govind-motion/` is a HyperFrames project.
+(`.claude/setup-editkit.sh`; set `EDITKIT_HYPERFRAMES=0` to skip HyperFrames, `EDITKIT_HF_SKILLS=0` to skip only the
+HyperFrames skill list). The cloud environment's setup script should be `.claude/cloud-setup.sh` (cached snapshot:
+transcription models, python env, ffmpeg, Chrome), so sessions don't re-download Whisper. `videos/govind-motion/` is a HyperFrames project.
 
 Branches and global changes
 - Each session works only on its own session branch (the one it was given; never reuse another session's branch, and if
