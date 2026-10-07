@@ -56,7 +56,8 @@ only when choosing; `grep -i <name>` is enough) · `editkit/brands/<name>.md` (c
   resumes; Done sends the list to Claude as an artifact comment (this session is woken). Read notes with
   `ArtifactData list notes`; change only what they ask; rebuild with `--round N+1` and republish the same file.
 - Final: `editkit/bin/hfrender <key>` (background) renders the picture and stream-copies the source audio, publishes
-  `videos/<key>/` (hf project, mp4, source). Local Chromium can't play H.264 and cdnjs is blocked: test the review
+  `videos/<key>/` (hf project, mp4, source, plus `<key>-share.mp4` under the 30 MiB chat upload limit when the master
+  is bigger: send that one). Local Chromium can't play H.264 and cdnjs is blocked: test the review
   page with a WebM copy and a routed local GSAP.
 
 ## Revising a past video
