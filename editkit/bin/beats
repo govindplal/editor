@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# usage: editkit/bin/beats <key> [music file]  — BPM, beat grid, downbeats, drop -> runs/<key>/beats.json
+#  default: the edit's sound.music (else the source audio, e.g. a music-backed reel)
+set -euo pipefail
+. "$(dirname "$0")/_common.sh"
+KEY=$1; RUN=$ROOT/runs/$KEY
+F=${2:-$(python3 -c "import json;print((json.load(open('$RUN/edit.json')).get('sound') or {}).get('music') or '')" 2>/dev/null || true)}
+[ -n "$F" ] && [ -f "$RUN/$F" ] && F=$RUN/$F
+[ -n "$F" ] || F=$RUN/$(meta "$RUN/meta.json" source)
+python3 "$KIT/py/beats.py" "$F" "$RUN/beats.json"
