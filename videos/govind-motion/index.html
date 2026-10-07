@@ -1,0 +1,294 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Govind — Kinetic Intro</title>
+    <script src="vendor/gsap.min.js"></script>
+    <style>
+      :root {
+        --bg: #0b0b12;
+        --ink: #f5f3ee;
+        --lime: #c6ff3d;
+        --pink: #ff3d81;
+        --blue: #3d7bff;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        width: 1920px; height: 1080px; overflow: hidden;
+        background: var(--bg);
+      }
+      #root {
+        position: relative; width: 100%; height: 100%; overflow: hidden;
+        font-family: Helvetica, Arial, sans-serif; color: var(--ink);
+        background: var(--bg);
+      }
+      .clip { position: absolute; inset: 0; }
+      .center { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+      .mono { font-family: "Courier New", monospace; letter-spacing: 0.08em; }
+      .ch { display: inline-block; white-space: pre; will-change: transform; }
+      .mask { display: inline-block; overflow: hidden; padding: 0.06em 0.04em; line-height: 1; }
+      .outline { color: rgba(245,243,238,0.08); -webkit-text-stroke: 3px var(--ink); }
+      .lime { color: var(--lime); }
+      .pink { color: var(--pink); }
+
+      /* background */
+      #bg-grid {
+        position: absolute; inset: -100px;
+        background-image: radial-gradient(rgba(255,255,255,0.12) 2px, transparent 2px);
+        background-size: 60px 60px;
+      }
+      .blob { position: absolute; border-radius: 50%; filter: blur(120px); opacity: 0.45; }
+      #blob1 { width: 700px; height: 700px; background: var(--blue); left: -150px; top: -200px; }
+      #blob2 { width: 620px; height: 620px; background: var(--pink); right: -120px; bottom: -220px; }
+      #ring {
+        position: absolute; width: 1100px; height: 1100px; left: 410px; top: -10px;
+        border-radius: 50%; border: 2px dashed rgba(255,255,255,0.16);
+      }
+      #hud-l { position: absolute; left: 60px; top: 48px; font-size: 22px; opacity: 0.6; }
+      #hud-r { position: absolute; right: 60px; top: 48px; font-size: 22px; opacity: 0.6; }
+      #progress {
+        position: absolute; left: 0; bottom: 0; height: 8px; width: 100%;
+        background: var(--lime); transform-origin: left center;
+      }
+
+      /* scene 1 */
+      #s1 .l1 { font-size: 300px; font-weight: 900; line-height: 0.95; letter-spacing: -0.04em; }
+      #s1 .l2 { font-size: 200px; font-weight: 900; line-height: 1; letter-spacing: -0.03em; display: flex; gap: 40px; }
+      #s1 .bar { width: 760px; height: 14px; background: var(--lime); margin-top: 30px; transform-origin: left center; align-self: flex-start; margin-left: 0; }
+      #s1 .wrap { display: flex; flex-direction: column; align-items: flex-start; }
+
+      /* scene 2 */
+      #s2 .label { position: absolute; left: 140px; top: 230px; font-size: 44px; color: var(--lime); }
+      #s2 .count { position: absolute; right: 140px; bottom: 120px; font-size: 40px; opacity: 0.7; }
+      .roleword {
+        position: absolute; left: 0; right: 0; top: 150px; bottom: 0;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 270px; font-weight: 900; letter-spacing: -0.04em;
+      }
+      #s2 .tick { position: absolute; left: 140px; top: 310px; width: 220px; height: 6px; background: var(--ink); transform-origin: left center; }
+
+      /* scene 3 */
+      .marq { position: absolute; left: 0; white-space: nowrap; font-size: 200px; font-weight: 900; letter-spacing: -0.02em; }
+      #m1 { top: -20px; } #m2 { top: 800px; }
+      #s3 .intro { font-size: 56px; margin-bottom: 20px; color: var(--lime); min-height: 70px; }
+      #s3 .big { font-size: 360px; font-weight: 900; letter-spacing: -0.05em; line-height: 1; }
+
+      /* scene 4 */
+      #s4 .head { font-size: 40px; color: var(--lime); margin-bottom: 70px; }
+      #s4 .chips { display: flex; gap: 36px; flex-wrap: wrap; justify-content: center; width: 1500px; }
+      .chip {
+        font-size: 84px; font-weight: 900; padding: 28px 54px; border-radius: 28px;
+        letter-spacing: -0.02em; color: var(--bg);
+      }
+      #c1 { background: var(--lime); } #c2 { background: var(--pink); }
+      #c3 { background: var(--ink); } #c4 { background: var(--blue); color: var(--ink); }
+
+      /* scene 5 */
+      #s5 .name { font-size: 210px; font-weight: 900; letter-spacing: -0.04em; line-height: 1; display: flex; gap: 0.16em; }
+      #s5 .handle { font-size: 54px; color: var(--lime); margin-top: 24px; min-height: 70px; }
+      #s5 .ul { width: 900px; height: 8px; background: var(--pink); margin-top: 18px; transform-origin: center; }
+      #s5 .tag { font-size: 70px; font-weight: 900; margin-top: 70px; letter-spacing: -0.02em; }
+      #burst { position: absolute; left: 50%; top: 50%; width: 400px; height: 400px; margin: -200px 0 0 -200px; border-radius: 50%; border: 6px solid var(--lime); }
+      #burst2 { border-color: var(--pink); }
+
+      /* wipes */
+      #wipes { pointer-events: none; }
+      .wipe { position: absolute; top: 0; bottom: 0; left: 0; width: 100%; }
+      #wipeA { background: var(--lime); }
+      #wipeB { background: var(--pink); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="14.4" data-width="1920" data-height="1080">
+
+      <div id="bg" class="clip" data-start="0" data-duration="14.4" data-track-index="0">
+        <div id="bg-grid"></div>
+        <div class="blob" id="blob1"></div>
+        <div class="blob" id="blob2"></div>
+        <div id="ring"></div>
+        <div id="hud-l" class="mono">GOVIND P LAL</div>
+        <div id="hud-r" class="mono">KINETIC INTRO / 2026</div>
+        <div id="progress"></div>
+      </div>
+
+      <!-- 1: hello -->
+      <div id="s1" class="clip center" data-start="0" data-duration="2.4" data-track-index="1">
+        <div class="wrap">
+          <div class="l1 outline" id="s1-l1">HELLO,</div>
+          <div class="l2" id="s1-l2"><span class="w">I'M</span><span class="w lime">GOVIND.</span></div>
+          <div class="bar" id="s1-bar"></div>
+        </div>
+      </div>
+
+      <!-- 2: roles -->
+      <div id="s2" class="clip" data-start="2.4" data-duration="3" data-track-index="1">
+        <div class="label mono" id="s2-label">I AM A</div>
+        <div class="tick" id="s2-tick"></div>
+        <div class="roleword" id="rw1" style="color: var(--ink)">BUILDER</div>
+        <div class="roleword" id="rw2" style="color: var(--pink)">DESIGNER</div>
+        <div class="roleword" id="rw3" style="color: var(--lime)">MAKER</div>
+        <div class="count mono" id="s2-count">01 / 03</div>
+      </div>
+
+      <!-- 3: motion -->
+      <div id="s3" class="clip center" data-start="5.4" data-duration="3" data-track-index="1">
+        <div class="marq outline" id="m1">MOTION MOTION MOTION MOTION MOTION MOTION</div>
+        <div class="marq outline" id="m2">DESIGN DESIGN DESIGN DESIGN DESIGN DESIGN</div>
+        <div class="intro mono" id="s3-intro">.</div>
+        <div class="big" id="s3-big">MOTION.</div>
+      </div>
+
+      <!-- 4: toolkit -->
+      <div id="s4" class="clip center" data-start="8.4" data-duration="2.6" data-track-index="1">
+        <div class="head mono" id="s4-head">// MY TOOLKIT</div>
+        <div class="chips">
+          <div class="chip" id="c1">GITHUB</div>
+          <div class="chip" id="c2">FIGMA</div>
+          <div class="chip" id="c3">VERCEL</div>
+          <div class="chip" id="c4">HUGGING FACE</div>
+        </div>
+      </div>
+
+      <!-- 5: outro -->
+      <div id="s5" class="clip center" data-start="11" data-duration="3.4" data-track-index="1">
+        <div id="burst"></div>
+        <div id="burst2" class="burst2" style="position:absolute;left:50%;top:50%;width:400px;height:400px;margin:-200px 0 0 -200px;border-radius:50%;border:6px solid var(--pink)"></div>
+        <div class="name" id="s5-name"><span class="nw">GOVIND</span><span class="nw lime">P LAL</span></div>
+        <div class="ul" id="s5-ul"></div>
+        <div class="handle mono" id="s5-handle">@govindplal</div>
+        <div class="tag" id="s5-tag">LET'S BUILD SOMETHING.</div>
+      </div>
+
+      <!-- transitions -->
+      <div id="wipes" class="clip" data-start="0" data-duration="14.4" data-track-index="5">
+        <div class="wipe" id="wipeA"></div>
+        <div class="wipe" id="wipeB"></div>
+      </div>
+    </div>
+
+    <script>
+      const TOTAL = 14.4;
+      const tl = gsap.timeline({ paused: true });
+
+      // split element text into per-char spans (optionally wrapped in masks)
+      function split(el, masked) {
+        const out = [];
+        const text = el.textContent;
+        el.textContent = "";
+        for (const c of text) {
+          const s = document.createElement("span");
+          s.className = "ch";
+          s.textContent = c;
+          if (masked) {
+            const m = document.createElement("span");
+            m.className = "mask";
+            m.appendChild(s);
+            el.appendChild(m);
+          } else el.appendChild(s);
+          out.push(s);
+        }
+        return out;
+      }
+      const $ = (s) => document.querySelector(s);
+
+      /* ---------- background ---------- */
+      tl.fromTo("#bg-grid", { x: 0, y: 0 }, { x: -60, y: -60, duration: TOTAL, ease: "none" }, 0);
+      tl.fromTo("#blob1", { x: 0, y: 0 }, { x: 500, y: 250, duration: TOTAL, ease: "sine.inOut" }, 0);
+      tl.fromTo("#blob2", { x: 0, y: 0 }, { x: -600, y: -200, duration: TOTAL, ease: "sine.inOut" }, 0);
+      tl.fromTo("#ring", { rotation: 0 }, { rotation: 180, duration: TOTAL, ease: "none" }, 0);
+      tl.fromTo("#progress", { scaleX: 0 }, { scaleX: 1, duration: TOTAL, ease: "none" }, 0);
+
+      /* ---------- scene 1: hello (0 – 2.4) ---------- */
+      const h = split($("#s1-l1"));
+      tl.fromTo(h, { y: -500, rotation: (i) => [-35, 28, -22, 40, -30, 25][i % 6], opacity: 0 },
+        { y: 0, rotation: 0, opacity: 1, duration: 0.7, ease: "bounce.out", stagger: 0.07 }, 0.1);
+      const w = document.querySelectorAll("#s1-l2 .w");
+      tl.fromTo(w, { scale: 3.2, opacity: 0, rotation: -8 },
+        { scale: 1, opacity: 1, rotation: 0, duration: 0.45, ease: "back.out(2.2)", stagger: 0.18 }, 0.9);
+      tl.fromTo("#s1-bar", { scaleX: 0 }, { scaleX: 1, duration: 0.5, ease: "power4.out" }, 1.35);
+      // impact shake
+      tl.to("#s1 .wrap", { x: 14, duration: 0.05, repeat: 5, yoyo: true, ease: "none" }, 1.1);
+      tl.to("#s1 .wrap", { x: 0, duration: 0.05 }, 1.4);
+
+      /* ---------- scene 2: roles (2.4 – 5.4) ---------- */
+      const S2 = 2.4;
+      tl.fromTo("#s2-label", { x: -80, opacity: 0 }, { x: 0, opacity: 1, duration: 0.5, ease: "power3.out" }, S2 + 0.1);
+      tl.fromTo("#s2-tick", { scaleX: 0 }, { scaleX: 1, duration: 0.8, ease: "power4.out" }, S2 + 0.2);
+      [["#rw1", 0.1], ["#rw2", 1.1], ["#rw3", 2.1]].forEach(([sel, off], i) => {
+        const el = $(sel);
+        const chars = split(el, true).map((c) => c);
+        const start = S2 + off;
+        tl.fromTo(chars, { yPercent: 130, rotation: 10 },
+          { yPercent: 0, rotation: 0, duration: 0.5, ease: "power4.out", stagger: 0.035 }, start);
+        if (i < 2) {
+          tl.to(chars, { yPercent: -130, rotation: -10, duration: 0.35, ease: "power3.in", stagger: 0.02 }, start + 0.65);
+        }
+      });
+      // counter ticks
+      tl.set("#s2-count", { textContent: "01 / 03" }, S2);
+      tl.set("#s2-count", { textContent: "02 / 03" }, S2 + 1.1);
+      tl.set("#s2-count", { textContent: "03 / 03" }, S2 + 2.1);
+
+      /* ---------- scene 3: motion (5.4 – 8.4) ---------- */
+      const S3 = 5.4;
+      tl.fromTo("#m1", { x: 0 }, { x: -1500, duration: 3, ease: "none" }, S3);
+      tl.fromTo("#m2", { x: -1800 }, { x: 0, duration: 3, ease: "none" }, S3);
+      const typed = split($("#s3-intro"));
+      $("#s3-intro").textContent = "";
+      const typedChars = [];
+      for (const ch of "I TURN IDEAS INTO") {
+        const sp = document.createElement("span");
+        sp.className = "ch"; sp.textContent = ch;
+        $("#s3-intro").appendChild(sp); typedChars.push(sp);
+      }
+      tl.fromTo(typedChars, { opacity: 0 }, { opacity: 1, duration: 0.01, stagger: 0.045 }, S3 + 0.15);
+      const big = split($("#s3-big"));
+      tl.fromTo(big, { scale: 4, opacity: 0, rotationX: 80, filter: "blur(30px)" },
+        { scale: 1, opacity: 1, rotationX: 0, filter: "blur(0px)", duration: 0.5, ease: "power4.out", stagger: 0.06 }, S3 + 1.0);
+      tl.to("#s3-big", { x: 18, duration: 0.04, repeat: 7, yoyo: true, ease: "none" }, S3 + 1.5);
+      tl.to("#s3-big", { x: 0, duration: 0.04 }, S3 + 1.82);
+      tl.to(big, { color: "#c6ff3d", textShadow: "0 0 60px rgba(198,255,61,0.8)", duration: 0.4, stagger: 0.05, ease: "power2.out" }, S3 + 1.7);
+      tl.to("#s3-big", { skewX: -8, scale: 1.06, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 1 }, S3 + 2.1);
+
+      /* ---------- scene 4: toolkit (8.4 – 11.0) ---------- */
+      const S4 = 8.4;
+      tl.fromTo("#s4-head", { opacity: 0, y: -40, scaleX: 1.6 }, { opacity: 1, y: 0, scaleX: 1, duration: 0.6, ease: "power3.out" }, S4 + 0.05);
+      const dirs = [[-1200, -400, -30], [1200, -300, 25], [-900, 500, 20], [1100, 450, -25]];
+      ["#c1", "#c2", "#c3", "#c4"].forEach((sel, i) => {
+        tl.fromTo(sel, { x: dirs[i][0], y: dirs[i][1], rotation: dirs[i][2], scale: 0.4 },
+          { x: 0, y: 0, rotation: [-4, 3, -2, 4][i], scale: 1, duration: 0.8, ease: "elastic.out(1,0.6)" }, S4 + 0.25 + i * 0.14);
+        tl.to(sel, { y: -16, duration: 0.55, ease: "sine.inOut", yoyo: true, repeat: 3 }, S4 + 1.1 + i * 0.1);
+      });
+
+      /* ---------- scene 5: outro (11.0 – 14.4) ---------- */
+      const S5 = 11.0;
+      tl.fromTo("#burst", { scale: 0.2, opacity: 1 }, { scale: 5, opacity: 0, duration: 1.1, ease: "power3.out" }, S5 + 0.05);
+      tl.fromTo("#burst2", { scale: 0.2, opacity: 1 }, { scale: 4, opacity: 0, duration: 1.1, ease: "power3.out" }, S5 + 0.2);
+      const nameChars = [];
+      document.querySelectorAll("#s5-name .nw").forEach((n) => nameChars.push(...split(n)));
+      tl.fromTo(nameChars, { rotationY: 90, opacity: 0, y: 60 },
+        { rotationY: 0, opacity: 1, y: 0, duration: 0.6, ease: "back.out(1.8)", stagger: 0.05 }, S5 + 0.3);
+      tl.fromTo("#s5-ul", { scaleX: 0 }, { scaleX: 1, duration: 0.6, ease: "power4.out" }, S5 + 1.0);
+      const hc = split($("#s5-handle"));
+      tl.fromTo(hc, { opacity: 0 }, { opacity: 1, duration: 0.01, stagger: 0.05 }, S5 + 1.1);
+      const tg = split($("#s5-tag"), true);
+      tl.fromTo(tg, { yPercent: 120 }, { yPercent: 0, duration: 0.5, ease: "power4.out", stagger: 0.025 }, S5 + 1.7);
+      tl.to(nameChars, { y: -10, duration: 0.5, ease: "sine.inOut", yoyo: true, repeat: 1, stagger: 0.04 }, S5 + 2.2);
+
+      /* ---------- wipes at scene boundaries ---------- */
+      [2.4, 5.4, 8.4, 11.0].forEach((b) => {
+        tl.fromTo("#wipeA", { xPercent: -100 }, { xPercent: 0, duration: 0.3, ease: "power3.in" }, b - 0.3);
+        tl.fromTo("#wipeB", { xPercent: -100 }, { xPercent: 0, duration: 0.3, ease: "power3.in" }, b - 0.22);
+        tl.fromTo("#wipeA", { xPercent: 0 }, { xPercent: 100, duration: 0.3, ease: "power3.out" }, b + 0.05);
+        tl.fromTo("#wipeB", { xPercent: 0 }, { xPercent: 100, duration: 0.3, ease: "power3.out" }, b + 0.0);
+      });
+      // park wipes off-screen before the first cover
+      tl.set("#wipeA", { xPercent: -100 }, 0);
+      tl.set("#wipeB", { xPercent: -100 }, 0);
+
+      window.__timelines["main"] = tl;
+      tl.seek(0);
+    </script>
+  </body>
+</html>
