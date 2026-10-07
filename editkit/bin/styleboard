@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# usage: editkit/bin/styleboard <key> <time> [style1,style2,...|all]  -> runs/<key>/qa/styleboard.jpg
+# Renders one moment of the edit in several styles, labelled, so the user can pick a look.
+set -euo pipefail
+. "$(dirname "$0")/_common.sh"
+KEY=$1; T=$2; LIST=${3:-all}; RUN=$ROOT/runs/$KEY
+[ "$LIST" = all ] && LIST=$(python3 -c "import json;print(','.join(k for k in json.load(open('$KIT/styles.json')) if k!='_fields'))")
+FPS=$(meta "$RUN/meta.json" fps); DUR=$(meta "$RUN/meta.json" duration)
+OUTD=$RUN/qa/board; rm -rf "$OUTD"; mkdir -p "$OUTD"
+W=$(meta "$RUN/meta.json" w); H=$(meta "$RUN/meta.json" h); TW=$([ "$H" -gt "$W" ] && echo 270 || echo 480)
+i=0; for s in ${LIST//,/ }; do
+  EDITKIT_STYLE=$s python3 "$KIT/py/build.py" "$RUN" >/dev/null
+  $OE render "$RUN/index.html" --out "$OUTD/r" --fps "$FPS" --duration "$DUR" --stills "$T" >/dev/null 2>&1 || { echo "[styleboard] $s failed"; continue; }
+  ffmpeg -v error -y -i "$OUTD"/r/*.png -vf "scale=$TW:-2,drawbox=y=ih-34:w=iw:h=34:color=black@0.75:t=fill,drawtext=text='$s':x=8:y=h-28:fontsize=22:fontcolor=white" "$OUTD/$(printf %02d $i).png"
+  rm -rf "$OUTD/r"; i=$((i+1))
+done
+python3 "$KIT/py/build.py" "$RUN" >/dev/null
+COLS=$([ "$H" -gt "$W" ] && echo 10 || echo 5)
+ffmpeg -v error -y -pattern_type glob -i "$OUTD/*.png" -vf "tile=${COLS}x$(( (i+COLS-1)/COLS )):padding=4:color=black" -frames:v 1 -q:v 3 "$RUN/qa/styleboard.jpg"
+rm -rf "$OUTD"; echo "[styleboard] $i styles -> runs/$KEY/qa/styleboard.jpg"

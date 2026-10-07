@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/setup-hyperframes.sh\" >&2"
+            "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/setup-editkit.sh\" >&2"
           }
         ]
       },

@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# usage: editkit/bin/restore <key>   — rebuild runs/<key>/ from videos/<key>/ (new session, revising an old edit)
+set -euo pipefail
+. "$(dirname "$0")/_common.sh"
+KEY=$1; PUB=$ROOT/videos/$KEY; RUN=$ROOT/runs/$KEY
+[ -d "$PUB" ] || die "no videos/$KEY"
+mkdir -p "$RUN"; for f in "$PUB"/*; do case $(basename "$f") in "$KEY.mp4"|"$KEY-preview.mp4") ;; *) cp -n "$f" "$RUN"/ ;; esac; done
+[ -f "$RUN/$(meta "$RUN/meta.json" source)" ] && echo "[restore] runs/$KEY ready" || echo "[restore] source missing: ask the user to re-upload, then: cp <file> runs/$KEY/$(meta "$RUN/meta.json" source)"
