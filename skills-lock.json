@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "open-edit": {
+      "source": "veedstudio/open-edit",
+      "sourceType": "github",
+      "skillPath": ".claude/skills/open-edit/SKILL.md",
+      "computedHash": "b1271520d9ba6560084be92805ebaf2d3ff184ece7b70284c601954efd299320"
+    }
+  }
+}

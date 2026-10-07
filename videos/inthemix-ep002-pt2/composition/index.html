@@ -1,0 +1,513 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>In The Mix EP002 pt2 — captions + motion</title>
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<style>
+  :root {
+    --yellow: #F5EC2A;
+    --purple: #3A1E4D;
+    --ink: #111014;
+    --white: #ffffff;
+    --red: #E2231A;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: #000; }
+  #stage { position: relative; width: 1080px; height: 1920px; overflow: hidden; background: #000; font-family: 'Montserrat', sans-serif; }
+
+  /* ---------- footage ---------- */
+  #cam { position: absolute; inset: 0; transform-origin: 50% 30%; will-change: transform; }
+  #cam video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  #flash { position: absolute; inset: 0; background: #fff; opacity: 0; }
+  .vignette { position: absolute; inset: 0; pointer-events: none;
+    background: linear-gradient(to bottom, rgba(0,0,0,.45) 0%, rgba(0,0,0,0) 14%, rgba(0,0,0,0) 52%, rgba(0,0,0,.55) 100%); }
+
+  /* ---------- chrome: top pill + progress ---------- */
+  #top { position: absolute; top: 70px; left: 0; right: 0; display: flex; justify-content: center; gap: 16px; }
+  .pill { font-weight: 800; font-size: 30px; letter-spacing: 2px; text-transform: uppercase; padding: 12px 26px; border-radius: 40px; }
+  .pill.brand { background: var(--yellow); color: var(--purple); }
+  .pill.topic { background: rgba(17,16,20,.78); color: #fff; border: 3px solid var(--yellow); }
+  #progress { position: absolute; top: 0; left: 0; height: 12px; width: 100%; background: var(--yellow); transform-origin: 0 50%; transform: scaleX(0); }
+
+  /* ---------- captions ---------- */
+  .cap { position: absolute; left: 30px; right: 30px; top: 1120px; text-align: center; opacity: 0; visibility: hidden;
+    font-weight: 900; font-size: 84px; line-height: 1.05; text-transform: uppercase; color: #fff; }
+  .cap .w { display: inline-block; margin: 0 14px; transform-origin: 50% 70%;
+    text-shadow: 0 0 2px #000, 4px 4px 0 #000, -4px 4px 0 #000, 4px -4px 0 #000, -4px -4px 0 #000, 0 6px 0 #000, 0 -5px 0 #000, 6px 0 0 #000, -6px 0 0 #000, 0 14px 22px rgba(0,0,0,.55); }
+  .cap .w.on { color: var(--yellow); }
+  .cap .w.big { font-size: 110px; }
+
+  /* ---------- graphics band ---------- */
+  .g { position: absolute; opacity: 0; visibility: hidden; }
+  .label { font-family: 'Anton', sans-serif; color: #fff; text-transform: uppercase; letter-spacing: 2px; text-align: center;
+    text-shadow: 0 6px 0 rgba(0,0,0,.6); }
+  .chip { display: inline-block; background: var(--purple); color: var(--yellow); font-family: 'Anton'; font-size: 46px; padding: 6px 26px 10px; border-radius: 14px; letter-spacing: 3px; border: 4px solid var(--yellow); }
+
+  #buddy { position: absolute; left: 820px; top: 1390px; width: 210px; height: 210px; opacity: 0; visibility: hidden; transform-origin: 50% 100%; }
+  #buddy .face { opacity: 0; }
+  .bubble { position: absolute; font-family: 'Bangers'; font-size: 64px; color: var(--purple); background: var(--yellow); border: 5px solid var(--ink);
+    padding: 4px 22px 0; border-radius: 26px; letter-spacing: 2px; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div id="cam"><video id="v" src="source.mp4" muted playsinline preload="auto"></video></div>
+  <div class="vignette"></div>
+
+  <!-- top chrome -->
+  <div id="progress"></div>
+  <div id="top">
+    <div class="pill brand">In the Mix · EP 02</div>
+    <div class="pill topic">⚽ Derby Talk</div>
+  </div>
+
+  <!-- ===== graphics ===== -->
+
+  <!-- B: derby clash (4.0 – 7.5) -->
+  <div class="g" id="gClash" style="left:0; width:1080px; top:1330px; height:420px;">
+    <svg width="1080" height="420" viewBox="0 0 1080 420">
+      <g transform="translate(540 70)"><g id="crown">
+        <path d="M-80 30 L-90 -40 L-45 -5 L0 -60 L45 -5 L90 -40 L80 30 Z" fill="#F5EC2A" stroke="#111014" stroke-width="8" stroke-linejoin="round"/>
+        <circle cx="-90" cy="-44" r="11" fill="#F5EC2A" stroke="#111014" stroke-width="6"/>
+        <circle cx="0" cy="-64" r="11" fill="#F5EC2A" stroke="#111014" stroke-width="6"/>
+        <circle cx="90" cy="-44" r="11" fill="#F5EC2A" stroke="#111014" stroke-width="6"/>
+      </g></g>
+      <g transform="translate(330 250)"><g id="shieldL">
+        <path d="M-95 -110 H95 V20 Q95 95 0 130 Q-95 95 -95 20 Z" fill="#E2231A" stroke="#111014" stroke-width="10"/>
+        <path d="M-40 -110 H40 V125 Q20 130 0 132 Q-20 130 -40 125 Z" fill="#fff" opacity=".9"/>
+      </g></g>
+      <g transform="translate(750 250)"><g id="shieldR">
+        <path d="M-95 -110 H95 V20 Q95 95 0 130 Q-95 95 -95 20 Z" fill="#2B5DE0" stroke="#111014" stroke-width="10"/>
+        <path d="M-95 -40 H95 V10 H-95 Z" fill="#F5EC2A" opacity=".95"/>
+      </g></g>
+      <g transform="translate(540 250)"><g id="spark">
+        <path d="M0 -120 L28 -38 L110 -48 L45 10 L90 90 L10 45 L-40 120 L-35 30 L-115 20 L-45 -25 L-80 -100 L-10 -50 Z" fill="#F5EC2A" stroke="#111014" stroke-width="8" stroke-linejoin="round"/>
+        <text x="0" y="22" text-anchor="middle" font-family="Anton" font-size="78" fill="#3A1E4D">VS</text>
+      </g></g>
+    </svg>
+  </div>
+
+  <!-- question marks around her (6.6 – 7.4) -->
+  <div class="g" id="gQ" style="left:0; top:260px; width:1080px; height:700px;">
+    <div class="label q" style="position:absolute; left:110px; top:110px; font-size:190px; color:#F5EC2A; transform:rotate(-14deg);">?</div>
+    <div class="label q" style="position:absolute; left:860px; top:40px; font-size:150px; color:#fff; transform:rotate(12deg);">?</div>
+    <div class="label q" style="position:absolute; left:900px; top:380px; font-size:110px; color:#F5EC2A; transform:rotate(18deg);">?</div>
+  </div>
+
+  <!-- C: India (7.7 – 10.5) -->
+  <div class="g" id="gIndia" style="left:240px; top:1340px; width:600px; height:420px;">
+    <svg width="600" height="420" viewBox="0 0 600 420">
+      <g id="flag" transform="translate(300 230)">
+        <rect x="-4" y="-170" width="12" height="320" rx="6" fill="#d9d4cc" stroke="#111014" stroke-width="5"/>
+        <g id="flagCloth">
+          <path d="M8 -165 Q90 -185 170 -165 T330 -165 V-35 Q250 -55 170 -35 T8 -35 Z" fill="#fff" stroke="#111014" stroke-width="7"/>
+          <path d="M8 -165 Q90 -185 170 -165 T330 -165 V-122 Q250 -142 170 -122 T8 -122 Z" fill="#FF9933"/>
+          <path d="M8 -78 Q90 -98 170 -78 T330 -78 V-35 Q250 -55 170 -35 T8 -35 Z" fill="#138808"/>
+          <circle cx="170" cy="-100" r="17" fill="none" stroke="#000080" stroke-width="5"/>
+          <circle cx="170" cy="-100" r="4" fill="#000080"/>
+        </g>
+      </g>
+      <g transform="translate(150 200)"><g id="pin">
+        <path d="M0 110 C-20 70 -70 30 -70 -20 A70 70 0 1 1 70 -20 C70 30 20 70 0 110 Z" fill="#E2231A" stroke="#111014" stroke-width="8"/>
+        <circle cx="0" cy="-20" r="26" fill="#fff" stroke="#111014" stroke-width="6"/>
+      </g></g>
+    </svg>
+  </div>
+  <!-- shock burst (9.84 – 10.6) -->
+  <div class="g" id="gShock" style="left:0; top:180px; width:1080px; height:900px;">
+    <svg width="1080" height="900" viewBox="0 0 1080 900">
+      <g stroke="#F5EC2A" stroke-width="16" stroke-linecap="round">
+        <line x1="150" y1="200" x2="60" y2="140"/><line x1="130" y1="330" x2="30" y2="330"/><line x1="160" y1="460" x2="70" y2="520"/>
+        <line x1="930" y1="200" x2="1020" y2="140"/><line x1="950" y1="330" x2="1050" y2="330"/><line x1="920" y1="460" x2="1010" y2="520"/>
+      </g>
+    </svg>
+    <div class="bubble" style="left:640px; top:20px; transform:rotate(8deg);">WAIT, INDIA?!</div>
+  </div>
+
+  <!-- D: globe / geography (10.6 – 13.2) -->
+  <div class="g" id="gGlobe" style="left:340px; top:1320px; width:400px; height:440px;">
+    <svg width="400" height="440" viewBox="0 0 400 440">
+      <defs><clipPath id="gc"><circle cx="200" cy="200" r="150"/></clipPath></defs>
+      <circle cx="200" cy="200" r="150" fill="#2B7BE4" stroke="#111014" stroke-width="10"/>
+      <g clip-path="url(#gc)"><g id="lands">
+        <path d="M40 120 q40 -40 90 -10 q30 20 10 60 q-20 40 20 70 q20 30 -20 60 q-50 10 -70 -40 q-20 -50 -30 -140z" fill="#3DBE5A" stroke="#111014" stroke-width="6"/>
+        <path d="M210 90 q50 -30 110 0 q40 40 10 80 q-30 20 -60 10 q-30 40 -10 90 q-40 20 -60 -20 q-20 -60 10 -160z" fill="#3DBE5A" stroke="#111014" stroke-width="6"/>
+        <path d="M440 120 q40 -40 90 -10 q30 20 10 60 q-20 40 20 70 q20 30 -20 60 q-50 10 -70 -40 q-20 -50 -30 -140z" fill="#3DBE5A" stroke="#111014" stroke-width="6"/>
+        <path d="M610 90 q50 -30 110 0 q40 40 10 80 q-30 20 -60 10 q-30 40 -10 90 q-40 20 -60 -20 q-20 -60 10 -160z" fill="#3DBE5A" stroke="#111014" stroke-width="6"/>
+      </g></g>
+      <ellipse cx="150" cy="130" rx="45" ry="22" fill="#fff" opacity=".25" transform="rotate(-30 150 130)"/>
+      <g transform="translate(240 140)"><g id="globePin">
+        <path d="M0 50 C-10 30 -32 14 -32 -10 A32 32 0 1 1 32 -10 C32 14 10 30 0 50 Z" fill="#F5EC2A" stroke="#111014" stroke-width="6"/>
+        <circle cx="0" cy="-10" r="11" fill="#111014"/>
+      </g></g>
+      <text x="200" y="420" text-anchor="middle" font-family="Anton" font-size="56" fill="#fff" stroke="#111014" stroke-width="10" paint-order="stroke" letter-spacing="3">GEOGRAPHY</text>
+    </svg>
+  </div>
+
+  <!-- E: one city, two continents (13.2 – 16.2) -->
+  <div class="g" id="gCity" style="left:60px; top:1300px; width:960px; height:460px;">
+    <svg width="960" height="460" viewBox="0 0 960 460">
+      <rect id="landL" x="0" y="150" width="440" height="230" rx="28" fill="#2B5DE0" stroke="#111014" stroke-width="10"/>
+      <rect id="landR" x="520" y="150" width="440" height="230" rx="28" fill="#F08A24" stroke="#111014" stroke-width="10"/>
+      <g id="water"><path d="M445 160 q20 30 0 60 q-20 30 0 60 q20 30 0 60 M515 160 q20 30 0 60 q-20 30 0 60 q20 30 0 60" stroke="#8fd3ff" stroke-width="8" fill="none"/></g>
+      <g id="skyL" fill="#111014">
+        <rect x="70" y="80" width="50" height="80"/><rect x="130" y="40" width="40" height="120"/><rect x="180" y="95" width="60" height="65"/>
+        <path d="M260 160 V90 a40 40 0 0 1 80 0 V160z"/><rect x="296" y="20" width="8" height="40"/><rect x="360" y="70" width="40" height="90"/>
+      </g>
+      <g id="skyR" fill="#111014">
+        <rect x="570" y="70" width="45" height="90"/><path d="M630 160 V100 a45 45 0 0 1 90 0 V160z"/><rect x="708" y="30" width="10" height="70"/>
+        <rect x="740" y="50" width="45" height="110"/><rect x="800" y="95" width="60" height="65"/><rect x="875" y="60" width="40" height="100"/>
+      </g>
+      <g id="bridge">
+        <path d="M340 245 Q480 175 620 245" stroke="#F5EC2A" stroke-width="14" fill="none" stroke-linecap="round"/>
+        <line x1="330" y1="250" x2="630" y2="250" stroke="#F5EC2A" stroke-width="14" stroke-linecap="round"/>
+        <g stroke="#F5EC2A" stroke-width="6"><line x1="400" y1="216" x2="400" y2="250"/><line x1="440" y1="202" x2="440" y2="250"/><line x1="480" y1="198" x2="480" y2="250"/><line x1="520" y1="202" x2="520" y2="250"/><line x1="560" y1="216" x2="560" y2="250"/></g>
+      </g>
+      <text x="220" y="345" text-anchor="middle" font-family="Anton" font-size="62" fill="#fff" letter-spacing="4">EUROPE</text>
+      <text x="740" y="345" text-anchor="middle" font-family="Anton" font-size="62" fill="#fff" letter-spacing="4">ASIA</text>
+      <g id="cityTag"><rect x="250" y="395" width="460" height="62" rx="14" fill="#3A1E4D" stroke="#F5EC2A" stroke-width="5"/>
+        <text x="480" y="442" text-anchor="middle" font-family="Anton" font-size="42" fill="#F5EC2A" letter-spacing="3">1 CITY · 2 CONTINENTS</text></g>
+    </svg>
+  </div>
+
+  <!-- F: 12th man (16.3 – 19.4) -->
+  <div class="g" id="gJersey" style="left:240px; top:1300px; width:600px; height:470px;">
+    <svg width="600" height="470" viewBox="0 0 600 470">
+      <g transform="translate(300 210)"><g id="jersey">
+        <path d="M-75 -165 Q0 -130 75 -165 L190 -110 L150 -10 L110 -30 L110 175 H-110 V-30 L-150 -10 L-190 -110 Z" fill="#DA291C" stroke="#111014" stroke-width="10" stroke-linejoin="round"/>
+        <path d="M-75 -165 Q0 -130 75 -165" stroke="#fff" stroke-width="10" fill="none"/>
+        <text x="0" y="110" text-anchor="middle" font-family="Anton" font-size="200" fill="#fff" stroke="#111014" stroke-width="6">12</text>
+        <text x="0" y="-60" text-anchor="middle" font-family="Anton" font-size="40" fill="#fff" letter-spacing="4">FANS</text>
+      </g></g>
+      <g id="crowd" fill="#111014" stroke="#F5EC2A" stroke-width="4">
+        <g class="fan"><circle cx="40" cy="400" r="24"/><path d="M5 470 q35 -60 70 0z"/></g>
+        <g class="fan"><circle cx="110" cy="410" r="24"/><path d="M75 470 q35 -60 70 0z"/></g>
+        <g class="fan"><circle cx="490" cy="410" r="24"/><path d="M455 470 q35 -60 70 0z"/></g>
+        <g class="fan"><circle cx="560" cy="400" r="24"/><path d="M525 470 q35 -60 70 0z"/></g>
+      </g>
+    </svg>
+  </div>
+
+  <!-- G: 180,000 (19.4 – 23.2) -->
+  <div class="g" id="gCount" style="left:0; width:1080px; top:1300px; height:470px;">
+    <svg width="1080" height="200" viewBox="0 0 1080 200" style="position:absolute; top:0; left:0;">
+      <path id="stadium" d="M190 190 Q190 40 540 30 Q890 40 890 190" fill="none" stroke="#F5EC2A" stroke-width="12" stroke-linecap="round"/>
+      <g id="lights" fill="#fff"><circle cx="230" cy="70" r="12"/><circle cx="850" cy="70" r="12"/></g>
+    </svg>
+    <div class="label" id="countNum" style="position:absolute; top:70px; left:0; right:0; font-size:200px; color:#F5EC2A; line-height:1;">0</div>
+    <div class="chip" id="countTag" style="position:absolute; top:300px; left:50%; transform:translateX(-50%);">FANS IN ONE STADIUM</div>
+  </div>
+
+  <!-- H: Fla-Flu (24.9 – 26.3) -->
+  <div class="g" id="gFla" style="left:0; width:1080px; top:1290px; height:500px;">
+    <svg width="1080" height="320" viewBox="0 0 1080 320">
+      <defs>
+        <clipPath id="cl"><circle cx="0" cy="0" r="120"/></clipPath>
+      </defs>
+      <g transform="translate(300 160)"><g id="crestL">
+        <g clip-path="url(#cl)">
+          <rect x="-120" y="-120" width="240" height="240" fill="#C8102E"/>
+          <rect x="-120" y="-60" width="240" height="30" fill="#111"/><rect x="-120" y="0" width="240" height="30" fill="#111"/><rect x="-120" y="60" width="240" height="30" fill="#111"/>
+        </g>
+        <circle r="120" fill="none" stroke="#111014" stroke-width="12"/>
+        <circle r="120" fill="none" stroke="#fff" stroke-width="4"/>
+      </g></g>
+      <g transform="translate(780 160)"><g id="crestR">
+        <g clip-path="url(#cl)">
+          <rect x="-120" y="-120" width="240" height="240" fill="#fff"/>
+          <rect x="-120" y="-120" width="80" height="240" fill="#7A1E3A"/><rect x="40" y="-120" width="80" height="240" fill="#00843D"/>
+        </g>
+        <circle r="120" fill="none" stroke="#111014" stroke-width="12"/>
+        <circle r="120" fill="none" stroke="#fff" stroke-width="4"/>
+      </g></g>
+    </svg>
+    <div class="bubble" id="flaTag" style="left:50%; top:110px; font-size:96px; transform:translateX(-50%) rotate(-6deg);">FLA × FLU</div>
+  </div>
+
+  <!-- I/J: best derby trophy (26.4 – 31.2) -->
+  <div class="g" id="gTrophy" style="left:290px; top:1300px; width:500px; height:470px;">
+    <svg width="500" height="470" viewBox="0 0 500 470">
+      <g transform="translate(250 200)"><g id="rays" opacity="0">
+        <g fill="#F5EC2A" opacity=".55">
+          <path d="M0 0 L-30 -230 L30 -230Z"/><path d="M0 0 L-30 -230 L30 -230Z" transform="rotate(45)"/><path d="M0 0 L-30 -230 L30 -230Z" transform="rotate(90)"/><path d="M0 0 L-30 -230 L30 -230Z" transform="rotate(135)"/>
+          <path d="M0 0 L-30 -230 L30 -230Z" transform="rotate(180)"/><path d="M0 0 L-30 -230 L30 -230Z" transform="rotate(225)"/><path d="M0 0 L-30 -230 L30 -230Z" transform="rotate(270)"/><path d="M0 0 L-30 -230 L30 -230Z" transform="rotate(315)"/>
+        </g>
+      </g></g>
+      <g transform="translate(250 210)"><g id="cup">
+        <path d="M-95 -140 H95 Q100 -20 30 30 V85 H-30 V30 Q-100 -20 -95 -140Z" fill="#3A1E4D" stroke="#111014" stroke-width="10"/>
+        <path id="cupGold" d="M-95 -140 H95 Q100 -20 30 30 V85 H-30 V30 Q-100 -20 -95 -140Z" fill="#F5C518" stroke="#111014" stroke-width="10" opacity="0"/>
+        <path d="M-95 -110 Q-160 -110 -150 -50 Q-140 0 -70 10" fill="none" stroke="#111014" stroke-width="14"/>
+        <path d="M95 -110 Q160 -110 150 -50 Q140 0 70 10" fill="none" stroke="#111014" stroke-width="14"/>
+        <rect x="-80" y="85" width="160" height="50" rx="8" fill="#111014"/>
+        <text id="cupQ" x="0" y="-25" text-anchor="middle" font-family="Anton" font-size="140" fill="#F5EC2A">?</text>
+        <path id="cupStar" d="M0 -95 L14 -58 L54 -56 L23 -31 L34 8 L0 -14 L-34 8 L-23 -31 L-54 -56 L-14 -58Z" fill="#fff" stroke="#111014" stroke-width="6" opacity="0"/>
+      </g></g>
+      <g id="sparkles" fill="#fff" opacity="0">
+        <path d="M60 80 l8 22 22 8 -22 8 -8 22 -8 -22 -22 -8 22 -8z"/><path d="M430 110 l7 18 18 7 -18 7 -7 18 -7 -18 -18 -7 18 -7z"/><path d="M420 330 l6 15 15 6 -15 6 -6 15 -6 -15 -15 -6 15 -6z"/>
+      </g>
+    </svg>
+  </div>
+
+  <!-- ball buddy character -->
+  <div id="buddy">
+    <svg width="210" height="210" viewBox="0 0 210 210">
+      <circle cx="105" cy="110" r="92" fill="#fff" stroke="#111014" stroke-width="9"/>
+      <path d="M105 20 l28 20 -10 32 h-36 l-10 -32z" fill="#111014"/>
+      <path d="M28 85 l26 -6 16 26 -14 26 -26 -4" fill="#111014"/>
+      <path d="M182 85 l-26 -6 -16 26 14 26 26 -4" fill="#111014"/>
+      <path d="M75 190 l12 -26 h36 l12 26" fill="#111014"/>
+      <!-- faces -->
+      <g class="face" id="fWow">
+        <ellipse cx="80" cy="118" rx="15" ry="19" fill="#111014"/><ellipse cx="130" cy="118" rx="15" ry="19" fill="#111014"/>
+        <circle cx="85" cy="112" r="5" fill="#fff"/><circle cx="135" cy="112" r="5" fill="#fff"/>
+        <ellipse cx="105" cy="160" rx="13" ry="16" fill="#E2231A" stroke="#111014" stroke-width="5"/>
+      </g>
+      <g class="face" id="fShock">
+        <circle cx="80" cy="115" r="22" fill="#fff" stroke="#111014" stroke-width="6"/><circle cx="130" cy="115" r="22" fill="#fff" stroke="#111014" stroke-width="6"/>
+        <circle cx="80" cy="115" r="7" fill="#111014"/><circle cx="130" cy="115" r="7" fill="#111014"/>
+        <path d="M58 82 l30 8 M152 82 l-30 8" stroke="#111014" stroke-width="7" stroke-linecap="round"/>
+        <ellipse cx="105" cy="165" rx="20" ry="22" fill="#111014"/>
+        <path d="M175 60 q12 18 0 26 q-12 -8 0 -26z" fill="#6fc6ff" stroke="#111014" stroke-width="4"/>
+      </g>
+      <g class="face" id="fThink">
+        <circle cx="80" cy="118" r="13" fill="#fff" stroke="#111014" stroke-width="5"/><circle cx="130" cy="118" r="13" fill="#fff" stroke="#111014" stroke-width="5"/>
+        <circle cx="85" cy="111" r="6" fill="#111014"/><circle cx="135" cy="111" r="6" fill="#111014"/>
+        <path d="M62 95 l30 -6 M118 89 l30 6" stroke="#111014" stroke-width="6" stroke-linecap="round"/>
+        <path d="M88 160 q15 -6 32 2" stroke="#111014" stroke-width="7" fill="none" stroke-linecap="round"/>
+      </g>
+      <g class="face" id="fHappy">
+        <path d="M66 120 q14 -18 28 0 M116 120 q14 -18 28 0" stroke="#111014" stroke-width="8" fill="none" stroke-linecap="round"/>
+        <path d="M74 145 q31 38 62 0 z" fill="#E2231A" stroke="#111014" stroke-width="6" stroke-linejoin="round"/>
+        <circle cx="62" cy="142" r="9" fill="#ff8fa3" opacity=".8"/><circle cx="148" cy="142" r="9" fill="#ff8fa3" opacity=".8"/>
+      </g>
+    </svg>
+  </div>
+  <div class="bubble g" id="thinkDots" style="left:740px; top:1300px; font-size:56px;">HMM…</div>
+
+  <div id="caps"></div>
+  <div id="flash"></div>
+</div>
+
+<script src="assets/gsap.min.js"></script>
+<script>
+// ---------- caption groups: [ [word, start], ... ], groupEnd ----------
+// Word times come from the local transcript (Parakeet), text cross-checked with Whisper large-v3
+// (English + Malayalam translated where the speakers switch language).
+const GROUPS = [
+  [[["It",0.32],["might",0.48],["be",0.72],["surprising",0.96]], 1.6],
+  [[["for",1.6],["most",1.76],["of",2.0],["our",2.16]], 2.6],
+  [[["viewers",2.64],["also.",3.12]], 3.9],
+  [[["The",4.04],["world's",4.2]], 5.2],
+  [[["most",5.24],["renowned",5.48],["derby",6.04,1]], 6.6],
+  [[["Renowned?",6.62,1]], 7.6],
+  [[["Did",7.68],["you",7.84],["know",7.92]], 8.08],
+  [[["it",8.08],["was",8.16],["in",8.32],["India?",8.48,1]], 9.8],
+  [[["In",9.84],["India?!",10.0,1]], 10.54],
+  [[["Where",10.56],["in",10.72],["India?",10.88]], 11.26],
+  [[["It",11.28],["is",11.36],["because,",11.52]], 11.82],
+  [[["purely",11.84],["because",12.16]], 12.32],
+  [[["of",12.32],["the",12.4],["geography.",12.48,1]], 13.24],
+  [[["One",13.28],["city",13.6,1]], 14.54],
+  [[["in",14.56],["two",14.8],["different",15.04],["continents.",15.28,1]], 16.36],
+  [[["12th",16.4,1],["man",16.8]], 16.95],
+  [[["of",16.96],["Manchester",17.04],["United",17.44]], 19.45],
+  [[["180,000",19.52,1],["attendees",20.96]], 21.9],
+  [[["for",21.95],["that",22.2],["derby",22.45],["match",22.75]], 23.6],
+  [[["Fla-Flu!",25.04,1],["Fla-Flu!",25.6,1]], 26.4],
+  [[["In",26.44],["the",26.6],["world,",26.75]], 27.46],
+  [[["which",27.48],["is",27.7],["the",27.85]], 27.95],
+  [[["best",27.96],["derby?",28.28,1]], 29.9],
+  [[["Best",30.0],["derby.",30.4,1]], 31.2],
+];
+
+const tl = gsap.timeline();
+const capsEl = document.getElementById('caps');
+GROUPS.forEach(([words, end]) => {
+  const g = document.createElement('div');
+  g.className = 'cap';
+  words.forEach(([w, t, big]) => {
+    const s = document.createElement('span');
+    s.className = 'w' + (big ? ' big' : ''); s.style.color = '#ffffff';
+    s.textContent = w;
+    if (g.childNodes.length) g.appendChild(document.createTextNode(' '));
+    g.appendChild(s);
+  });
+  capsEl.appendChild(g);
+  const start = words[0][1];
+  const spans = g.querySelectorAll('.w');
+  tl.set(g, { autoAlpha: 1 }, start);
+  tl.fromTo(g, { scale: 0.82, y: 24 }, { scale: 1, y: 0, duration: 0.18, ease: 'back.out(2.5)' }, start);
+  words.forEach(([w, t, big], i) => {
+    const wEnd = i + 1 < words.length ? words[i + 1][1] : end;
+    tl.set(spans[i], { color: '#F5EC2A' }, t);
+    tl.fromTo(spans[i], { scale: 1.1 }, { scale: 1, duration: 0.16, ease: 'power2.out' }, t);
+    if (i + 1 < words.length) tl.set(spans[i], { color: '#ffffff' }, wEnd);
+  });
+  tl.set(g, { autoAlpha: 0 }, end);
+});
+
+// ---------- camera: per-shot zooms, punches, shakes ----------
+const cam = '#cam';
+function shot(t0, t1, s0, s1, origin) {
+  tl.set(cam, { scale: s0, x: 0, y: 0, rotation: 0, transformOrigin: origin || '50% 30%' }, t0);
+  tl.to(cam, { scale: s1, duration: t1 - t0, ease: 'none' }, t0);
+}
+function punch(t, s, dur) {
+  tl.to(cam, { scale: s, duration: dur || 0.12, ease: 'power3.out' }, t);
+}
+function shake(t, dur, amp) {
+  const n = Math.round(dur / 0.05);
+  for (let i = 0; i < n; i++) {
+    const a = amp * (1 - i / n);
+    tl.to(cam, { x: (i % 2 ? -1 : 1) * a, y: (i % 3 - 1) * a * 0.6, rotation: (i % 2 ? 1 : -1) * a * 0.04, duration: 0.05, ease: 'none' }, t + i * 0.05);
+  }
+  tl.to(cam, { x: 0, y: 0, rotation: 0, duration: 0.05 }, t + n * 0.05);
+}
+function flash(t) {
+  tl.fromTo('#flash', { opacity: 0.75 }, { opacity: 0, duration: 0.2, ease: 'power2.out', immediateRender: false }, t);
+}
+
+shot(0, 1.833, 1.0, 1.08);
+shot(1.833, 3.417, 1.14, 1.08);
+shot(3.417, 6.625, 1.0, 1.2);
+shot(6.625, 7.375, 1.3, 1.34, '50% 28%');
+shot(7.375, 8.75, 1.08, 1.14);
+shot(8.75, 11.167, 1.0, 1.04);
+punch(9.84, 1.3, 0.1); shake(9.84, 0.45, 18);
+tl.to(cam, { scale: 1.1, duration: 0.5, ease: 'power2.inOut' }, 10.5);
+shot(11.167, 12.25, 1.12, 1.16);
+shot(12.25, 13.208, 1.0, 1.06);
+shot(13.208, 14.625, 1.06, 1.12);
+shot(14.625, 15.875, 1.12, 1.06);
+shot(15.875, 18.042, 1.0, 1.16);
+shot(18.042, 19.125, 1.22, 1.18);
+shot(19.125, 21.625, 1.22, 1.0);
+shot(21.625, 23.167, 1.04, 1.1);
+shot(23.167, 23.792, 1.15, 1.18);
+shot(23.792, 26.125, 1.0, 1.04);
+punch(25.04, 1.18, 0.1); shake(25.04, 0.3, 14);
+punch(25.6, 1.3, 0.1); shake(25.6, 0.35, 18);
+shot(26.125, 29.75, 1.0, 1.16);
+shot(29.75, 31.208, 1.06, 1.06);
+punch(30.0, 1.24, 0.12);
+shot(31.208, 34.2, 1.0, 1.0);
+
+[3.417, 8.75, 13.208, 19.125, 23.792, 26.125, 31.208].forEach(flash);
+
+// ---------- chrome ----------
+tl.fromTo('#top', { y: -160, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.45, ease: 'back.out(1.8)' }, 0.1);
+tl.to('#top', { y: -160, autoAlpha: 0, duration: 0.3, ease: 'power2.in' }, 30.9);
+tl.fromTo('#progress', { scaleX: 0 }, { scaleX: 1, duration: 31.2, ease: 'none' }, 0);
+tl.to('#progress', { autoAlpha: 0, duration: 0.2 }, 31.2);
+
+// ---------- graphics helpers ----------
+function popIn(sel, t, from) {
+  tl.set(sel, { autoAlpha: 1 }, t);
+  tl.fromTo(sel, Object.assign({ scale: 0.4, y: 60 }, from || {}), { scale: 1, y: 0, x: 0, rotation: 0, duration: 0.4, ease: 'back.out(2)' }, t);
+}
+function popOut(sel, t) {
+  tl.to(sel, { scale: 0.6, autoAlpha: 0, duration: 0.2, ease: 'power2.in' }, t);
+}
+
+// B: derby clash
+popIn('#gClash', 4.0, { scale: 0.9, y: 80 });
+tl.fromTo('#crown', { autoAlpha: 0, y: -60 }, { autoAlpha: 1, y: 0, duration: 0.35, ease: 'back.out(3)' }, 5.24);
+tl.fromTo('#shieldL', { x: -400 }, { x: 0, duration: 0.45, ease: 'power3.out' }, 4.05);
+tl.fromTo('#shieldR', { x: 400 }, { x: 0, duration: 0.45, ease: 'power3.out' }, 4.05);
+tl.fromTo('#spark', { scale: 0, transformOrigin: '0px 0px', rotation: -30 }, { scale: 1, rotation: 0, duration: 0.3, ease: 'back.out(3)' }, 6.04);
+tl.to('#shieldL', { x: 40, duration: 0.08, yoyo: true, repeat: 1 }, 6.04);
+tl.to('#shieldR', { x: -40, duration: 0.08, yoyo: true, repeat: 1 }, 6.04);
+popOut('#gClash', 6.6);
+
+// question marks
+tl.set('#gQ', { autoAlpha: 1 }, 6.62);
+tl.fromTo('#gQ .q', { scale: 0, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, duration: 0.25, stagger: 0.08, ease: 'back.out(3)' }, 6.62);
+tl.to('#gQ .q', { y: -30, duration: 0.6, ease: 'sine.inOut' }, 6.9);
+tl.to('#gQ', { autoAlpha: 0, duration: 0.15 }, 7.36);
+
+// C: India
+popIn('#gIndia', 7.7, { scale: 0.7 });
+tl.fromTo('#flagCloth', { scaleX: 0, transformOrigin: '8px -100px' }, { scaleX: 1, duration: 0.5, ease: 'back.out(1.6)' }, 8.3);
+tl.to('#flagCloth', { skewY: 3, duration: 0.4, yoyo: true, repeat: 5, ease: 'sine.inOut' }, 8.8);
+tl.fromTo('#pin', { y: -320, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.45, ease: 'bounce.out' }, 8.48);
+popOut('#gIndia', 10.5);
+// shock
+tl.set('#gShock', { autoAlpha: 1 }, 9.84);
+tl.fromTo('#gShock svg', { scale: 0.6, transformOrigin: '50% 40%' }, { scale: 1, duration: 0.2, ease: 'back.out(3)' }, 9.84);
+tl.fromTo('#gShock .bubble', { scale: 0, rotation: -20 }, { scale: 1, rotation: 8, duration: 0.3, ease: 'back.out(3)' }, 9.9);
+tl.to('#gShock', { autoAlpha: 0, duration: 0.15 }, 11.1);
+
+// D: globe
+popIn('#gGlobe', 10.6);
+tl.fromTo('#lands', { x: 0 }, { x: -400, duration: 2.6, ease: 'none' }, 10.6);
+tl.fromTo('#globePin', { y: -80, autoAlpha: 0 }, { y: 0, autoAlpha: 1, duration: 0.35, ease: 'bounce.out' }, 12.48);
+popOut('#gGlobe', 13.2);
+
+// E: one city two continents
+popIn('#gCity', 13.28, { scale: 0.8 });
+tl.fromTo('#landL', { x: -200 }, { x: 0, duration: 0.4, ease: 'power3.out' }, 13.28);
+tl.fromTo('#landR', { x: 200 }, { x: 0, duration: 0.4, ease: 'power3.out' }, 13.28);
+tl.fromTo(['#skyL', '#skyR'], { scaleY: 0, transformOrigin: '50% 160px' }, { scaleY: 1, duration: 0.35, stagger: 0.1, ease: 'back.out(2)' }, 13.6);
+tl.fromTo('#bridge', { scaleX: 0, transformOrigin: '330px 250px' }, { scaleX: 1, duration: 0.5, ease: 'power2.out' }, 14.8);
+tl.fromTo('#cityTag', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.3, ease: 'back.out(2)' }, 15.28);
+popOut('#gCity', 16.3);
+
+// F: 12th man
+popIn('#gJersey', 16.4, { rotation: -25, scale: 0.3 });
+tl.to('#jersey', { rotation: 4, duration: 0.5, yoyo: true, repeat: 4, ease: 'sine.inOut', svgOrigin: '0 -160' }, 16.8);
+tl.fromTo('#crowd .fan', { y: 80 }, { y: 0, duration: 0.3, stagger: 0.08, ease: 'back.out(2)' }, 17.0);
+tl.to('#crowd .fan', { y: -18, duration: 0.18, yoyo: true, repeat: 7, stagger: 0.07, ease: 'sine.inOut' }, 17.5);
+popOut('#gJersey', 19.35);
+
+// G: 180,000 count-up
+popIn('#gCount', 19.45, { scale: 0.8 });
+tl.fromTo('#stadium', { strokeDasharray: 1000, strokeDashoffset: 1000 }, { strokeDashoffset: 0, duration: 0.6, ease: 'power2.out' }, 19.45);
+const counter = { v: 0 };
+tl.to(counter, { v: 180000, duration: 1.4, ease: 'power3.out',
+  onUpdate: () => { document.getElementById('countNum').textContent = Math.round(counter.v).toLocaleString('en-US'); } }, 19.52);
+tl.fromTo('#countNum', { scale: 1 }, { scale: 1.12, duration: 0.12, yoyo: true, repeat: 1 }, 20.92);
+tl.fromTo('#countTag', { autoAlpha: 0, y: 30 }, { autoAlpha: 1, y: 0, duration: 0.3 }, 20.96);
+tl.fromTo('#lights', { opacity: 0.3 }, { opacity: 1, duration: 0.15, yoyo: true, repeat: 9 }, 20.9);
+popOut('#gCount', 23.3);
+
+// H: Fla-Flu
+tl.set('#gFla', { autoAlpha: 1 }, 24.95);
+tl.fromTo('#crestL', { x: -500 }, { x: 0, duration: 0.3, ease: 'back.out(1.6)' }, 24.95);
+tl.fromTo('#crestR', { x: 500 }, { x: 0, duration: 0.3, ease: 'back.out(1.6)' }, 24.95);
+tl.fromTo('#flaTag', { scale: 0, rotation: -30 }, { scale: 1, rotation: -6, duration: 0.25, ease: 'back.out(3)' }, 25.04);
+tl.to('#flaTag', { scale: 1.2, rotation: 6, duration: 0.12, yoyo: true, repeat: 1 }, 25.6);
+tl.to(['#crestL', '#crestR'], { y: -40, duration: 0.12, yoyo: true, repeat: 3, ease: 'power1.out' }, 25.6);
+tl.to('#gFla', { autoAlpha: 0, scale: 0.8, duration: 0.2 }, 26.3);
+
+// I/J: trophy
+popIn('#gTrophy', 26.5, { scale: 0.5 });
+tl.to('#cupQ', { rotation: 10, transformOrigin: '50% 50%', duration: 0.4, yoyo: true, repeat: 5, ease: 'sine.inOut' }, 26.8);
+tl.to('#cupQ', { autoAlpha: 0, duration: 0.15 }, 30.0);
+tl.to('#cupGold', { opacity: 1, duration: 0.2 }, 30.0);
+tl.to('#cupStar', { opacity: 1, duration: 0.2 }, 30.05);
+tl.fromTo('#cup', { scale: 1 }, { scale: 1.15, duration: 0.15, yoyo: true, repeat: 1, svgOrigin: '0 0' }, 30.0);
+tl.to('#rays', { opacity: 1, duration: 0.2 }, 30.0);
+tl.to('#rays', { rotation: 60, svgOrigin: '0 0', duration: 1.2, ease: 'none' }, 30.0);
+tl.to('#sparkles', { opacity: 1, duration: 0.15, yoyo: true, repeat: 5 }, 30.1);
+popOut('#gTrophy', 31.05);
+
+// ball buddy: expressions
+function buddy(t0, t1, face, from) {
+  tl.set('#buddy', { autoAlpha: 1 }, t0);
+  tl.set('#buddy .face', { opacity: 0 }, t0);
+  tl.set(face, { opacity: 1 }, t0);
+  tl.fromTo('#buddy', Object.assign({ scale: 0, rotation: -40 }, from || {}), { scale: 1, rotation: 0, y: 0, duration: 0.35, ease: 'back.out(2.5)' }, t0);
+  tl.to('#buddy', { y: -14, duration: 0.3, yoyo: true, repeat: Math.max(1, Math.floor((t1 - t0 - 0.6) / 0.3)), ease: 'sine.inOut' }, t0 + 0.35);
+  tl.to('#buddy', { scale: 0, rotation: 30, duration: 0.2, ease: 'power2.in' }, t1);
+}
+buddy(0.96, 3.3, '#fWow');
+buddy(9.84, 11.1, '#fShock');
+buddy(26.5, 29.85, '#fThink');
+buddy(29.9, 31.0, '#fHappy');
+tl.set('#thinkDots', { autoAlpha: 1 }, 27.0);
+tl.fromTo('#thinkDots', { scale: 0 }, { scale: 1, duration: 0.25, ease: 'back.out(3)' }, 27.0);
+tl.to('#thinkDots', { autoAlpha: 0, duration: 0.15 }, 29.8);
+</script>
+</body>
+</html>
