@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en" data-resolution="{{RES}}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width={{W}}, height={{H}}" />
+    <title>{{TITLE}}</title>
+    <script src="assets/gsap.min.js"></script>
+    <style data-page>
+      html, body { margin: 0; width: {{W}}px; height: {{H}}px; overflow: hidden; background: #000; }
+    </style>
+    <style>
+      @font-face { font-family: "Bricolage Grotesque"; src: url("assets/fonts/bricolage.woff2") format("woff2"); font-weight: 200 800; font-stretch: 75% 100%; font-display: block; }
+      @font-face { font-family: "Instrument Serif"; src: url("assets/fonts/instrument-italic.woff2") format("woff2"); font-style: italic; font-weight: 400; font-display: block; }
+      @font-face { font-family: "Instrument Serif"; src: url("assets/fonts/instrument.woff2") format("woff2"); font-style: normal; font-weight: 400; font-display: block; }
+      @font-face { font-family: "Martian Mono"; src: url("assets/fonts/martian.woff2") format("woff2"); font-weight: 400; font-display: block; }
+
+      #root { --y: #e4e62e; --ink: #0d0d0c; --paper: #f6f3ea; position: relative; width: 100%; height: 100%; overflow: hidden; background: #000; font-family: "Bricolage Grotesque", sans-serif; color: var(--paper); }
+      #root .clip { position: absolute; inset: 0; }
+      #root .layer { position: absolute; inset: 0; pointer-events: none; }
+
+      /* footage, camera, grade */
+      #cam { position: absolute; inset: 0; transform-origin: 60% 24%; will-change: transform; }
+      #grade { position: absolute; inset: 0; --br: 1; --ct: 1; --sat: 1; --sep: 0; filter: brightness(var(--br)) contrast(var(--ct)) saturate(var(--sat)) sepia(var(--sep)); }
+      #aroll { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+      #g-warm { mix-blend-mode: soft-light; opacity: 0; background: radial-gradient(ellipse 70% 42% at 60% 24%, rgba(255, 168, 92, 0.95), rgba(255, 150, 70, 0) 72%); }
+      #g-cool { mix-blend-mode: soft-light; opacity: 0; background: radial-gradient(ellipse 85% 60% at 58% 26%, rgba(0, 72, 92, 0) 45%, rgba(0, 72, 92, 0.95) 100%); }
+      #g-mem { mix-blend-mode: multiply; opacity: 0; background: radial-gradient(ellipse 90% 70% at 50% 40%, rgba(255, 226, 180, 1) 30%, rgba(150, 110, 80, 1) 100%); }
+      #vig { opacity: 1; background: radial-gradient(ellipse 78% 62% at 52% 38%, rgba(0, 0, 0, 0) 55%, rgba(0, 0, 0, 0.5) 100%), linear-gradient(to top, rgba(0, 0, 0, 0.5) 0%, rgba(0, 0, 0, 0) 42%); }
+      #grain { opacity: 0.07; mix-blend-mode: overlay; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='360'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 0 0.5  0 0 0 1.6 -0.3'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); background-size: 360px 360px; }
+      #flash { background: var(--y); opacity: 0; }
+
+      /* captions: left-aligned, lower-left over the shirt, never centred */
+      #caps { --plate: rgba(13, 13, 12, 0); }
+      #caps .cap { position: absolute; left: 64px; max-width: 760px; bottom: 460px; padding: 8px 20px 12px; background: var(--plate); visibility: hidden; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 0.24em; row-gap: 0; font-weight: 760; font-stretch: 82%; font-size: 68px; line-height: 1.02; letter-spacing: -0.01em; color: var(--paper); text-shadow: 0 2px 22px rgba(0, 0, 0, 0.55); }
+      #caps .cap .w { display: inline-block; overflow: hidden; padding: 0.04em 0.04em 0.12em; margin: -0.04em -0.04em -0.12em; vertical-align: baseline; }
+      #caps .cap .wi { display: inline-block; }
+      #caps .cap .em { font-family: "Instrument Serif", serif; font-style: italic; font-weight: 400; font-stretch: 100%; font-size: 1.16em; letter-spacing: 0; color: var(--y); }
+      #caps .cap .k { color: var(--y); }
+      #caps .cap.cap-seam { bottom: auto; top: 932px; left: 0; width: 1080px; max-width: none; padding: 18px 84px 22px; background: #0d0d0c; font-size: 56px; text-shadow: none; }
+      #caps .cap .ico { display: inline-block; height: 0.9em; width: 2.2em; vertical-align: -0.08em; }
+      #caps .cap .ico svg { width: 100%; height: 100%; display: block; }
+      #caps .cap.cap-high { bottom: auto; top: 980px; }
+      #caps .cap.cap-h { font-family: "Instrument Serif", serif; font-style: italic; font-weight: 400; font-stretch: 100%; font-size: 70px; line-height: 1.04; }
+      #caps .cap .who { font-family: "Martian Mono", monospace; font-style: normal; font-size: 24px; letter-spacing: 0.16em; color: var(--y); width: 100%; margin-bottom: 10px; text-shadow: none; }
+
+      /* shared graphic parts */
+      #root .mono { font-family: "Martian Mono", monospace; font-size: 26px; letter-spacing: 0.18em; text-transform: uppercase; }
+      #root .serif { font-family: "Instrument Serif", serif; font-style: italic; font-weight: 400; }
+      #root .cond { font-weight: 800; font-stretch: 75%; letter-spacing: -0.015em; line-height: 0.86; text-transform: uppercase; }
+      #root .mask { display: block; overflow: hidden; padding-bottom: 0.06em; }
+      #root .mask > span { display: block; }
+      #root .strip { display: inline-block; background: var(--ink); color: var(--paper); padding: 10px 18px 12px; }
+      #root .strip.y { background: var(--y); color: var(--ink); }
+      #root svg.line path, #root svg.line circle, #root svg.line rect, #root svg.line line { fill: none; stroke: var(--paper); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+      #root svg.line .acc { stroke: var(--y); }
+
+      /* b-roll photo cards: duotone print in the show's yellow, halftone, slow push inside the frame */
+      #root .bcard { position: absolute; left: 64px; top: 958px; width: 340px; padding: 12px 12px 0; background: var(--paper); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55); }
+      #root .bcard .ph { position: relative; width: 316px; height: 244px; overflow: hidden; background: var(--ink); }
+      #root .bcard img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; filter: grayscale(1) contrast(1.4) brightness(1.08); }
+      #root .bcard .duo { position: absolute; inset: 0; background: var(--y); mix-blend-mode: multiply; }
+      #root .bcard .dots { position: absolute; inset: 0; background-image: radial-gradient(rgba(13, 13, 12, 0.6) 1.1px, rgba(13, 13, 12, 0) 1.7px); background-size: 6px 6px; mix-blend-mode: soft-light; }
+      #root .bcard .nm { font-weight: 800; font-stretch: 78%; text-transform: uppercase; font-size: 40px; line-height: 0.95; color: var(--ink); padding: 10px 0 4px; }
+      #root .bcard .cr { font-family: "Martian Mono", monospace; font-size: 11px; letter-spacing: 0.02em; color: rgba(13, 13, 12, 0.6); padding: 0 0 9px; }
+      /* line-art scenes (stickman gags, icons): paper strokes, accent strokes */
+      #root svg .ln { fill: none; stroke: var(--paper); stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+      #root svg .ac { fill: none; stroke: var(--y); stroke-width: 7; stroke-linecap: round; stroke-linejoin: round; }
+
+      /* ---- per-video graphics go below ---- */
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="{{DUR}}" data-width="{{W}}" data-height="{{H}}">
+      <div id="cam" class="layer">
+        <div id="grade" class="layer">
+          <video id="aroll" class="clip" src="assets/{{SRC}}" muted playsinline data-start="0" data-duration="{{DUR}}" data-track-index="0" data-review-skip></video>
+        </div>
+        <div id="g-warm" class="layer"></div>
+        <div id="g-cool" class="layer"></div>
+        <div id="g-mem" class="layer"></div>
+      </div>
+      <div id="vig" class="layer"></div>
+      <div id="grain" class="layer"></div>
+
+      <!-- graphics: one .clip per beat (data-track-name="Graphics" | "B-roll", data-label="what it shows"), e.g.
+      <div id="b-example" class="clip" data-start="2.0" data-duration="2.5" data-track-index="4" data-track-name="B-roll" data-label="Name photo">
+        <div class="bcard"><div class="ph"><img src="assets/broll/example.jpg" alt="" /><div class="duo"></div><div class="dots"></div></div><div class="nm">Full Name</div><div class="cr">Photo: Author · CC BY 3.0 · Wikimedia Commons</div></div>
+      </div> -->
+
+      <div id="caps" class="clip" data-start="0" data-duration="{{DUR}}" data-track-index="5" data-review-skip></div>
+      <div id="flash" class="layer"></div>
+    </div>
+
+    <script type="application/json" id="edit-data">
+{
+  "fps": {{FPS}},
+  "cuts": {{CUTS}},
+  "looks": {
+    "main":   {"br": 0.98, "ct": 1.12, "sat": 1.04, "sep": 0,   "warm": 0.4,  "cool": 0.45, "mem": 0},
+    "alt":    {"br": 1.02, "ct": 1.08, "sat": 1.06, "sep": 0,   "warm": 0.5,  "cool": 0.28, "mem": 0},
+    "memory": {"br": 1.02, "ct": 1.02, "sat": 0.4,  "sep": 0.3, "warm": 0.5,  "cool": 0,    "mem": 0.32},
+    "glow":   {"br": 1.04, "ct": 1.08, "sat": 1.12, "sep": 0,   "warm": 0.7,  "cool": 0.25, "mem": 0},
+    "neutral":{"br": 1,    "ct": 1,    "sat": 1,    "sep": 0,   "warm": 0,    "cool": 0,    "mem": 0}
+  },
+  "grade": [[0, "main"]],
+  "camera": [],
+  "shake": [],
+  "plates": [],
+  "checks": [],
+  "captions": []
+}
+    </script>
+    <script>
+      (function () {
+        const D = JSON.parse(document.getElementById("edit-data").textContent);
+        const tl = gsap.timeline({ paused: true });
+        const q = (s) => document.querySelector(s);
+        const qa = (s) => Array.from(document.querySelectorAll(s));
+
+        // ---------- grade: CSS variables on #grade + blend layers, snapped on cuts ----------
+        D.grade.forEach(([t, name, dur]) => {
+          const L = D.looks[name];
+          const vars = { "--br": L.br, "--ct": L.ct, "--sat": L.sat, "--sep": L.sep };
+          if (dur) {
+            tl.to("#grade", { ...vars, duration: dur, ease: "sine.inOut" }, t);
+            tl.to("#g-warm", { opacity: L.warm, duration: dur, ease: "sine.inOut" }, t);
+            tl.to("#g-cool", { opacity: L.cool, duration: dur, ease: "sine.inOut" }, t);
+            tl.to("#g-mem", { opacity: L.mem, duration: dur, ease: "sine.inOut" }, t);
+          } else {
+            tl.set("#grade", vars, t);
+            tl.set("#g-warm", { opacity: L.warm }, t);
+            tl.set("#g-cool", { opacity: L.cool }, t);
+            tl.set("#g-mem", { opacity: L.mem }, t);
+          }
+        });
+        const DUR = +q("#root").dataset.duration, END = D.end != null ? D.end : DUR; // END: start of an outro/logo card left ungraded
+        tl.set("#vig", { opacity: 1 }, 0).set("#vig", { opacity: 0 }, END);
+        tl.set("#grain", { opacity: 0.07 }, 0).set("#grain", { opacity: 0.035 }, END);
+        tl.fromTo("#grain", { backgroundPosition: "0px 0px" }, { backgroundPosition: "-" + Math.round(DUR * 60) + "px -" + Math.round(DUR * 40) + "px", duration: DUR, ease: "steps(" + Math.round(DUR * 10) + ")" }, 0);
+
+        // ---------- camera ----------
+        D.camera.forEach(([t0, t1, s0, s1, ox, oy, ease]) => {
+          tl.set("#cam", { transformOrigin: ox * 100 + "% " + oy * 100 + "%" }, t0);
+          tl.fromTo("#cam", { scale: s0 }, { scale: s1, duration: Math.max(0.01, t1 - t0), ease: ease || "none", immediateRender: false }, t0);
+        });
+        let seed = 11;
+        const rnd = () => ((seed = (seed * 16807) % 2147483647) / 2147483647) * 2 - 1;
+        (D.shake || []).forEach(([t, amp, dur]) => {
+          const n = 6, step = dur / n;
+          for (let i = 0; i < n; i++) {
+            const k = 1 - i / n;
+            tl.to("#cam", { x: rnd() * amp * k, y: rnd() * amp * k, duration: step, ease: "none" }, t + i * step);
+          }
+          tl.to("#cam", { x: 0, y: 0, duration: 0.05, ease: "none" }, t + dur);
+        });
+
+        // ---------- captions (left-aligned, word reveal; dark plate only over host shots) ----------
+        const caps = q("#caps");
+        (D.plates || []).forEach(([a, b]) => {
+          tl.set(caps, { "--plate": "rgba(13, 13, 12, 0.88)" }, a);
+          tl.set(caps, { "--plate": "rgba(13, 13, 12, 0)" }, b);
+        });
+        const ICONS = {
+          db: '<svg viewBox="0 0 300 120"><g fill="none" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"><path d="M40 60 H260" stroke="#f6f3ea"/><rect x="52" y="18" width="34" height="84" rx="6" stroke="#e4e62e"/><rect x="214" y="18" width="34" height="84" rx="6" stroke="#e4e62e"/><rect x="16" y="36" width="24" height="48" rx="6" stroke="#f6f3ea"/><rect x="260" y="36" width="24" height="48" rx="6" stroke="#f6f3ea"/></g></svg>',
+        };
+        D.captions.forEach((c) => {
+          if (c.hero) return;
+          const el = document.createElement("div");
+          el.className = "cap" + (c.pos ? " cap-" + c.pos : "") + (c.who === "h" ? " cap-h" : "");
+          const toks = c.text.split(/\s+/);
+          const wt = c.wt || [];
+          const span = c.e - c.s;
+          const lens = toks.map((w) => w.replace(/[*^]/g, "").length + 1);
+          const tot = lens.reduce((a, b) => a + b, 0);
+          let acc = 0;
+          toks.forEach((raw, i) => {
+            const em = /^\*.*\*[.,!?…]*$/.test(raw), key = /^\^.*\^[.,!?…]*$/.test(raw);
+            const word = raw.replace(/[*^]/g, "");
+            const w = document.createElement("span"); w.className = "w";
+            const wi = document.createElement("span"); wi.className = "wi" + (em ? " em" : "") + (key ? " k" : "");
+            const ico = /^\{(\w+)\}$/.exec(word);
+            if (ico && ICONS[ico[1]]) { wi.className += " ico"; wi.innerHTML = ICONS[ico[1]]; } else wi.textContent = word;
+            w.appendChild(wi); el.appendChild(w);
+            const t = wt[i] != null ? wt[i] : c.s + (acc / tot) * span * 0.8;
+            acc += lens[i];
+            tl.fromTo(wi, { yPercent: 115 }, { yPercent: 0, duration: 0.2, ease: "power3.out" }, Math.max(c.s, t - 0.04));
+          });
+          if (c.tag) { const tg = document.createElement("span"); tg.className = "who"; tg.textContent = c.tag; el.prepend(tg); }
+          caps.appendChild(el);
+          tl.set(el, { visibility: "visible", opacity: 1, y: 0 }, c.s - 0.04);
+          tl.to(el, { opacity: 0, y: -12, duration: 0.12, ease: "power2.in" }, c.e - 0.12);
+          tl.set(el, { visibility: "hidden" }, c.e);
+        });
+
+        // ---------- graphic helpers ----------
+        const up = (sel, t, d) => tl.fromTo(sel, { yPercent: 108 }, { yPercent: 0, duration: d || 0.32, ease: "power4.out" }, t);
+        const away = (sel, t) => tl.to(sel, { opacity: 0, y: -18, duration: 0.18, ease: "power2.in" }, t);
+        const draw = (sel, t, d) => {
+          qa(sel).forEach((p) => { p.setAttribute("pathLength", "1"); p.style.strokeDasharray = "1"; });
+          tl.fromTo(sel, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: d || 0.6, ease: "power2.inOut", stagger: 0.08 }, t);
+        };
+
+        // b-roll photo card: card("#b-name", in, out, rotation, scale)
+        const card = (id, t0, t1, rot, sc = 1) => {
+          tl.fromTo(id + " .bcard", { y: 90, rotation: rot - 9, opacity: 0, scale: sc * 0.92 }, { y: 0, rotation: rot, opacity: 1, scale: sc, duration: 0.42, ease: "power3.out" }, t0);
+          tl.fromTo(id + " img", { scale: 1.14 }, { scale: 1, duration: t1 - t0, ease: "none" }, t0);
+          tl.to(id + " .bcard", { x: -460, rotation: rot - 10, duration: 0.28, ease: "power3.in" }, t1 - 0.28);
+        };
+
+        // ---- per-video graphics: one block per beat, timed to the word (see editkit/HYPERFRAMES.md) ----
+        // card("#b-example", 2.0, 4.5, -3);
+
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

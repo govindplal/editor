@@ -60,7 +60,8 @@ def main():
             scripts.append(f"<script{attrs}>{txt}</script>")
             continue
         scripts.append(f"<script>{txt}</script>")
-    dom = re.sub(r"<script[^>]*>.*?</script>", "", body, flags=re.S).strip()
+    dom = re.sub(r"<script[^>]*>.*?</script>", "", body, flags=re.S)
+    dom = re.sub(r"<!--.*?-->", "", dom, flags=re.S).strip()
 
     m = re.search(r'data-composition-id="([^"]+)"', dom)
     W = int(re.search(r'data-width="(\d+)"', dom).group(1)); H = int(re.search(r'data-height="(\d+)"', dom).group(1))
@@ -129,7 +130,7 @@ def main():
     order = data.get("laneOrder") or ["Captions", "Graphics", "B-roll", "Camera", "Grade", "Footage", "Audio"]
     lanes.sort(key=lambda l: order.index(l["name"]) if l["name"] in order else len(order))
     title = a.title or a.key
-    meta = {"key": a.key, "round": a.round, "roundLabel": f"Round {a.round}", "fps": fps, "lanes": lanes, "unsure": unsure}
+    meta = {"title": a.heading or title, "key": a.key, "round": a.round, "roundLabel": f"Round {a.round}", "fps": fps, "lanes": lanes, "unsure": unsure}
     page = open(os.path.join(KIT, "review", "player.html"), encoding="utf-8").read()
     rep = {
         "{{TITLE}}": html.escape(title), "{{HEADING}}": html.escape(a.heading or title),

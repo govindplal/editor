@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# usage: editkit/bin/asr <key> <s:e,s:e,...> [--lang ml] [--modes translate,transcribe-en]
+#  Whisper on short spans of runs/<key>/audio16k.wav to fix captions / fill gaps (≈1–2 min per span on CPU: background it).
+set -euo pipefail
+. "$(dirname "$0")/_common.sh"
+KEY=$1; SPANS=$2; shift 2; RUN=$ROOT/runs/$KEY
+[ -f "$RUN/audio16k.wav" ] || die "no runs/$KEY/audio16k.wav (ingest first)"
+ensure_venv
+"$VENV/bin/python" -I "$KIT/py/asr.py" "$RUN/audio16k.wav" "$SPANS" "$@"

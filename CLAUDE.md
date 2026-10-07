@@ -1,9 +1,22 @@
 # editor — video editing repo
 
 Every video request (caption, edit, restyle, revise; shorts, podcasts, YouTube) → use the **video-edit** skill
-(`.claude/skills/video-edit/SKILL.md`). It drives `editkit/`: scripts do transcription, shot detection, rendering
-and audio; per video you only write `runs/<key>/edit.json` (reference: `editkit/SPEC.md`, craft: `editkit/CRAFT.md`,
-styles: `editkit/STYLES.md`, creator bibles: `editkit/brands/`).
+(`.claude/skills/video-edit/SKILL.md`). Default flow for a new video: **HyperFrames composition + shared review room**
+(`editkit/HYPERFRAMES.md`); the quick editkit `edit.json` path (`editkit/SPEC.md`, `CRAFT.md`, `STYLES.md`,
+creator bibles in `editkit/brands/`) is for small caption-only jobs or when asked.
+
+How the user works (every video, every session)
+- First output is **always the review room**, never an MP4: https://claude.ai/artifact/8X495UNS4JvcNDt2dDWfM7
+  (one shared timeline player; republish it for each new video/round, see `editkit/HYPERFRAMES.md` §5). The user plays
+  it, types timestamped notes (playback pauses, resumes on send) and presses Done; the notes arrive as an artifact
+  comment. Change **only** what the notes ask, republish as the next round, reply in the thread and resolve it.
+- A round with 0 notes = approved → render the final master (`editkit/bin/hfrender <key>`, original audio
+  stream-copied) and commit it to `videos/<key>/`. Don't upload it to the chat and don't make compressed copies unless
+  the user asks.
+- Be a senior editor: plan every beat; grade, camera moves, captions for the whole video (never centred, no generic
+  fonts or gradients); add **b-roll from the internet** whenever a person/place/thing is named, and **animated
+  line-art illustrations** (stickman gags etc.) where the story is visual or funny. Verify with the user whenever a
+  name, photo, licence or caption is doubtful; mark unsure captions in the review room.
 
 Token rules
 - Don't read toolkit source (`editkit/lib`, `editkit/py`), open-edit/hyperframes docs, `words.json` or generated HTML

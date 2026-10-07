@@ -1,0 +1,44 @@
+<!-- Stickman kicked out of a door (used in videos/rajeev-promo at 16.4–18.05 s, "they threw me out of the audition").
+     Story: door opens -> man appears -> a leg kicks -> he arcs out and lands on his back -> door slams -> dust -> stars.
+     Retime by shifting every absolute time (16.42 ... 17.9) by the same offset; relabel the door sign (AUDITION).
+     Same rig works for other gags: change the door to a desk/stage/car, keep #kk-pos (moves) + #kk-man (rotates).
+     Keep the scene off the face: it sat bottom-left above the captions while the camera relaxed to 1.04. -->
+
+<!-- CSS (inside the composition <style>) -->
+<style>
+      #g-kick svg { position: absolute; left: 26px; top: 868px; width: 400px; height: 425px; overflow: visible; }
+</style>
+
+<!-- HTML (a .clip in #root) -->
+      <div id="g-kick" class="clip" data-start="16.4" data-duration="1.66" data-track-index="3" data-track-name="Graphics" data-label="Thrown out (stickman)">
+        <svg viewBox="0 0 320 340" aria-hidden="true">
+          <path class="ln" d="M0 334 H316" />
+          <rect x="182" y="64" width="112" height="270" fill="#0d0d0c" stroke="#f6f3ea" stroke-width="6" />
+          <rect id="kk-door" x="186" y="68" width="104" height="262" fill="#e4e62e" />
+          <circle cx="204" cy="200" r="6" fill="#0d0d0c" />
+          <rect x="196" y="20" width="84" height="30" fill="#e4e62e" />
+          <text x="238" y="41" text-anchor="middle" font-family="Martian Mono, monospace" font-size="13" fill="#0d0d0c">AUDITION</text>
+          <path id="kk-leg" class="ac" d="M262 286 L212 300 L196 294" />
+          <g id="kk-pos"><g id="kk-man"><circle class="ln" cx="0" cy="-46" r="14" /><path class="ln" d="M0 -32 L0 8 M0 -20 L-20 -4 M0 -20 L20 -8 M0 8 L-14 38 M0 8 L14 38" /></g><g id="kk-stars"><path class="ac" d="M24 -40 l4 -8 l4 8 M64 -46 l4 -8 l4 8 M44 -58 l4 -8 l4 8" /></g></g>
+          <g id="kk-dust"><circle class="ln" cx="70" cy="326" r="8" /><circle class="ln" cx="40" cy="322" r="6" /><circle class="ln" cx="100" cy="324" r="5" /></g>
+        </svg>
+      </div>
+
+
+<!-- JS (inside the timeline script, after the helpers) -->
+<script>
+        // stickman kicked out of the audition room
+        tl.fromTo("#kk-door", { scaleX: 1, svgOrigin: "290 68" }, { scaleX: 0.12, duration: 0.14, ease: "power3.out" }, 16.42);
+        tl.fromTo("#kk-pos", { x: 238, y: 296, opacity: 0 }, { opacity: 1, duration: 0.06 }, 16.5);
+        tl.set("#kk-man", { transformOrigin: "50% 59%", rotation: 0 }, 16.5);
+        tl.fromTo("#kk-leg", { strokeDasharray: 1, strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 0.1, ease: "power4.out" }, 16.68);
+        qa("#kk-leg").forEach((p) => p.setAttribute("pathLength", "1"));
+        tl.to("#kk-pos", { keyframes: [{ x: 168, y: 190, duration: 0.24, ease: "power2.out" }, { x: 96, y: 318, duration: 0.26, ease: "power2.in" }] }, 16.74);
+        tl.to("#kk-man", { keyframes: [{ rotation: -140, duration: 0.24, ease: "power2.out" }, { rotation: -270, duration: 0.26, ease: "power2.in" }] }, 16.74);
+        tl.to("#kk-leg", { opacity: 0, duration: 0.08 }, 16.92);
+        tl.to("#kk-door", { scaleX: 1, duration: 0.1, ease: "power4.in" }, 17.12);
+        tl.fromTo("#kk-dust circle", { scale: 0.2, opacity: 1, transformOrigin: "50% 50%" }, { scale: 2.2, opacity: 0, duration: 0.45, ease: "power2.out", stagger: 0.04 }, 17.24);
+        tl.to("#kk-pos", { keyframes: [{ y: 304, duration: 0.12, ease: "power2.out" }, { y: 318, duration: 0.14, ease: "bounce.out" }] }, 17.26);
+        tl.fromTo("#kk-stars", { opacity: 0, rotation: 0, transformOrigin: "50% 50%" }, { opacity: 1, rotation: 180, duration: 0.5, ease: "none" }, 17.42);
+        tl.to("#g-kick svg", { opacity: 0, y: -14, duration: 0.16, ease: "power2.in" }, 17.9);
+</script>

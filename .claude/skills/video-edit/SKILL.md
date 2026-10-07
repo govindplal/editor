@@ -1,6 +1,6 @@
 ---
 name: video-edit
-description: Edit an uploaded video in this repo — captions, zooms/punch-ins, cuts, flashes, motion graphics, mascots, 50 named styles — using the editkit toolkit. Use for any request to caption, edit, style, restyle or revise a video (shorts, podcasts, YouTube, long-form). Cheapest path; prefer it over open-edit/hyperframes docs.
+description: Edit an uploaded video in this repo — captions, zooms/punch-ins, grading, b-roll, animated illustrations, motion graphics — as a HyperFrames composition reviewed in the shared review room (timestamped notes) before the final render; editkit for quick jobs. Use for any request to caption, edit, style, restyle or revise a video (shorts, podcasts, YouTube, long-form). Cheapest path; prefer it over open-edit/hyperframes docs.
 ---
 
 # video-edit (editkit)
@@ -42,23 +42,15 @@ only when choosing; `grep -i <name>` is enough) · `editkit/brands/<name>.md` (c
    Tell the user in a few lines: what was added, any caption lines you were unsure of, anything not delivered.
    If they stated a lasting preference, update/create their `editkit/brands/<name>.md` and merge it to main.
 
-## HyperFrames route + review loop (user asks for HyperFrames/Remotion, or to review/comment before render)
-- Ingest as usual (transcript, shots), then author one monolithic HyperFrames composition in `runs/<key>/hf/`
-  (`npx hyperframes init hf --example blank --resolution portrait --skip-transcribe --non-interactive`, fonts as local
-  woff2 + `@font-face`, `assets/gsap.min.js` from `editkit/lib`). Keep the source `<video>` **muted**; put the edit data
-  in `<script type="application/json" id="edit-data">` (`captions`, `camera`, `grade`, `cuts`, `checks`) and build
-  captions/camera/grade from it in the one paused timeline. Graphics = `.clip` divs with `data-track-name`/`data-label`.
-  Reference: `videos/rajeev-promo/hf/index.html`. Check with `npx hyperframes lint` + `snapshot --at ...`.
-- Review page: `editkit/bin/review <key>` → publish `runs/<key>/review/index.html` as an Artifact with the printed
-  `files` and `capabilities {"db":{}, "comments":{}}`. It inlines the composition (same HTML as the render), plays it
-  with the original audio, shows Captions/Graphics/Camera/Grade/Footage/Audio lanes, lists `unsure` captions and
-  `checks` to verify; typing a note pauses there, Enter saves it (db collection `notes`, `{t, text, round}`) and
-  resumes; Done sends the list to Claude as an artifact comment (this session is woken). Read notes with
-  `ArtifactData list notes`; change only what they ask; rebuild with `--round N+1` and republish the same file.
-- Final: `editkit/bin/hfrender <key>` (background) renders the picture and stream-copies the source audio, publishes
-  `videos/<key>/` (hf project, mp4, source, plus `<key>-share.mp4` under the 30 MiB chat upload limit when the master
-  is bigger: send that one). Local Chromium can't play H.264 and cdnjs is blocked: test the review
-  page with a WebM copy and a routed local GSAP.
+## Default flow: HyperFrames + review room (every new video, unless the user asks for a quick editkit edit)
+Read `editkit/HYPERFRAMES.md` once per session and follow it:
+ingest → `editkit/bin/asr` for unclear spans → `editkit/bin/hfnew <key>` → plan beats (grade, camera, captions for
+everything, hero type, **b-roll from the internet whenever someone or something is named**, **animated line-art
+illustrations for visual or funny moments**, end CTA) → build + snapshot critique → `editkit/bin/review` and publish to
+the **shared review room** → apply only the user's notes, round by round → after an approved round (0 notes),
+`editkit/bin/hfrender <key>` → commit the master MP4 to `videos/<key>/`. Don't upload it to the chat and don't make a
+compressed copy unless asked. Ask the user when a name, photo or caption is doubtful.
+The editkit `edit.json` path below stays for quick caption-only jobs or when the user asks for it.
 
 ## Revising a past video
 Same session: edit `runs/<key>/edit.json`, then `editkit/bin/render <key> --from a --to b` (only that span

@@ -1,0 +1,11 @@
+<!-- B-roll photo card: a person/place/thing the speaker names, shown as a duotone print (brand accent multiplied over
+     a high-contrast greyscale photo, halftone dots, slow push inside the frame, paper border, name + licence credit).
+     CSS ships in editkit/hf/template.html (.bcard). Images: assets/broll/<name>.jpg (see editkit/HYPERFRAMES.md §B-roll).
+     Place it where it covers neither the face nor the captions (portrait talking head: left column, y ≈ 700–1290);
+     per-card overrides: #b-name .bcard { left; top; transform-origin: 0 0 } and the 5th card() arg to scale it down. -->
+<div id="b-name" class="clip" data-start="7.2" data-duration="2.66" data-track-index="4" data-track-name="B-roll" data-label="Full Name photo">
+  <div class="bcard"><div class="ph"><img src="assets/broll/name.jpg" alt="" /><div class="duo"></div><div class="dots"></div></div><div class="nm">Full Name</div><div class="cr">Photo: Author · CC BY 3.0 · Wikimedia Commons</div></div>
+</div>
+<script>
+  card("#b-name", 7.2, 9.84, 2.5);   // in, out, resting rotation (vary −3…+3 between cards), optional scale
+</script>

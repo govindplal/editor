@@ -15,9 +15,28 @@ PARAKEET = "sherpa-onnx-nemo-parakeet-tdt-0.6b-v2-int8"
 
 
 def ensure(name):
+    """Download + extract a model once per machine. Locked (session-start prefetch and ingest may race) and
+    atomic (extract to .tmp, then rename), so a half-extracted model is never used."""
+    import fcntl
     d = os.path.join(MODELS, name)
-    if os.path.isdir(d) and os.listdir(d):
+    ready = lambda: os.path.isdir(d) and not os.path.exists(d + ".tar.bz2") and any(f.endswith("tokens.txt") for f in os.listdir(d))
+    if ready():
         return d
+    os.makedirs(MODELS, exist_ok=True)
+    with open(d + ".lock", "w") as lk:
+        fcntl.flock(lk, fcntl.LOCK_EX)
+        if ready():
+            return d
+        tar, tmp = d + ".tar.bz2", d + ".tmp"
+        print(f"[transcribe] downloading {name} ...", file=sys.stderr)
+        subprocess.run(["curl", "-sSLf", "--retry", "3", "-o", tar, REL + name + ".tar.bz2"], check=True)
+        subprocess.run(["rm", "-rf", tmp, d]); os.makedirs(tmp)
+        with tarfile.open(tar) as t:
+            t.extractall(tmp)
+        inner = os.path.join(tmp, name)
+        os.rename(inner if os.path.isdir(inner) else tmp, d)
+        subprocess.run(["rm", "-rf", tmp, tar])
+    return d
     os.makedirs(MODELS, exist_ok=True)
     tar = d + ".tar.bz2"
     print(f"[transcribe] downloading {name} ...", file=sys.stderr)
