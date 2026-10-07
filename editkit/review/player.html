@@ -309,11 +309,12 @@ button { font: inherit; color: inherit; }
   function loadLocal() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || "[]"); } catch (e) { return []; } }
   function saveLocal() { try { localStorage.setItem(STORE_KEY, JSON.stringify(notes)); } catch (e) {} }
   function sortNotes() { notes.sort((a, b) => a.t - b.t || a.createdAt.localeCompare(b.createdAt)); }
-  const cur = () => notes.filter((n) => (n.round || 1) === META.round);
+  const mine = () => notes.filter((n) => n.key === META.key);  // one shared review room: notes are per video key
+  const cur = () => mine().filter((n) => (n.round || 1) === META.round);
   function renderNotes() {
     sortNotes();
     const ul = $("rv-notes"); ul.innerHTML = "";
-    const list = cur(), past = notes.length - list.length;
+    const list = cur(), past = mine().length - list.length;
     $("rv-count").textContent = list.length;
     if (past) { const li = document.createElement("li"); li.className = "rv-empty"; li.textContent = past + (past === 1 ? " note" : " notes") + " from earlier rounds already applied."; ul.appendChild(li); }
     if (!list.length) { const li = document.createElement("li"); li.className = "rv-empty"; li.textContent = "No notes yet. Play the cut and start typing wherever something should change."; ul.appendChild(li); }
@@ -344,7 +345,7 @@ button { font: inherit; color: inherit; }
   async function submitNote() {
     const text = ta.value.trim();
     if (!text) { endNote(true); return; }
-    const n = { id: "n" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), t: Math.round(noteT * 100) / 100, text, round: META.round, createdAt: new Date().toISOString() };
+    const n = { id: "n" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), key: META.key, t: Math.round(noteT * 100) / 100, text, round: META.round, createdAt: new Date().toISOString() };
     notes.push(n); saveLocal(); renderNotes();
     endNote(true);
     status("Saved note at " + tc(n.t) + (db ? "" : " (on this device)"));
@@ -371,8 +372,8 @@ button { font: inherit; color: inherit; }
 
   // ---------- done ----------
   function notesText() {
-    const lines = notes.filter((n) => n.round === META.round).map((n) => "[" + tc(n.t) + "] " + n.text.replace(/\s+/g, " "));
-    return "Review notes, " + META.roundLabel + " (" + lines.length + "):\n" + lines.join("\n");
+    const lines = cur().map((n) => "[" + tc(n.t) + "] " + n.text.replace(/\s+/g, " "));
+    return "Review notes for " + META.key + " (" + (META.title || META.key) + "), " + META.roundLabel + " (" + lines.length + "):\n" + lines.join("\n");
   }
   $("rv-done").addEventListener("click", async () => {
     const btn = $("rv-done"); btn.disabled = true;
@@ -380,7 +381,7 @@ button { font: inherit; color: inherit; }
     let text = notesText();
     if (text.length > 3800) text = text.slice(0, 3700) + "\n… (list cut short here; every note is in the notes store)";
     $("rv-sendtext").textContent = text; $("rv-sendbox").hidden = false;
-    if (db) { try { await db.doc("review/state").set({ status: "done", round: META.round, count: notes.length, at: new Date().toISOString() }); } catch (e) {} }
+    if (db) { try { await db.doc("review/" + META.key).set({ status: "done", key: META.key, round: META.round, count: cur().length, at: new Date().toISOString() }); } catch (e) {} }
     let sent = false;
     try {
       const cm = await window.claude?.use?.("comments");

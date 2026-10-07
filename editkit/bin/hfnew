@@ -1,0 +1,31 @@
+#!/usr/bin/env bash
+# usage: editkit/bin/hfnew <key> [--title T]
+#  After ingest: scaffold the HyperFrames project runs/<key>/hf from editkit/hf/template.html
+#  (grade + camera + caption engine + b-roll card + line-art classes, fonts, GSAP, muted source video).
+#  Then write the edit into its edit-data JSON and per-video graphics (editkit/HYPERFRAMES.md).
+set -euo pipefail
+. "$(dirname "$0")/_common.sh"
+KEY=$1; shift; RUN=$ROOT/runs/$KEY; TITLE=$KEY
+[ "${1:-}" = --title ] && TITLE=$2
+[ -f "$RUN/meta.json" ] || die "ingest first: editkit/bin/ingest <video> $KEY"
+HF=$RUN/hf
+[ -f "$HF/index.html" ] && die "runs/$KEY/hf/index.html exists (edit it, or delete it to start over)"
+mkdir -p "$HF/assets/fonts" "$HF/assets/broll"
+cp "$KIT"/hf/fonts/*.woff2 "$HF/assets/fonts/"; cp "$KIT/lib/gsap.min.js" "$HF/assets/"; cp "$KIT/hf/hyperframes.json" "$HF/"
+SRC=$(meta "$RUN/meta.json" source)
+ln -f "$RUN/$SRC" "$HF/assets/$SRC" 2>/dev/null || cp "$RUN/$SRC" "$HF/assets/$SRC"
+python3 - "$RUN" "$HF" "$TITLE" "$SRC" <<'PY'
+import json, sys
+run, hf, title, src = sys.argv[1:]
+m = json.load(open(f"{run}/meta.json")); shots = json.load(open(f"{run}/shots.json"))
+fps = m["fps"]; fps = round(eval(fps)) if isinstance(fps, str) else fps
+cuts = [round(s[0], 2) for s in shots[1:]]
+t = open(f"{run}/../../editkit/hf/template.html").read()
+for k, v in {"{{W}}": m["w"], "{{H}}": m["h"], "{{DUR}}": m["duration"], "{{FPS}}": fps, "{{TITLE}}": title,
+             "{{SRC}}": src, "{{CUTS}}": json.dumps(cuts), "{{RES}}": "portrait" if m["h"] > m["w"] else "landscape"}.items():
+    t = t.replace(k, str(v))
+open(f"{hf}/index.html", "w").write(t)
+json.dump({"id": title, "name": title}, open(f"{hf}/meta.json", "w"))
+PY
+(cd "$HF" && npx hyperframes lint 2>&1 | grep -E "errors?," || true)
+echo "[hfnew] runs/$KEY/hf ready ($(meta "$RUN/meta.json" w)x$(meta "$RUN/meta.json" h)); write edit-data + graphics, then snapshot."
