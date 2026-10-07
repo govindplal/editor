@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+# usage: editkit/bin/reference <video|image|dir> <name>   -> runs/_refs/<name>/{sheet.jpg, pace.txt}
+# Reads a reference the user likes (a reel, a frame, a folder of frames): pacing numbers + one frame per shot,
+# so the edit can copy its rhythm, type, palette and density instead of guessing from a description.
+set -euo pipefail
+. "$(dirname "$0")/_common.sh"
+IN=$1; NAME=$2; D=$ROOT/runs/_refs/$NAME; rm -rf "$D"; mkdir -p "$D/f"
+if [ -d "$IN" ]; then
+  i=0; for f in "$IN"/*; do case ${f,,} in *.png|*.jpg|*.jpeg|*.webp) ffmpeg -v error -y -i "$f" -vf scale=360:-2 "$D/f/$(printf %03d $i).jpg"; i=$((i+1));; esac; done
+  echo "frames from folder: $i" > "$D/pace.txt"
+elif ffprobe -v error -select_streams v:0 -show_entries stream=codec_name -of csv=p=0 "$IN" | grep -qvE "png|mjpeg|webp|bmp" \
+     && [ "$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$IN" | cut -d. -f1)" != "N/A" ]; then
+  DUR=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$IN")
+  read -r W H < <(ffprobe -v error -select_streams v:0 -show_entries stream=width,height -of csv=p=0:s=x "$IN" | tr x ' ')
+  ffmpeg -hide_banner -i "$IN" -vf "scale=160:-2,select='gt(scene,0.25)',showinfo" -an -f null - 2>&1 \
+    | grep -o 'pts_time:[0-9.]*' | cut -d: -f2 > "$D/cuts.txt" || true
+  python3 - "$D" "$DUR" "$W" "$H" <<'EOF'
+import sys
+d, dur, w, h = sys.argv[1], float(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])
+c = [float(x) for x in open(f"{d}/cuts.txt").read().split()]
+c = [t for i, t in enumerate(c) if not i or t - c[i - 1] > 0.15]
+b = [0.0] + c + [dur]; L = sorted(y - x for x, y in zip(b, b[1:]))
+med = L[len(L) // 2]
+first = c[0] if c else dur
+mids = [round((x + y) / 2, 2) for x, y in zip(b, b[1:])][:30]
+open(f"{d}/mids.txt", "w").write(" ".join(map(str, mids)))
+txt = (f"{w}x{h} {'portrait' if h > w else 'landscape'} · {dur:.1f} s · {len(c)} cuts · "
+       f"{len(c) / dur * 60:.0f} cuts/min · median shot {med:.2f} s · shortest {L[0]:.2f} s · longest {L[-1]:.2f} s · "
+       f"first cut at {first:.2f} s\ncuts: {' '.join(f'{t:.2f}' for t in c[:60])}")
+open(f"{d}/pace.txt", "w").write(txt)
+EOF
+  i=0; for t in $(cat "$D/mids.txt"); do ffmpeg -v error -y -ss "$t" -i "$IN" -frames:v 1 -vf "scale=360:-2,drawtext=text='$t':x=6:y=6:fontsize=20:fontcolor=white:box=1:boxcolor=black@0.6" "$D/f/$(printf %03d $i).jpg" 2>/dev/null || ffmpeg -v error -y -ss "$t" -i "$IN" -frames:v 1 -vf scale=360:-2 "$D/f/$(printf %03d $i).jpg"; i=$((i+1)); done
+else
+  ffmpeg -v error -y -i "$IN" -vf scale=720:-2 "$D/f/000.jpg"; echo "single frame" > "$D/pace.txt"
+fi
+N=$(ls "$D/f" | wc -l); COLS=$(( N < 6 ? N : 6 ))
+ffmpeg -v error -y -pattern_type glob -i "$D/f/*.jpg" -vf "scale=360:-2,tile=${COLS}x$(( (N+COLS-1)/COLS )):padding=4:color=black" -frames:v 1 -q:v 3 "$D/sheet.jpg"
+rm -rf "$D/f" "$D/mids.txt"
+cat "$D/pace.txt"; echo; echo "[reference] sheet: runs/_refs/$NAME/sheet.jpg"

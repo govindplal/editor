@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# usage: editkit/bin/qa <key> [--cover t]   — check the ENCODED master, not the page: a render that exits 0 proves nothing.
+#  duration / fps / size vs source, audio present and in sync length, loudness; 12-frame sheet of the final
+#  (runs/<key>/qa/master.jpg); --cover t writes videos/<key>/cover.jpg (thumbnail / poster frame).
+set -euo pipefail
+. "$(dirname "$0")/_common.sh"
+KEY=$1; shift; RUN=$ROOT/runs/$KEY; OUT=$RUN/out/$KEY.mp4; COVER=""
+while [ $# -gt 0 ]; do case $1 in --cover) COVER=$2; shift 2;; *) die "bad arg $1";; esac; done
+[ -f "$OUT" ] || die "no $OUT (render first)"
+SRC=$RUN/$(meta "$RUN/meta.json" source); mkdir -p "$RUN/qa"
+p() { ffprobe -v error -select_streams "$2" -show_entries "$3" -of csv=p=0 "$1" | head -1; }
+SD=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$SRC"); OD=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$OUT")
+VD=$(p "$OUT" v:0 stream=duration); AD=$(p "$OUT" a:0 stream=duration || true)
+SWH=$(p "$SRC" v:0 stream=width,height); OWH=$(p "$OUT" v:0 stream=width,height)
+python3 - "$SD" "$OD" "$VD" "${AD:-0}" "$SWH" "$OWH" "$(meta "$RUN/meta.json" audio)" <<'EOF'
+import sys
+sd, od, vd, ad = map(lambda x: float(x or 0), sys.argv[1:5]); swh, owh, sa = sys.argv[5:8]
+bad = []
+if abs(od - sd) > 0.15: bad.append(f"duration {od:.2f}s vs source {sd:.2f}s")
+if swh != owh: bad.append(f"size {owh} vs source {swh}")
+if sa != "None" and ad == 0: bad.append("no audio in the final")
+if ad and abs(ad - vd) > 0.1: bad.append(f"audio {ad:.2f}s vs video {vd:.2f}s")
+print("[qa] " + ("OK " if not bad else "PROBLEM: " + "; ".join(bad) + " · ") + f"{od:.2f}s {owh.replace(',', 'x')}")
+EOF
+if [ -n "$AD" ]; then
+  ffmpeg -hide_banner -nostats -i "$OUT" -af loudnorm=print_format=summary -f null - 2>&1 \
+    | awk '/Input Integrated/{i=$3} /Input True Peak/{p=$4} END{printf "[qa] loudness %s LUFS, true peak %s dBTP%s\n", i, p, (p+0 > -0.5 ? "  <- near clipping" : "")}'
+fi
+N=12; ffmpeg -v error -y -i "$OUT" -vf "fps=$N/$OD,scale=-2:'if(gt(ih,iw),360,240)',tile=6x2:padding=4:color=black" -frames:v 1 -q:v 3 "$RUN/qa/master.jpg"
+echo "[qa] master sheet: runs/$KEY/qa/master.jpg"
+if [ -n "$COVER" ]; then
+  mkdir -p "$ROOT/videos/$KEY"; ffmpeg -v error -y -ss "$COVER" -i "$OUT" -frames:v 1 -q:v 2 "$ROOT/videos/$KEY/cover.jpg"
+  echo "[qa] cover: videos/$KEY/cover.jpg"
+fi

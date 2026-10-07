@@ -38,7 +38,19 @@ All times are seconds on the source timeline. Everything is optional except `sty
 
   "chrome": {"pills": ["Show · EP 02", "Topic"], "progress": true, "pillsAt": 0.1, "pillsUntil": 30.9},
 
-  "graphics": [ {"t": 4.0, "end": 6.6, "type": "vs", "zone": "lower", "scale": 1, ...props} ]
+  "graphics": [ {"t": 4.0, "end": 6.6, "type": "vs", "zone": "lower", "scale": 1, ...props} ],
+
+  "sound": {                          // OPT-IN (only when the user asks for SFX/music); omit = audio untouched
+    "auto": true,                     // synth SFX on the edit's events, 0.03 s early: title/chapter whoosh,
+                                      // stamp/icon/list item pop, punch/shake thump, whip whip, cta click,
+                                      // buddy boing, burst/vs crack, count riser, flash whoosh, glitch buzz
+    "sfx": [[12.4, "chime", 0.3]],    // extra cues [t, name, vol]: pop tick thump crack whoosh whip riser
+                                      // sparkle boing click chime buzz
+    "skip": ["flash"],                // silence an auto kind
+    "vol": 1.0,                       // scales all SFX
+    "music": "bed.mp3",               // file in runs/<key>/ (user-supplied, licensed); looped, faded, ducked under voice
+    "musicVol": 0.12, "musicAt": 0    // bed level (≈ -18 dB) and start time
+  }
 }
 ```
 
@@ -80,3 +92,9 @@ Keep faces clear: portrait faces sit in the top ~45%, so graphics go `lower`; la
 - Long-form: captions + a graphic every 20–40 s at real beats, `chapter` per section, `lower` for each new speaker,
   `cta` once, gentler camera (`push` .03–.045, few punches).
 - Only illustrate what is said. Don't add facts the speakers didn't state.
+- Timing, hook, effect lanes, sound and the critique rubric: `editkit/CRAFT.md`.
+
+## Helper scripts
+`editkit/bin/reference <file|dir> <name>` pacing + sheet of a reference reel/frames · `editkit/bin/beats <key> [file]`
+BPM/beats/downbeats/drop → `runs/<key>/beats.json` (±30 ms, slightly early) · `editkit/bin/qa <key> [--cover t]`
+checks the encoded master + 12-frame sheet + cover · `editkit/bin/styleboard <key> <t> [ids|all]` one moment in many styles.

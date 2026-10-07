@@ -21,7 +21,27 @@ mkdir -p "$RUN/out"
 $OE render "$RUN/index.html" --out "$RUN/out/silent.mp4" --fps "$FPS" --duration "$DUR" --workers "$(nproc)" "${FROMTO[@]}" 2>&1 | grep -E "error|fail|warn|wall" || true
 [ -f "$RUN/out/silent.mp4" ] || die "render failed"
 OUT=$RUN/out/$KEY.mp4
-if [ "$(meta "$RUN/meta.json" audio)" = "None" ]; then cp "$RUN/out/silent.mp4" "$OUT"
+SOUND=$(python3 -c "import json;s=json.load(open('$RUN/edit.json')).get('sound') or {};print(1 if (s.get('auto') or s.get('sfx') or s.get('music')) and not s.get('off') else 0)")
+if [ "$SOUND" = 1 ]; then
+  # opt-in sound layer: voice stays at unity gain; synthesised SFX + optional ducked music bed go under it
+  N=$(node "$KIT/lib/sound.mjs" "$RUN" "$DUR"); echo "[render] sound: $N sfx cues"
+  read -r MUS MV MAT < <(python3 -c "import json;s=json.load(open('$RUN/edit.json'))['sound'];print(s.get('music') or '-',s.get('musicVol',.12),s.get('musicAt',0))")
+  HASV=$([ "$(meta "$RUN/meta.json" audio)" = "None" ] && echo 0 || echo 1)
+  IN=(-i "$RUN/out/silent.mp4"); F=""; MIX=""; n=0; k=1
+  ST="aresample=48000,aformat=channel_layouts=stereo"
+  if [ $HASV = 1 ]; then IN+=(-i "$SRC"); F+="[$k:a]$ST,asplit[v][vk];"; MIX+="[v]"; n=$((n+1)); k=$((k+1)); fi
+  IN+=(-i "$RUN/out/sfx.wav"); F+="[$k:a]$ST[s];"; MIX+="[s]"; n=$((n+1)); k=$((k+1))
+  if [ "$MUS" != - ]; then
+    [ -f "$RUN/$MUS" ] || die "sound.music: $RUN/$MUS not found"
+    IN+=(-stream_loop -1 -i "$RUN/$MUS")
+    FO=$(python3 -c "print(max(0,$DUR-1.5))")
+    F+="[$k:a]$ST,volume=$MV,adelay=$(python3 -c "print(int($MAT*1000))"):all=1,afade=t=in:d=0.6,afade=t=out:st=$FO:d=1.5[m0];"
+    if [ $HASV = 1 ]; then F+="[m0][vk]sidechaincompress=threshold=0.015:ratio=12:attack=10:release=400[m];"; else F+="[m0]anull[m];"; fi
+    MIX+="[m]"; n=$((n+1))
+  elif [ $HASV = 1 ]; then F+="[vk]anullsink;"; fi
+  F+="${MIX}amix=inputs=$n:normalize=0:duration=longest,atrim=0:$DUR,alimiter=limit=0.97:level=false[a]"
+  ffmpeg -v error -y "${IN[@]}" -filter_complex "$F" -map 0:v -map "[a]" -c:v copy -c:a aac -b:a 256k -t "$DUR" -movflags +faststart "$OUT"
+elif [ "$(meta "$RUN/meta.json" audio)" = "None" ]; then cp "$RUN/out/silent.mp4" "$OUT"
 elif ! ffmpeg -v error -y -i "$RUN/out/silent.mp4" -i "$SRC" -map 0:v -map 1:a -c copy -shortest -movflags +faststart "$OUT" 2>/dev/null; then
   ffmpeg -v error -y -i "$RUN/out/silent.mp4" -i "$SRC" -map 0:v -map 1:a -c:v copy -c:a aac -b:a 320k -shortest -movflags +faststart "$OUT"
   echo "[render] NOTE: source audio codec can't go in MP4 untouched; re-encoded to AAC 320k"
@@ -36,6 +56,8 @@ echo "[render] final: runs/$KEY/out/$KEY.mp4 ($((SZ/1000000)) MB)  send-to-user:
 if [ $PUBLISH = 1 ]; then
   PUB=$ROOT/videos/$KEY; mkdir -p "$PUB"
   cp "$RUN"/{edit.json,meta.json,shots.json} "$PUB"/; for f in words.json transcript.txt; do [ -f "$RUN/$f" ] && cp "$RUN/$f" "$PUB"/; done
+  MUS=$(python3 -c "import json;print((json.load(open('$RUN/edit.json')).get('sound') or {}).get('music') or '')")
+  [ -n "$MUS" ] && [ -f "$RUN/$MUS" ] && [ "$(stat -c %s "$RUN/$MUS")" -lt 20000000 ] && cp "$RUN/$MUS" "$PUB"/
   [ "$(stat -c %s "$SRC")" -lt 50000000 ] && cp "$SRC" "$PUB"/ || echo "[render] source >50MB: not stored in git (re-upload to revise later)"
   if [ "$SZ" -lt 95000000 ]; then cp "$OUT" "$PUB/$KEY.mp4"; else echo "[render] final >95MB: too big for git, only the preview is shareable"; cp "$PREV" "$PUB/$KEY-preview.mp4" 2>/dev/null || true; fi
   echo "[render] published: videos/$KEY/"
