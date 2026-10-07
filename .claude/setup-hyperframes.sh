@@ -23,6 +23,5 @@ fi
 
 # HyperFrames skills + Chrome Headless Shell
 cd /tmp
-npx --yes hyperframes skills
+[ -d "$HOME/.claude/skills/hyperframes" ] || npx --yes hyperframes skills
 npx --yes hyperframes browser ensure
-npx --yes hyperframes doctor || true
