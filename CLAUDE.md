@@ -9,6 +9,9 @@ Token rules
   unless debugging a failure. Don't re-read files you just wrote.
 - One contact sheet and one stills sheet per video; view more only to fix a visible problem.
 - Long-running steps (ingest of long videos, full renders) go in the background; wait for the notification, never poll.
+- Never open, read, probe or list anything under `videos/` (old edits, .mp4s, sources) unless the user names that
+  video for a revision; then use `editkit/bin/restore <key>`. A new video never needs a look at an old one.
+- Skip `videos/govind-motion/` entirely (its own CLAUDE.md/AGENTS.md are large) unless asked about that piece.
 - Keep replies to the user short: deliverable, what was added, doubts, anything not delivered.
 
 Defaults: original audio is never altered (unless the user asks for cuts); captions on for the whole video;
