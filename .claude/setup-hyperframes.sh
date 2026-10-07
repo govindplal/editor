@@ -11,7 +11,9 @@ command -v ffmpeg >/dev/null || { apt-get update && apt-get install -y ffmpeg; }
 
 # HyperFrames skills + Chrome Headless Shell (foreground: skills must exist when the session starts)
 cd /tmp
-[ -d "$HOME/.claude/skills/hyperframes" ] || npx --yes hyperframes skills
+# EDITKIT_HF_SKILLS=0 skips the ~20 HyperFrames skills (their descriptions cost prompt tokens every turn);
+# the CLI, Chrome and editkit/HYPERFRAMES.md are enough for the repo flow.
+[ "${EDITKIT_HF_SKILLS:-1}" = 0 ] || [ -d "$HOME/.claude/skills/hyperframes" ] || npx --yes hyperframes skills
 npx --yes hyperframes browser ensure
 
 # whisper-cpp (built from source, provides whisper-cli) — slow, so it builds in the background
