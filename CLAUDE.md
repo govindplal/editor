@@ -18,3 +18,14 @@ Defaults: original audio is never altered (unless the user asks for cuts); capti
 deliverables are committed under `videos/<key>/` on the session branch.
 Session start installs node, ffmpeg, HyperFrames (skills, Chrome, whisper-cpp) and the editkit env automatically
 (`.claude/setup-editkit.sh`; set `EDITKIT_HYPERFRAMES=0` to skip HyperFrames). `videos/govind-motion/` is a HyperFrames project.
+
+Branches and global changes
+- Each session works only on its own session branch (the one it was given; never reuse another session's branch, and if
+  that branch's PR is already merged, restart it from `origin/main`). Never read, check out or compare other branches:
+  `main` is the only source of truth.
+- Anything that should outlive the session (a new or changed skill, rule, style, graphic component, script, or edit to
+  `CLAUDE.md`/`editkit/`/`.claude/`) must be made global before the session ends: commit it, push the session branch,
+  open a PR into `main` and merge it. The user has given standing permission for these merges; ask only if the merge
+  conflicts or CI fails. Say so in the final reply ("merged to main: ...").
+- Finished videos and `videos/<key>/` records stay on the session branch unless the user asks for them on `main`.
+
