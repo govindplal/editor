@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+# usage: editkit/bin/ingest <video> [key] [--lang <code>] [--check] [--wmodel medium|large-v3] [--no-transcribe]
+#  -> runs/<key>/{source.*, meta.json, shots.json, words.json, transcript.txt, sheet.png}
+set -euo pipefail
+. "$(dirname "$0")/_common.sh"
+SRC=$(realpath "$1"); shift
+KEY=""; if [ $# -gt 0 ] && [[ "$1" != --* ]]; then KEY=$1; shift; fi
+[ -z "$KEY" ] && KEY=$(basename "${SRC%.*}" | tr 'A-Z' 'a-z' | sed 's/[^a-z0-9]\+/-/g; s/^-//' | cut -c1-40 | sed 's/-$//')
+RUN=$ROOT/runs/$KEY; mkdir -p "$RUN/qa"
+EXT=${SRC##*.}; EXT=$(echo "$EXT" | tr 'A-Z' 'a-z')
+[ -e "$RUN/source.$EXT" ] || ln "$SRC" "$RUN/source.$EXT" 2>/dev/null || cp "$SRC" "$RUN/source.$EXT"
+
+# meta
+ffprobe -v error -print_format json -show_streams -show_format "$RUN/source.$EXT" | python3 -c "
+import json,sys; d=json.load(sys.stdin); v=[s for s in d['streams'] if s['codec_type']=='video'][0]; a=[s for s in d['streams'] if s['codec_type']=='audio']
+w,h=int(v['width']),int(v['height']); rot=0
+for sd in v.get('side_data_list',[]): rot=int(sd.get('rotation',0) or 0)
+if abs(rot)==90: w,h=h,w
+json.dump({'source':'source.$EXT','w':w,'h':h,'fps':v['r_frame_rate'],'duration':float(d['format']['duration']),'audio':a[0]['codec_name'] if a else None},open('$RUN/meta.json','w'))"
+DUR=$(meta "$RUN/meta.json" duration)
+
+# shots (scene cuts on a downscaled copy)
+ffmpeg -hide_banner -i "$RUN/source.$EXT" -vf "scale=160:-2,select='gt(scene,0.3)',showinfo" -an -f null - 2>&1 \
+ | grep -o 'pts_time:[0-9.]*' | cut -d: -f2 | python3 -c "
+import sys,json; c=[0.0]+[float(x) for x in sys.stdin.read().split()]+[$DUR]; s=[]
+for a,b in zip(c,c[1:]):
+  if s and b-a<0.4: s[-1][1]=round(b,3)
+  else: s.append([round(a,3),round(b,3)])
+json.dump(s,open('$RUN/shots.json','w'))"
+
+# transcript
+if [[ " $* " != *" --no-transcribe "* ]]; then
+  ensure_venv
+  ffmpeg -v error -y -i "$RUN/source.$EXT" -vn -ac 1 -ar 16000 "$RUN/audio16k.wav"
+  ARGS=(); for a in "$@"; do [ "$a" != --no-transcribe ] && ARGS+=("$a"); done
+  "$VENV/bin/python" -I "$KIT/py/transcribe.py" "$RUN/audio16k.wav" "$RUN" "${ARGS[@]}"
+fi
+
+# contact sheet: one small still per shot (max 24)
+MIDS=$(python3 -c "
+import json; s=json.load(open('$RUN/shots.json')); m=[round((a+b)/2,2) for a,b in s]
+k=max(1,-(-len(m)//24)); print(','.join(str(x) for x in m[::k]))")
+W=$(meta "$RUN/meta.json" w); H=$(meta "$RUN/meta.json" h)
+TW=$([ "$H" -gt "$W" ] && echo 150 || echo 240)
+$OE frames "$RUN/source.$EXT" --at "$MIDS" --width $TW --sheet --cols 8 --out "$RUN/qa/shots" >/dev/null 2>&1 && mv "$RUN/qa/shots/sheet.png" "$RUN/sheet.png" && rm -rf "$RUN/qa/shots"
+
+echo "[ingest] key=$KEY  ${W}x${H} fps=$(meta "$RUN/meta.json" fps) dur=${DUR}s shots=$(python3 -c "import json;print(len(json.load(open('$RUN/shots.json'))))")"
+echo "[ingest] read: runs/$KEY/transcript.txt  runs/$KEY/sheet.png (shot mids: $MIDS)"
