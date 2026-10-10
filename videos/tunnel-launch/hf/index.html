@@ -67,38 +67,70 @@
       .step .st { font-size: 128px; margin-top: 18px; }
       .step .ss { font-size: 40px; font-weight: 600; line-height: 1.22; margin-top: 22px; color: var(--muted); }
       .step .ss b { color: var(--ink); font-weight: 800; }
+      .li { display: flex; align-items: center; gap: 18px; height: 84px; font-size: 34px; font-weight: 700; white-space: nowrap; }
+      .li .lr { flex: none; width: 50px; height: 50px; border: 4px solid var(--ink); border-radius: 50%; box-sizing: border-box; font: 600 24px/42px "Fredoka", sans-serif; text-align: center; }
+      .li .lt { position: relative; }
+      .li .lt svg { position: absolute; left: -8px; top: 50%; width: calc(100% + 16px); height: 16px; margin-top: -6px; }
     </style>
   </head>
   <body>
-    <div id="root" data-composition-id="main" data-start="0" data-duration="32" data-width="1920" data-height="1080">
-      <video id="aroll" class="clip" src="assets/source.mp4" muted playsinline data-start="0" data-duration="32" data-track-index="0" data-review-skip></video>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="34" data-width="1920" data-height="1080">
+      <video id="aroll" class="clip" src="assets/source.mp4" muted playsinline data-start="0" data-duration="34" data-track-index="0" data-review-skip></video>
 
       <!-- ============ A + B: hook (0-4) and reveal (4-8), one stage, camera dives into the tunnel ============ -->
-      <div id="sA" class="clip scene" data-start="0" data-duration="8.1" data-track-index="1" data-track-name="Graphics" data-label="Hook: the wall · Meet Tunnel">
+      <div id="sA" class="clip scene" data-start="0" data-duration="10.1" data-track-index="1" data-track-name="Graphics" data-label="The usual way: 5 steps · Meet Tunnel">
         <div id="camA" class="wrap">
           <svg class="abs" style="left:0; top:0; width:1920px; height:1080px"><path id="a-floor" class="ln" d="M110 880 H1810" /></svg>
-          <div id="a-head" class="abs fd" style="left:120px; top:92px; font-size:84px">
-            <div class="mask nw"><span id="a-l1">It’s on your phone.</span></div>
-            <div class="mask nw" style="margin-top:12px"><span id="a-l2">It needs to be on that computer.</span></div>
+          <div class="abs fd" style="left:120px; top:84px; font-size:76px"><div class="mask nw"><span id="a-t1">Phone → laptop, the usual way:</span></div></div>
+          <div class="abs fd" style="left:120px; top:84px; font-size:76px"><div class="mask nw"><span id="a-t2"><span style="color:var(--red)">5 steps.</span> For one line of text.</span></div></div>
+          <div id="a-list" class="abs" style="left:486px; top:262px; width:720px">
+            <div id="a-i1" class="li"><span class="lr">1</span><span class="lt">Copy it on your phone.<svg viewBox="0 0 300 16" preserveAspectRatio="none"><path class="rd" d="M2 9 C70 4 150 13 298 7" /></svg></span></div>
+            <div id="a-i2" class="li"><span class="lr">2</span><span class="lt">Paste it into WhatsApp or Teams.<svg viewBox="0 0 300 16" preserveAspectRatio="none"><path class="rd" d="M2 7 C90 13 190 3 298 9" /></svg></span></div>
+            <div id="a-i3" class="li"><span class="lr">3</span><span class="lt">Open that chat on your laptop.<svg viewBox="0 0 300 16" preserveAspectRatio="none"><path class="rd" d="M2 9 C70 4 150 13 298 7" /></svg></span></div>
+            <div id="a-i4" class="li"><span class="lr">4</span><span class="lt">Copy it again.<svg viewBox="0 0 300 16" preserveAspectRatio="none"><path class="rd" d="M2 7 C90 13 190 3 298 9" /></svg></span></div>
+            <div id="a-i5" class="li"><span class="lr">5</span><span class="lt">Paste it where you need it.<svg viewBox="0 0 300 16" preserveAspectRatio="none"><path class="rd" d="M2 9 C70 4 150 13 298 7" /></svg></span></div>
           </div>
-          <div id="a-head2" class="abs fd" style="left:120px; top:92px; font-size:84px">
-            <div class="mask nw"><span id="a-l3">That computer won’t let</span></div>
-            <div class="mask nw" style="margin-top:12px"><span id="a-l4"><span style="position:relative; display:inline-block">anything<svg class="abs" style="left:-6px; bottom:-7px; height:20px; width:calc(100% + 12px)" viewBox="0 0 340 26" preserveAspectRatio="none"><path id="a-scrib" class="rd" d="M4 16 C60 4 120 24 180 12 S300 6 336 14" /></svg></span> in.</span></div>
+
+          <div id="a-phone" class="phone" style="left:150px; top:320px; width:280px; height:560px"><div class="notch"></div>
+            <div id="p-note" class="abs" style="left:0; right:0; top:44px; bottom:0">
+              <div class="abs muted" style="left:22px; top:16px; font-size:15px; font-weight:800; letter-spacing:0.12em">NOTES</div>
+              <div class="abs" style="left:22px; top:96px; font-size:22px; font-weight:600"><span id="p-sel" style="padding:2px 4px; margin:-2px -4px; border-radius:6px">ship it on friday.</span></div>
+              <div class="abs" style="left:22px; top:142px; width:180px; height:12px; border-radius:6px; background:var(--paper2)"></div>
+              <div class="abs" style="left:22px; top:168px; width:130px; height:12px; border-radius:6px; background:var(--paper2)"></div>
+              <div id="p-menu" class="abs" style="left:18px; top:50px; padding:6px 16px 8px; border-radius:12px; background:var(--ink); color:var(--paper); font-size:16px; font-weight:800">Copy</div>
+            </div>
+            <div id="p-chat" class="abs" style="left:0; right:0; top:40px; bottom:0; opacity:0">
+              <div class="abs" style="left:0; right:0; top:0; height:58px; border-bottom:3px solid var(--ink)"><div class="abs" style="left:18px; top:12px; width:32px; height:32px; border:3px solid var(--ink); border-radius:50%; box-sizing:border-box"></div><div class="abs" style="left:60px; top:16px; font-size:17px; font-weight:800">Me (You)</div></div>
+              <div id="p-msg" class="abs" style="right:16px; top:86px; padding:8px 12px 10px; border:3px solid var(--ink); border-radius:16px 16px 4px 16px; font-size:17px; font-weight:700; white-space:nowrap">ship it on friday. <span style="font-size:12px">✓✓</span></div>
+              <div class="abs" style="left:14px; right:62px; bottom:22px; height:42px; border:3px solid var(--ink); border-radius:21px; box-sizing:border-box; padding:9px 14px; font-size:15px; font-weight:600; white-space:nowrap; overflow:hidden"><span id="p-ph" class="muted">Message</span><span id="p-inp" style="display:none">ship it on friday.</span></div>
+              <div id="p-send" class="abs" style="right:14px; bottom:22px; width:42px; height:42px; border-radius:50%; background:var(--ink)"><svg class="abs" style="left:11px; top:11px; width:20px; height:20px" viewBox="0 0 20 20"><path class="ln" d="M3 10 H16 M10 4 L16 10 L10 16" style="stroke:var(--paper); stroke-width:3.5" /></svg></div>
+            </div>
           </div>
 
-          <div id="a-phone" class="phone" style="left:230px; top:320px; width:280px; height:560px"><div class="notch"></div></div>
-          <div id="a-bub" class="pkt" style="font-size:23px; padding:10px 16px 12px">ship it on friday.</div>
-
-          <svg id="a-wall" class="abs" style="left:1040px; top:472px; width:70px; height:408px" viewBox="0 0 70 408"></svg>
-          <svg id="a-hit" class="abs" style="left:970px; top:560px; width:80px; height:140px" viewBox="0 0 80 140"><path class="ln" d="M60 30 L20 6 M56 70 L6 70 M60 110 L20 134" /></svg>
-          <svg id="a-ball" class="abs" style="left:0; top:0; width:64px; height:64px" viewBox="0 0 64 64"><circle class="ln" cx="32" cy="32" r="26" /><path class="ln" d="M14 24 L30 30 L22 46 M34 10 L36 30 L52 38 M30 30 L40 52" style="stroke-width:4" /></svg>
-
-          <div id="a-lap" class="laptop" style="left:1180px; top:482px; width:580px">
+          <div id="a-lap" class="laptop" style="left:1240px; top:482px; width:580px">
             <div class="scr" style="height:370px">
-              <svg id="a-lock" class="abs" style="left:230px; top:96px; width:108px; height:130px" viewBox="0 0 100 120"><path class="ln" d="M28 52 V36 a22 22 0 0 1 44 0 V52" /><rect class="ln" x="14" y="52" width="72" height="58" rx="12" /><path class="ln" d="M50 72 V88" /></svg>
+              <div id="l-doc" class="abs" style="inset:0">
+                <div class="abs" style="left:0; right:0; top:0; height:44px; border-bottom:3px solid var(--ink); font:500 16px/40px 'Geist Mono', monospace; text-align:center">launch-notes.txt</div>
+                <div class="abs" style="left:30px; top:70px; font-size:22px; font-weight:600; line-height:1.6"><div class="muted">launch checklist</div><div class="muted">– landing page ✓</div><div>– <span id="l-paste" style="opacity:0">ship it on friday.</span><span id="l-caret" style="display:inline-block; width:3px; height:24px; background:var(--ink); vertical-align:-4px; margin-left:2px"></span></div></div>
+              </div>
+              <div id="l-chat" class="abs" style="inset:0; background:var(--paper); opacity:0">
+                <div class="abs" style="left:0; top:0; bottom:0; width:168px; border-right:3px solid var(--ink)">
+                  <div class="abs" style="left:10px; right:10px; top:14px; height:52px; border-radius:12px; background:var(--paper2)"></div>
+                  <div class="abs" style="left:20px; top:24px; width:30px; height:30px; border:3px solid var(--ink); border-radius:50%; box-sizing:border-box"></div><div class="abs" style="left:58px; top:28px; font-size:14px; font-weight:800">Me (You)</div>
+                  <div class="abs" style="left:20px; top:90px; width:30px; height:30px; border:3px solid var(--ink); border-radius:50%; box-sizing:border-box"></div><div class="abs" style="left:58px; top:100px; width:80px; height:10px; border-radius:5px; background:var(--paper2)"></div>
+                  <div class="abs" style="left:20px; top:150px; width:30px; height:30px; border:3px solid var(--ink); border-radius:50%; box-sizing:border-box"></div><div class="abs" style="left:58px; top:160px; width:64px; height:10px; border-radius:5px; background:var(--paper2)"></div>
+                </div>
+                <div class="abs" style="left:168px; right:0; top:0; height:50px; border-bottom:3px solid var(--ink); font-size:16px; font-weight:800; line-height:46px; padding-left:20px">Me (You)</div>
+                <div id="l-msg" class="abs" style="left:190px; top:84px; padding:8px 14px 10px; border:3px solid var(--ink); border-radius:16px 16px 16px 4px; font-size:18px; font-weight:700; white-space:nowrap; opacity:0">ship it on friday.</div>
+                <div id="l-menu" class="abs" style="left:250px; top:142px; padding:6px 16px 8px; border-radius:12px; background:var(--ink); color:var(--paper); font-size:16px; font-weight:800">Copy</div>
+              </div>
+              <svg id="l-cur" class="abs" style="left:0; top:0; width:26px; height:36px" viewBox="0 0 26 36"><path d="M3 3 L3 29 L10 22 L15 33 L20 31 L15 20 L24 20 Z" fill="#f1e7d3" stroke="#111" stroke-width="3" stroke-linejoin="round" /></svg>
             </div>
             <div class="base"></div>
           </div>
+          <div id="a-keys" class="abs" style="left:1420px; top:404px; display:flex; gap:12px; align-items:center"><span id="a-k1" class="key" style="font-size:24px">Ctrl</span><span class="fd" style="font-size:30px">+</span><span id="a-k2" class="key" style="font-size:24px">V</span></div>
+          <div id="a-bub" class="pkt" style="font-size:20px; padding:8px 14px 10px; border-width:3px; border-radius:16px">ship it on friday. <span style="font-size:13px">✓✓</span></div>
+          <div id="a-rip" class="rip"></div><div id="a-rip2" class="rip"></div>
 
           <!-- B: Meet Tunnel -->
           <svg id="b-tun" class="tun abs" style="left:1030px; top:466px; width:560px; height:448px" viewBox="0 0 200 160"></svg>
@@ -112,7 +144,7 @@
       </div>
 
       <!-- ============ C: 1 Scan (arch wipe in from the tunnel's far end) ============ -->
-      <div id="sC" class="clip scene" data-start="7.5" data-duration="4.9" data-track-index="2" data-track-name="Graphics" data-label="1 Scan: QR pairing">
+      <div id="sC" class="clip scene" data-start="9.5" data-duration="4.9" data-track-index="2" data-track-name="Graphics" data-label="1 Scan: QR pairing">
         <div id="camC" class="wrap">
           <div class="step" style="left:120px; top:170px; width:520px">
             <div class="mask"><div id="c-ring" class="ring">1</div></div>
@@ -143,7 +175,7 @@
       </div>
 
       <!-- ============ D/E/F: 2 Send · 3 Receive · files (one strip, panned) ============ -->
-      <div id="sD" class="clip scene" data-start="11.95" data-duration="12.1" data-track-index="1" data-track-name="Graphics" data-label="2 Send · 3 Receive · files">
+      <div id="sD" class="clip scene" data-start="13.95" data-duration="12.1" data-track-index="1" data-track-name="Graphics" data-label="2 Send · 3 Receive · files">
         <div id="camD" class="wrap">
           <div id="strip" class="abs" style="left:0; top:0; width:3400px; height:1080px">
             <!-- D: send -->
@@ -244,7 +276,7 @@
       </div>
 
       <!-- ============ G: sealed (ink) + the three no's ============ -->
-      <div id="sG" class="clip scene ink" data-start="24" data-duration="4.5" data-track-index="2" data-track-name="Graphics" data-label="Sealed end to end · No cables / installs / accounts">
+      <div id="sG" class="clip scene ink" data-start="26" data-duration="4.5" data-track-index="2" data-track-name="Graphics" data-label="Sealed end to end · No cables / installs / accounts">
         <div id="g1" class="wrap">
           <div class="abs fd" style="left:120px; top:96px; font-size:92px">
             <div class="mask nw"><span id="g-l1">Sealed on your phone.</span></div>
@@ -276,7 +308,7 @@
       </div>
 
       <!-- ============ H: end card ============ -->
-      <div id="sH" class="clip scene" data-start="27.95" data-duration="4.05" data-track-index="3" data-track-name="Graphics" data-label="End card: tunnel-plum.vercel.app">
+      <div id="sH" class="clip scene" data-start="29.95" data-duration="4.05" data-track-index="3" data-track-name="Graphics" data-label="End card: tunnel-plum.vercel.app">
         <div class="abs mono" style="left:126px; top:236px; font-size:28px; letter-spacing:0.22em; color:var(--muted)"><div class="mask nw"><span id="h-k">SCAN. SEND. PASTE.</span></div></div>
         <div class="abs" style="left:110px; top:286px"><div class="mask"><span id="h-name" class="fd" style="font-size:270px">Tunnel</span></div></div>
         <div class="abs" style="left:122px; top:600px; width:820px; font-size:46px; font-weight:600; line-height:1.22; color:var(--muted)"><div class="mask"><span id="h-tag">Send text and files from your phone to your computer.</span></div></div>
@@ -286,7 +318,7 @@
       </div>
 
       <div id="grain" class="layer"></div>
-      <div id="caps" class="clip" data-start="0" data-duration="32" data-track-index="5" data-review-skip></div>
+      <div id="caps" class="clip" data-start="0" data-duration="34" data-track-index="5" data-review-skip></div>
     </div>
 
     <script type="application/json" id="edit-data">
@@ -300,8 +332,9 @@
   "plates": [],
   "checks": [
     {"t": 0.0, "text": "Soundtrack + SFX are original, synthesised for this video (120 BPM). Say if you'd rather have silence or your own track."},
-    {"t": 12.4, "text": "Demo text 'ship it on friday.' is a placeholder message; swap for anything you like."},
-    {"t": 28.9, "text": "End card URL: tunnel-plum.vercel.app (the link you gave). Your repo also lists tunnel-govindplals-projects.vercel.app."}
+    {"t": 1.0, "text": "WhatsApp and Teams are named in the step list but drawn as a generic chat (no logos). Say if you want their real look."},
+    {"t": 14.4, "text": "Demo text 'ship it on friday.' is a placeholder message; swap for anything you like."},
+    {"t": 30.9, "text": "End card URL: tunnel-plum.vercel.app (the link you gave). Your repo also lists tunnel-govindplals-projects.vercel.app."}
   ],
   "captions": []
 }
@@ -334,15 +367,6 @@
         };
         qa("svg.tun").forEach((s) => (s.innerHTML = LOOPS.map((p) => `<path d="${loopPath(p)}"/>`).join("")));
 
-        // brick wall
-        (function () {
-          let h = "";
-          for (let r = 0; r < 12; r++) {
-            const y = r * 34, xs = r % 2 ? [[0, 17.5], [17.5, 35], [52.5, 17.5]] : [[0, 35], [35, 35]];
-            h += `<g class="brk">` + xs.map(([x, w]) => `<rect x="${x + 2}" y="${y + 2}" width="${w - 4 + (x + w >= 70 ? 2 : 0)}" height="30" rx="3" fill="#f1e7d3" stroke="#111" stroke-width="4"/>`).join("") + `</g>`;
-          }
-          q("#a-wall").innerHTML = h;
-        })();
 
         // ---------- helpers ----------
         const prep = (sel) => qa(sel).forEach((p) => { p.setAttribute("pathLength", "1"); p.style.strokeDasharray = "1"; p.style.strokeDashoffset = "1"; });
@@ -362,48 +386,8 @@
         const press = (sel, t) => tl.to(sel, { keyframes: [{ scale: 0.9, duration: 0.06, ease: "power2.out" }, { scale: 1, duration: 0.3, ease: UI }] }, t);
 
         // =====================================================================
-        // A. HOOK 0-4 s: it's on your phone; the computer won't let anything in
+        // B. REVEAL (authored at 4-8 s, shifted to 6-10 s below with everything after it)
         // =====================================================================
-        tl.fromTo("#camA", { scale: 1, transformOrigin: "1310px 812px" }, { scale: 1.035, duration: 3.85, ease: "none" }, 0);
-        tl.set(["#a-l1"], { yPercent: 0 }, 0);
-        hideUp("#a-l2"); hideUp("#a-l3");
-        tl.set("#a-l4", { yPercent: 125 }, 0);
-        prep("#a-scrib");
-        tl.set("#a-scrib", { opacity: 0 }, 0);
-        tl.set("#a-scrib", { opacity: 1 }, 2.45);
-        tl.to("#a-phone", { keyframes: [{ rotation: -4, duration: 0.06 }, { rotation: 4, duration: 0.08 }, { rotation: -3, duration: 0.08 }, { rotation: 0, duration: 0.1 }] }, 0.05);
-        pos("#a-bub", 370, 450);
-        tl.fromTo("#a-bub", { scale: 0.6, opacity: 0 }, { scale: 1, opacity: 1, duration: 0.45, ease: PLAY }, 0.0);
-        up("#a-l2", 0.5);
-        // bubble launches at the wall, bonks on the bar line (2.0)
-        tl.to("#a-bub", { keyframes: [{ x: 640, y: 330, rotation: 8, duration: 0.26, ease: "power1.out" }, { x: 910, y: 620, rotation: 0, duration: 0.24, ease: "power1.in" }] }, 1.5);
-        tl.to("#a-bub", { keyframes: [{ scaleX: 0.62, scaleY: 1.18, duration: 0.05, ease: "power2.out" }, { scaleX: 1, scaleY: 1, duration: 0.12, ease: "power2.out" }] }, 2.0);
-        tl.to("#a-hit", { opacity: 0, duration: 0.25, ease: "none" }, 2.18);
-        draw("#a-hit path", 2.0, 0.12, 0.02, "power3.out");
-        tl.to("#camA", { keyframes: [{ x: 9, y: -6, duration: 0.04 }, { x: -8, y: 5, duration: 0.04 }, { x: 5, y: -3, duration: 0.04 }, { x: -2, y: 2, duration: 0.04 }, { x: 0, y: 0, duration: 0.05 }] }, 2.0);
-        tl.to("#a-bub", { x: 820, y: 846, rotation: -32, duration: 0.42, ease: "power2.in" }, 2.17);
-        tl.to("#a-bub", { scale: 0.25, opacity: 0, duration: 0.1, ease: "power2.in" }, 2.5);
-        pos("#a-ball", 820, 846);
-        tl.set("#a-ball", { opacity: 0 }, 0);
-        tl.set("#a-ball", { opacity: 1 }, 2.55);
-        tl.fromTo("#a-ball", { y: 836, scale: 0.6, rotation: 0 }, { keyframes: [{ y: 790, scale: 1, rotation: 90, duration: 0.14, ease: "power2.out" }, { y: 846, rotation: 160, duration: 0.16, ease: "power2.in" }], immediateRender: false }, 2.55);
-        // headline swaps to the site's own line
-        out(["#a-l1", "#a-l2"], 1.98, 0.18);
-        up("#a-l3", 2.12); up("#a-l4", 2.2);
-        tl.to("#a-scrib", { strokeDashoffset: 0, duration: 0.3, ease: "power2.out" }, 2.45);
-        // padlock says no, twice
-        [3.0, 3.5].forEach((t) => tl.to("#a-lock", { keyframes: [{ rotation: -14, duration: 0.07 }, { rotation: 12, duration: 0.09 }, { rotation: 0, duration: 0.12 }], transformOrigin: "50% 20%" }, t));
-
-        // =====================================================================
-        // B. REVEAL 4-8 s: the wall falls, the tunnel draws itself between the two
-        // =====================================================================
-        out("#a-l3", 3.82, 0.2);
-        tl.to("#a-l4", { yPercent: -130, duration: 0.2, ease: "power3.in" }, 3.82);
-        qa("#a-wall .brk").reverse().forEach((g, i) => tl.to(g, { y: 760, opacity: 0, rotation: (i % 2 ? 1 : -1) * (14 + (i * 7) % 30), transformOrigin: "50% 50%", duration: 0.42, ease: "power2.in" }, 3.86 + i * 0.022));
-        tl.to("#a-ball", { x: "+=260", rotation: "+=400", opacity: 0, duration: 0.4, ease: "power2.in" }, 3.86);
-        tl.to("#a-phone", { x: 650, scale: 0.464, transformOrigin: "0% 100%", duration: 0.55, ease: UI }, 3.9);
-        tl.to("#a-lap", { x: 430, scale: 0.345, transformOrigin: "0% 100%", duration: 0.55, ease: UI }, 3.9);
-        tl.to("#a-lock", { opacity: 0, duration: 0.2 }, 3.95);
         draw("#b-tun path", 4.0, 0.55, 0.07, "power2.out");
         hideUp("#b-meet"); hideUp("#b-name"); hideUp("#b-sub");
         up("#b-meet", 4.3, 0.4); up("#b-name", 4.42, 0.6); up("#b-sub", 5.2, 0.55);
@@ -582,6 +566,80 @@
         tl.set("#h-hi", { opacity: 1 }, 29.5);
         tl.to("#h-hi", { keyframes: [{ x: 1560, y: 560, scale: 0.8, duration: 0.24, ease: "power1.out" }, { x: 1740, y: 440, scale: 1, duration: 0.3, ease: PLAY }] }, 29.5);
         tl.to("#h-hi", { y: "+=10", duration: 0.5, ease: "sine.inOut", repeat: 3, yoyo: true }, 30.05);
+
+        // everything authored above (reveal onwards) moves 2 s later to make room for the 6 s problem act
+        tl.shiftChildren(2, false, 3.5);
+
+        // =====================================================================
+        // A. THE USUAL WAY 0-6 s: copy, paste into a chat, open it on the laptop, copy again, paste
+        // =====================================================================
+        tl.fromTo("#camA", { scale: 1, transformOrigin: "1310px 812px" }, { scale: 1.03, duration: 5.85, ease: "none" }, 0);
+        tl.set("#a-t1", { yPercent: 0 }, 0);
+        hideUp("#a-t2");
+        tl.to("#a-phone", { keyframes: [{ rotation: -4, duration: 0.06 }, { rotation: 4, duration: 0.08 }, { rotation: -3, duration: 0.08 }, { rotation: 0, duration: 0.1 }] }, 0.05);
+        const items = ["#a-i1", "#a-i2", "#a-i3", "#a-i4", "#a-i5"];
+        items.forEach((s, i) => {
+          tl.fromTo(s, { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: i ? 0.4 : 0.25, ease: UI }, i * 1.0);
+          if (i) tl.to(items[i - 1], { opacity: 0.42, duration: 0.2 }, i * 1.0);
+        });
+        // 1. copy on the phone
+        tl.set("#p-sel", { backgroundColor: "rgba(17,17,17,0)", color: "#111111" }, 0);
+        tl.to("#p-sel", { backgroundColor: "#111111", color: "#f1e7d3", duration: 0.08 }, 0.15);
+        tl.set("#p-menu", { scale: 0, transformOrigin: "30% 100%" }, 0);
+        tl.to("#p-menu", { scale: 1, duration: 0.35, ease: PLAY }, 0.25);
+        tap("#a-rip", 213, 433, 0.47);
+        tl.to("#p-menu", { scale: 0, duration: 0.12, ease: "power2.in" }, 0.62);
+        // 2. paste it into a chat with yourself and send
+        tl.to("#p-note", { opacity: 0, duration: 0.12 }, 1.0);
+        tl.to("#p-chat", { opacity: 1, duration: 0.15 }, 1.0);
+        tl.set("#p-msg", { opacity: 0, scale: 0.6, transformOrigin: "100% 100%" }, 0);
+        tl.set("#p-ph", { display: "none" }, 1.18);
+        tl.set("#p-inp", { display: "inline" }, 1.18);
+        tap("#a-rip2", 389, 831, 1.42);
+        press("#p-send", 1.42);
+        tl.set("#p-inp", { display: "none" }, 1.47);
+        tl.set("#p-ph", { display: "inline" }, 1.47);
+        tl.to("#p-msg", { opacity: 1, scale: 1, duration: 0.35, ease: PLAY }, 1.47);
+        // 3. it travels round to the laptop; open that chat there
+        pos("#a-bub", 305, 472);
+        tl.set("#a-bub", { opacity: 0 }, 0);
+        tl.set("#a-bub", { opacity: 1 }, 2.0);
+        tl.to("#a-bub", { keyframes: [{ x: 850, y: 214, scale: 0.95, duration: 0.24, ease: "power1.out" }, { x: 1536, y: 592, scale: 0.85, duration: 0.24, ease: "power1.in" }] }, 2.0);
+        tl.to("#l-doc", { opacity: 0, duration: 0.12 }, 1.95);
+        tl.fromTo("#l-chat", { opacity: 0, scale: 0.96 }, { opacity: 1, scale: 1, duration: 0.3, ease: UI }, 1.95);
+        tl.set("#a-bub", { opacity: 0 }, 2.5);
+        tl.to("#l-msg", { opacity: 1, duration: 0.06 }, 2.48);
+        // 4. copy it again
+        tl.set("#l-cur", { x: 470, y: 300, opacity: 0 }, 0);
+        tl.set("#l-cur", { opacity: 1 }, 2.95);
+        tl.to("#l-cur", { x: 300, y: 112, duration: 0.3, ease: "power2.inOut" }, 2.95);
+        tl.set("#l-msg", { backgroundColor: "rgba(17,17,17,0)", color: "#111111" }, 0);
+        tl.to("#l-msg", { backgroundColor: "#111111", color: "#f1e7d3", duration: 0.08 }, 3.15);
+        tl.set("#l-menu", { scale: 0, transformOrigin: "0% 0%" }, 0);
+        tl.to("#l-menu", { scale: 1, duration: 0.35, ease: PLAY }, 3.2);
+        tl.to("#l-cur", { x: 270, y: 150, duration: 0.18, ease: "power2.out" }, 3.27);
+        tl.to("#l-cur", { keyframes: [{ scale: 0.82, duration: 0.05 }, { scale: 1, duration: 0.12 }] }, 3.45);
+        tl.to("#l-menu", { scale: 0, duration: 0.12, ease: "power2.in" }, 3.62);
+        // 5. back to the doc, paste
+        tl.to("#l-chat", { opacity: 0, duration: 0.15 }, 4.0);
+        tl.to("#l-doc", { opacity: 1, duration: 0.15 }, 4.0);
+        tl.to("#l-cur", { x: 330, y: 190, duration: 0.25, ease: "power2.inOut" }, 4.0);
+        tl.set("#a-keys", { opacity: 0, scale: 0.6 }, 0);
+        tl.to("#a-keys", { opacity: 1, scale: 1, duration: 0.3, ease: PLAY }, 4.18);
+        [["#a-k1", 4.3], ["#a-k2", 4.42]].forEach(([k, t]) => tl.to(k, { keyframes: [{ y: 6, boxShadow: "0 1px 0 #111111", duration: 0.04 }, { y: 0, boxShadow: "0 7px 0 #111111", duration: 0.16 }] }, t));
+        tl.fromTo("#l-paste", { opacity: 0, y: 6 }, { opacity: 1, y: 0, duration: 0.2, ease: UI, immediateRender: false }, 4.5);
+        [4.9, 5.4].forEach((t) => { tl.set("#l-caret", { opacity: 0 }, t); tl.set("#l-caret", { opacity: 1 }, t + 0.25); });
+        // 5 steps, for one line of text: everything gets struck out
+        out("#a-t1", 4.98, 0.18);
+        up("#a-t2", 5.05);
+        tl.to(items, { opacity: 1, duration: 0.12 }, 5.0);
+        draw("#a-list .rd", 5.05, 0.18, 0.08, "power2.out");
+        // into the reveal: clear the stage, devices step aside for the tunnel
+        out("#a-t2", 5.86, 0.2);
+        tl.to(items, { opacity: 0, y: -16, duration: 0.18, stagger: 0.03, ease: "power2.in" }, 5.85);
+        tl.to(["#p-chat", "#l-doc", "#l-cur", "#a-keys"], { opacity: 0, duration: 0.15 }, 5.85);
+        tl.to("#a-phone", { x: 730, scale: 0.464, transformOrigin: "0% 100%", duration: 0.55, ease: UI }, 5.9);
+        tl.to("#a-lap", { x: 370, scale: 0.345, transformOrigin: "0% 100%", duration: 0.55, ease: UI }, 5.9);
 
         window.__timelines = window.__timelines || {};
         window.__timelines["main"] = tl;

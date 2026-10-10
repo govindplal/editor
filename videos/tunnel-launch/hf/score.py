@@ -6,7 +6,8 @@ import sys
 import numpy as np
 
 SR = 48000
-DUR = 32.0
+DUR = 34.0
+SHIFT_FROM, SHIFT = 3.9, 2.0  # round 2: the opening grew from 4 s to 6 s; every cue authored at >= 3.9 s plays 2 s later
 N = int(SR * DUR)
 rng = np.random.default_rng(7)
 L = np.zeros(N)
@@ -22,7 +23,7 @@ def tt(d):
     return np.arange(int(SR * d)) / SR
 
 
-def place(sig, t, g=1.0, pan=0.0, verb=0.0):
+def _place(sig, t, g=1.0, pan=0.0, verb=0.0):
     i = int(round(t * SR))
     if i >= N:
         return
@@ -31,6 +32,10 @@ def place(sig, t, g=1.0, pan=0.0, verb=0.0):
     R[i : i + len(s)] += s * np.sin((pan + 1) * np.pi / 4) * 1.414
     if verb:
         VERB[i : i + len(s)] += s * verb
+
+
+def place(sig, t, g=1.0, pan=0.0, verb=0.0):
+    _place(sig, t + (SHIFT if t >= SHIFT_FROM else 0), g, pan, verb)
 
 
 def band(x, lo, hi, soft=0.15):
@@ -211,19 +216,36 @@ def groove_bar(t0, ch, mel=None, drums=True, bassline=True, light=False, mg=0.34
                 place(marimba(m), t0 + i * B / 2, mg, 0.25 * (1 if i % 2 else -1), 0.3)
 
 
-# ---- 0-4 s: hook (sparse; bubble bonks the wall at 2.0) ----
-for i, m in enumerate([77, None, 72, 74, None, 72, 69, None]):
-    if m:
-        place(marimba(m), i * B / 2, 0.3, -0.2, 0.35)
-place(pad(CH["F"], 2.0), 0, 0.08, 0, 0.5)
-place(kick(0.7), 0)
-place(whoop(), 1.47, 0.45, -0.3)
-place(bonk(), 1.97, 0.9, 0.35, 0.15)
-for t, m in ((2.5, 69), (3.0, 68), (3.5, 67)):  # wah-wah-wah
-    place(marimba(m, 1.2, 0.6), t, 0.3, 0.2, 0.4)
-place(pad([62, 65, 68], 2.0), 2.0, 0.07, 0, 0.5)
-place(click(2400), 2.97, 0.35, 0.4)
-place(click(2400), 3.47, 0.35, 0.4)
+# ---- 0-6 s: the usual way, one step per second (absolute times, not shifted) ----
+for k, ch in enumerate(["F", "C", "Dm"]):
+    _place(pad(CH[ch], 2.0), 2.0 * k, 0.09, 0, 0.5)
+for i, (t, m) in enumerate(zip([0, 1, 2, 3, 4], [72, 74, 76, 77, 79])):  # each step climbs a note: patience running out
+    _place(kick(0.6 + 0.06 * i), t)
+    _place(marimba(m), t, 0.3, -0.2, 0.35)
+    _place(marimba(m - 5), t + 0.25, 0.2, 0.2, 0.35)
+    _place(bass(ROOT[["F", "F", "C", "C", "Dm"][i]] + 12), t, 0.4)
+for i in range(12):
+    _place(hat(), 2.0 + i * 0.25, 0.06 + 0.004 * i, 0.35)
+_place(pop(900, 500, 0.06), 0.22, 0.3, -0.5)   # Copy menu
+_place(click(2000, 0.015), 0.44, 0.45, -0.5)   # tap Copy
+_place(whoosh(0.3, 400, 4000), 0.95, 0.2, -0.5)  # chat opens
+_place(click(1800, 0.012), 1.15, 0.3, -0.5)    # paste
+_place(click(2000, 0.015), 1.39, 0.45, -0.5)   # send
+_place(whoop(), 1.45, 0.35, -0.4)
+_place(whoosh(0.55, 400, 6000), 1.95, 0.45, 0.0)  # it travels to the laptop
+_place(pop(), 2.45, 0.4, 0.5)
+_place(pop(900, 500, 0.06), 3.17, 0.3, 0.5)    # Copy menu again
+_place(click(2000, 0.015), 3.42, 0.45, 0.5)
+_place(whoosh(0.3, 400, 4000), 3.95, 0.2, 0.5)  # back to the doc
+_place(click(1500, 0.02), 4.27, 0.45, 0.5)     # Ctrl
+_place(click(1700, 0.02), 4.39, 0.45, 0.5)     # V
+_place(pop(900, 400, 0.07), 4.47, 0.35, 0.5)   # pasted
+for t, m in ((5.0, 69), (5.33, 68), (5.66, 67)):  # "5 steps." wah-wah-wah
+    _place(marimba(m, 1.2, 0.6), t, 0.32, 0.1, 0.4)
+_place(pad([62, 65, 68], 1.0), 5.0, 0.08, 0, 0.5)
+for i in range(5):  # red strike-throughs
+    t = tt(0.12)
+    _place(band(rng.uniform(-1, 1, len(t)), 1500, 6000) * np.sin(np.pi * t / 0.12) * 0.3, 5.05 + i * 0.08, 0.4, -0.2 + 0.1 * i)
 
 # ---- 4-8 s: reveal (tunnel loops draw = a 7-note gliss), build into the drop ----
 for i, m in enumerate([77, 79, 81, 84, 86, 89, 91]):
@@ -334,7 +356,7 @@ fade = np.ones(N)
 fn = int(0.8 * SR)
 fade[-fn:] = np.linspace(1, 0, fn) ** 1.5
 mix *= fade[:, None]
-mix = np.tanh(mix / np.max(np.abs(mix)) * 1.75) * 0.82
+mix = np.tanh(mix / np.max(np.abs(mix)) * 1.75) * 0.79
 pcm = (mix * 32767).astype("<i2")
 
 import wave
