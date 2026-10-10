@@ -45,7 +45,9 @@ and only the approved cut is rendered. Commands live in `editkit/bin/`. Start fr
      comment ("Review notes for <key>, Round N ..."). Confirm the watch with `ArtifactComments watch`.
    - If the room ever can't be reused (it was deleted or the user wants separate rooms), publish a new artifact and
      update the URL in this file and in CLAUDE.md.
-6. **Iterate**: read the notes; `ArtifactData query notes where key == <key>, round == N` has the same list. Change
+6. **Iterate**: the room is shared, so every watching session is woken by every video's Done. Act only on notes
+   headed "Review notes for <your key>"; leave other keys' threads to their sessions (no reply). Once your video's
+   master is committed, stop watching the room (`ArtifactComments watch` with `on: false`). Read the notes; `ArtifactData query notes where key == <key>, round == N` has the same list. Change
    **only** what the notes ask for. Rebuild with `--round N+1`, republish, then reply in the comment thread and resolve
    it. "Round N (0 notes)" means the cut is approved.
 7. **Final**: `editkit/bin/hfrender <key>` (background, ~7 min per minute of video). It renders the picture and
