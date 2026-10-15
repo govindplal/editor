@@ -1,6 +1,0 @@
-{
-  "name": "model-router",
-  "version": "0.1.0",
-  "description": "Routes each prompt to a reasoning effort by task type and risk, escalates once on failed checks, and sends cheap subagent work to a small model. Rules only: no model calls, files, network or processes.",
-  "author": { "name": "Govind" }
-}
