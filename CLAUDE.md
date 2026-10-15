@@ -1,21 +1,22 @@
 # editor — video editing repo
 
 Every video request (caption, edit, restyle, revise; shorts, podcasts, YouTube) → use the **video-edit** skill
-(`.claude/skills/video-edit/SKILL.md`). Default flow for a new video: **HyperFrames composition + shared review room**
+(`.claude/skills/video-edit/SKILL.md`). Default flow for a new video: **HyperFrames composition + Brief Room**
 (`editkit/HYPERFRAMES.md`); the quick editkit `edit.json` path (`editkit/SPEC.md`, `CRAFT.md`, `STYLES.md`,
 creator bibles in `editkit/brands/`) is for small caption-only jobs or when asked.
 
 How the user works (every video, every session)
-One shared Artifact, **Brief Room** (https://claude.ai/artifact/8X495UNS4JvcNDt2dDWfM7), carries the whole loop. The user
+Each video gets its own Artifact, **Brief Room** (created at the brief step, URL saved in `runs/<key>/room.url`; never
+publish over another session's room, so parallel sessions don't collide), and it carries the whole loop. The user
 uploads a video; the loop is:
-1. **Brief (nothing edited yet).** After ingest, publish the raw video to Brief Room (`editkit/bin/brief`,
+1. **Brief (nothing edited yet).** After ingest, publish the raw video to a new Brief Room (`editkit/bin/brief`,
    `editkit/HYPERFRAMES.md` §0): a frame.io-style timeline where the user plays it and leaves timecoded or in/out-range
    comments (plus general ones) saying what to change at each point. Then **stop**: no beats, no composition, no renders
    until their **Done** arrives as an artifact comment ("Edit brief for <key> ..."). An upload that already states the
    edits in the chat is still briefed first; treat the chat text as the user's starting comments and ask them to confirm
    or add timecoded ones in the room.
 2. **Edit and show.** Build the first cut from the brief (your own senior-editor additions only where it is silent) and
-   publish it to the same Brief Room as round 1 (`editkit/bin/review`, §5): the edited video on the same kind of timeline.
+   publish it to the same Brief Room (its saved URL) as round 1 (`editkit/bin/review`, §5): the edited video on the same kind of timeline.
 3. **Rework.** The user plays the cut, types timestamped notes (playback pauses, resumes on send) and presses
    **Done**; the notes arrive as an artifact comment ("Review notes for <key> ..."). Change **only** what they ask,
    republish as the next round, reply in the thread and resolve it. Repeat until the user presses **Finalize**.

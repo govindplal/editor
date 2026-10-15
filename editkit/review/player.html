@@ -314,7 +314,7 @@ button { font: inherit; color: inherit; }
   function loadLocal() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || "[]"); } catch (e) { return []; } }
   function saveLocal() { try { localStorage.setItem(STORE_KEY, JSON.stringify(notes)); } catch (e) {} }
   function sortNotes() { notes.sort((a, b) => a.t - b.t || a.createdAt.localeCompare(b.createdAt)); }
-  const mine = () => notes.filter((n) => n.key === META.key);  // one shared review room: notes are per video key
+  const mine = () => notes.filter((n) => n.key === META.key);  // notes are per video key
   const cur = () => mine().filter((n) => (n.round || 1) === META.round);
   function renderNotes() {
     sortNotes();

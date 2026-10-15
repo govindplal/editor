@@ -1,6 +1,6 @@
 # HyperFrames edit + review room: the default way every video is made here
 
-The user first briefs the edit in **one shared room** (an Artifact timeline player): they play the raw upload and
+The user first briefs the edit in **their own Brief Room** (one Artifact per video, a timeline player): they play the raw upload and
 comment on the moments that need work, and **nothing is edited until they press Done**. Afterwards they review every cut
 in the same room (the Artifact is named **Brief Room**), leave timestamped notes, and only the cut they **Finalize** is rendered. Commands live in `editkit/bin/`. Start from
 `editkit/hf/template.html` (via `hfnew`) and `editkit/hf/snippets/` (stickman gag, b-roll card).
@@ -8,8 +8,8 @@ in the same room (the Artifact is named **Brief Room**), leave timestamped notes
 ## Flow (per video)
 0. **Brief room (before any edit)**: after ingest (step 1) and any `asr` fixes, run `editkit/bin/brief <key> --heading "<Show · Guest · Brief>"`.
    It writes `runs/<key>/brief/index.html` + `assets/` (proxy video in ≤13.5 MB parts, filmstrip, waveform; speech and shot
-   cuts from the ingest). Publish exactly like the review room (§5 below: shared URL, `capabilities {"db":{},"comments":{}}`,
-   `files` = every printed asset, previous video's assets removed with `null`). Then **stop and wait**: do not plan beats,
+   cuts from the ingest). Publish exactly like the review room (§5 below, but as a **new** artifact named by the page title, "Brief Room": no `url`, `capabilities {"db":{},"comments":{}}`,
+   `files` = every printed asset, `description` = the video's heading; save the returned URL to `runs/<key>/room.url`). Then **stop and wait**: do not plan beats,
    scaffold (`hfnew`) or render. The user plays the video, comments at a timecode or an in/out range (drag on the Comments
    lane, or I / O keys), adds general comments (style, tone, music), and presses **Done**. Their comments arrive as an artifact
    comment headed "Edit brief for <key> ..." and are stored in `notes` with `round == 0` (`ArtifactData query notes where
@@ -45,21 +45,19 @@ in the same room (the Artifact is named **Brief Room**), leave timestamped notes
    `data-label`. Run `npx hyperframes lint` (0 errors), then `npx hyperframes snapshot --at t1,t2,...` (8–14 moments).
    Critique against CRAFT.md §7: is any face covered, any caption under a graphic, anything clipped at the edge? Fix
    the worst problems and re-snapshot only those moments.
-5. **Review room** (the first thing the user sees; never a rendered MP4):
+5. **Review round** (the edited video in Brief Room; never a rendered MP4):
    - `editkit/bin/review <key> --round N --heading "<Show · Guest · what>"`
-   - Publish **to the shared room URL**: `https://claude.ai/artifact/8X495UNS4JvcNDt2dDWfM7`.
-     - From a new session: `Artifact read` it first, then `Artifact publish` with `url` = the room,
-       `file_path` = `runs/<key>/review/index.html`, `files` = every printed asset, and `capabilities`
-       `{"db":{}, "comments":{}}`.
-     - Remove the previous video's assets with `null` (list them with `Artifact list scope:"files"`).
-     - Same session: republish the same file path.
+   - Publish into **this session's own Brief Room artifact**: the URL saved in `runs/<key>/room.url` when the brief was
+     published (§0). `Artifact publish` with `url` = that URL, `file_path` = `runs/<key>/review/index.html`, `files` = every
+     printed asset plus `null` for the brief's assets (`assets/proxy-*.mp4|webm`, `assets/strip.jpg`, `assets/wave.png`;
+     list with `Artifact list scope:"files"`), and `capabilities` `{"db":{}, "comments":{}}`. Later rounds: republish the
+     same file path. If `room.url` is missing (new session, restored video), publish a new artifact and save its URL there.
    - Publishing registers this session's watch, so when the user presses **Done**, their notes arrive as an artifact
      comment ("Review notes for <key>, Round N ..."). Confirm the watch with `ArtifactComments watch`.
-   - If the room ever can't be reused (it was deleted or the user wants separate rooms), publish a new artifact and
-     update the URL in this file and in CLAUDE.md.
-6. **Iterate**: the room is shared, so every watching session is woken by every video's Done. Act only on notes
-   headed "Review notes for <your key>"; leave other keys' threads to their sessions (no reply). Once your video's
-   master is committed, stop watching the room (`ArtifactComments watch` with `on: false`). Read the notes; `ArtifactData query notes where key == <key>, round == N` has the same list. Change
+   - Never publish over another session's artifact: every video has its own Brief Room, so sessions can run in parallel
+     without overwriting or waking each other.
+6. **Iterate**: this room belongs to this video only. Once the master is committed, stop watching it
+   (`ArtifactComments watch` with `on: false`). Read the notes; `ArtifactData query notes where key == <key>, round == N` has the same list. Change
    **only** what the notes ask for. Rebuild with `--round N+1`, republish, then reply in the comment thread and resolve
    it. A Done with 0 notes is not approval: ask whether to finalize. The loop ends only when the user presses **Finalize** (a
    comment headed "FINALIZE <key> ..."); the room's `review/<key>` doc then has `status == "finalized"`.
