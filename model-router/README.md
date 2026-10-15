@@ -2,6 +2,10 @@
 
 A Claude Code mod that routes each prompt to a reasoning effort by task type and risk, following the Model Routing Playbook.
 
+## Install
+
+This repo enables it for every session (`.claude/settings.json`). Elsewhere: `/plugin install model-router --marketplace govindplal/editor`
+
 ## Use
 
     claude --plugin-dir ./model-router

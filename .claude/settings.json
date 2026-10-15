@@ -18,5 +18,16 @@
         ]
       }
     ]
+  },
+  "extraKnownMarketplaces": {
+    "editor": {
+      "source": {
+        "source": "github",
+        "repo": "govindplal/editor"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "model-router@editor": true
   }
 }

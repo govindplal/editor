@@ -1,0 +1,12 @@
+{
+  "name": "editor",
+  "description": "Plugins for the editor repo",
+  "owner": { "name": "Govind" },
+  "plugins": [
+    {
+      "name": "model-router",
+      "source": "./model-router",
+      "description": "Routes each prompt to a reasoning effort by task type and risk, escalates on failed checks, sends cheap subagent work to a small model."
+    }
+  ]
+}
