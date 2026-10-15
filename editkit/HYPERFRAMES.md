@@ -1,10 +1,22 @@
 # HyperFrames edit + review room: the default way every video is made here
 
-The user reviews every cut in **one shared review room** (an Artifact timeline player), leaves timestamped notes,
-and only the approved cut is rendered. Commands live in `editkit/bin/`. Start from
+The user first briefs the edit in **one shared room** (an Artifact timeline player): they play the raw upload and
+comment on the moments that need work, and **nothing is edited until they press Done**. Afterwards they review every cut
+in the same room, leave timestamped notes, and only the approved cut is rendered. Commands live in `editkit/bin/`. Start from
 `editkit/hf/template.html` (via `hfnew`) and `editkit/hf/snippets/` (stickman gag, b-roll card).
 
 ## Flow (per video)
+0. **Brief room (before any edit)**: after ingest (step 1) and any `asr` fixes, run `editkit/bin/brief <key> --heading "<Show · Guest · Brief>"`.
+   It writes `runs/<key>/brief/index.html` + `assets/` (proxy video in ≤13.5 MB parts, filmstrip, waveform; speech and shot
+   cuts from the ingest). Publish exactly like the review room (§5 below: shared URL, `capabilities {"db":{},"comments":{}}`,
+   `files` = every printed asset, previous video's assets removed with `null`). Then **stop and wait**: do not plan beats,
+   scaffold (`hfnew`) or render. The user plays the video, comments at a timecode or an in/out range (drag on the Comments
+   lane, or I / O keys), adds general comments (style, tone, music), and presses **Done**. Their comments arrive as an artifact
+   comment headed "Edit brief for <key> ..." and are stored in `notes` with `round == 0` (`ArtifactData query notes where
+   key == <key>, round == 0`; range comments carry `end`, general ones `general: true`). Zero comments means they left it
+   to you. Then go on with steps 2-4, treating every comment as a requirement (timed to its moment/range, plus the
+   usual CRAFT.md quality elsewhere), and publish the first cut as round 1 (step 5). Reply in the brief's thread and resolve it.
+   Test locally with `--webm` (headless Chromium can't play H.264).
 1. **Ingest**: `editkit/bin/ingest <file> <key> [--lang ml]`. Run it in the background; Whisper is prefetched at
    session start. Read `transcript.txt` and the sheet. Where the speech is mixed-language or unclear, or a line is
    missing, run `editkit/bin/asr <key> 7.0:8.6,16.1:18.2 --lang ml` (short spans; background it). Compare

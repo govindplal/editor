@@ -1,6 +1,6 @@
 ---
 name: video-edit
-description: Edit an uploaded video in this repo — captions, zooms/punch-ins, grading, b-roll, animated illustrations, motion graphics — as a HyperFrames composition reviewed in the shared review room (timestamped notes) before the final render; editkit for quick jobs. Use for any request to caption, edit, style, restyle or revise a video (shorts, podcasts, YouTube, long-form). Cheapest path; prefer it over open-edit/hyperframes docs.
+description: Edit an uploaded video in this repo (brief room first: the user comments on the raw video, edits start only on Done) — captions, zooms/punch-ins, grading, b-roll, animated illustrations, motion graphics — as a HyperFrames composition reviewed in the shared review room (timestamped notes) before the final render; editkit for quick jobs. Use for any request to caption, edit, style, restyle or revise a video (shorts, podcasts, YouTube, long-form). Cheapest path; prefer it over open-edit/hyperframes docs.
 ---
 
 # video-edit (editkit)
@@ -44,7 +44,8 @@ only when choosing; `grep -i <name>` is enough) · `editkit/brands/<name>.md` (c
 
 ## Default flow: HyperFrames + review room (every new video, unless the user asks for a quick editkit edit)
 Read `editkit/HYPERFRAMES.md` once per session and follow it:
-ingest → `editkit/bin/asr` for unclear spans → `editkit/bin/hfnew <key>` → plan beats (grade, camera, captions for
+ingest → `editkit/bin/asr` for unclear spans → **`editkit/bin/brief <key>` and publish the brief room, then STOP: no edit,
+no plan, no render until the user's comments arrive with Done** → `editkit/bin/hfnew <key>` → plan beats (grade, camera, captions for
 everything, hero type, **b-roll from the internet whenever someone or something is named**, **animated line-art
 illustrations for visual or funny moments**, end CTA) → build + snapshot critique → `editkit/bin/review` and publish to
 the **shared review room** → apply only the user's notes, round by round → after an approved round (0 notes),

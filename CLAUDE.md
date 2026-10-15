@@ -6,10 +6,15 @@ Every video request (caption, edit, restyle, revise; shorts, podcasts, YouTube) 
 creator bibles in `editkit/brands/`) is for small caption-only jobs or when asked.
 
 How the user works (every video, every session)
-- First output is **always the review room**, never an MP4: https://claude.ai/artifact/8X495UNS4JvcNDt2dDWfM7
-  (one shared timeline player; republish it for each new video/round, see `editkit/HYPERFRAMES.md` §5). The user plays
-  it, types timestamped notes (playback pauses, resumes on send) and presses Done; the notes arrive as an artifact
-  comment. Change **only** what the notes ask, republish as the next round, reply in the thread and resolve it.
+- **Nothing is edited before the user's brief.** After ingest, the first output is the **brief room** (`editkit/bin/brief`,
+  `editkit/HYPERFRAMES.md` §0): the raw upload on a frame.io-style timeline where the user plays it and leaves timecoded
+  or in/out-range comments (plus general ones) saying what to change at each point. Publish it to the shared room URL
+  https://claude.ai/artifact/8X495UNS4JvcNDt2dDWfM7, then **stop**: no planning beats, no composition, no renders until
+  their **Done** arrives as an artifact comment ("Edit brief for <key> ..."). Then build the first cut from those
+  comments (your own senior-editor additions only where the brief is silent), and publish it to the same room as round 1.
+- From round 1 the room is the review room (`editkit/bin/review`, §5): the user plays the cut, types timestamped notes
+  (playback pauses, resumes on send) and presses Done; the notes arrive as an artifact comment. Change **only** what
+  the notes ask, republish as the next round, reply in the thread and resolve it.
 - A round with 0 notes = approved → render the final master (`editkit/bin/hfrender <key>`, original audio
   stream-copied) and commit it to `videos/<key>/`. Don't upload it to the chat and don't make compressed copies unless
   the user asks.

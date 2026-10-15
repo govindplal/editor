@@ -1,0 +1,453 @@
+<title>{{TITLE}}</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600&family=Martian+Mono:wght@400;500&display=swap">
+<style>
+/* Brief room: editor console, single dark look. Raw video + comment panel side by side, timeline underneath. Stacks on phones. */
+:root {
+  --bg: #121110; --panel: #1a1917; --raise: #23211e; --line: #2f2c27; --fg: #ece8df; --muted: #9a958a;
+  --accent: #e4e62e; --accent-ink: #141400; --head: #ff5a36; --range: #6f9bff; --speech: #4fd1b0;
+  --ui: "Instrument Sans", "Helvetica Neue", Arial, sans-serif; --mono: "Martian Mono", ui-monospace, Menlo, monospace;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--fg); font: 14px/1.45 var(--ui); margin: 0; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 0 24px; }
+* { box-sizing: border-box; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.rv-top { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding-block: 12px; border-bottom: 1px solid var(--line); }
+.rv-top h1 { margin: 0; font-size: 16px; font-weight: 600; text-wrap: balance; }
+.rv-chip { font: 500 11px/1 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); border: 1px solid var(--line); border-radius: 4px; padding: 5px 7px; }
+.rv-chip.is-live { color: var(--accent); border-color: var(--accent); }
+.rv-spacer { flex: 1 1 auto; }
+.rv-done { background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 6px; padding: 9px 14px; font-weight: 600; cursor: pointer; }
+.rv-done:disabled { opacity: .5; cursor: default; }
+
+.rv-app { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); grid-template-areas: "viewer side" "tl tl"; gap: 12px 16px; padding-block: 12px; }
+.rv-viewer { grid-area: viewer; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.rv-side { grid-area: side; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.rv-tl { grid-area: tl; min-width: 0; }
+@media (max-width: 860px) { .rv-app { grid-template-columns: minmax(0, 1fr); grid-template-areas: "viewer" "side" "tl"; } }
+
+.rv-stagebox { position: relative; height: min(62vh, 700px); min-height: 280px; background: #000; border-radius: 8px; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.rv-stagebox video { max-width: 100%; max-height: 100%; background: #000; }
+.rv-bigplay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.25); border: 0; cursor: pointer; }
+.rv-bigplay span { width: 74px; height: 74px; border-radius: 50%; background: var(--accent); display: grid; place-items: center; }
+.rv-bigplay svg { width: 30px; height: 30px; margin-left: 4px; fill: var(--accent-ink); }
+.rv-speech { min-height: 40px; padding: 8px 12px; background: var(--panel); border: 1px solid var(--line); border-radius: 6px; font-size: 14px; }
+.rv-speech small { display: block; color: var(--muted); font-size: 12px; }
+
+.rv-transport { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.rv-btn { background: var(--raise); border: 1px solid var(--line); border-radius: 6px; height: 34px; min-width: 34px; padding: 0 10px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+.rv-btn:hover { border-color: #4a463e; }
+.rv-btn svg { width: 16px; height: 16px; fill: currentColor; }
+.rv-btn.is-on { border-color: var(--accent); color: var(--accent); }
+.rv-time { font: 500 13px/1 var(--mono); font-variant-numeric: tabular-nums; padding: 0 6px; }
+.rv-time i { color: var(--muted); font-style: normal; }
+.rv-hint { color: var(--muted); font-size: 12px; margin-left: auto; }
+@media (max-width: 640px) { .rv-hint { display: none; } }
+
+.rv-card { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px; }
+.rv-compose .rv-at { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 4px 8px; font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.rv-compose .rv-at b { font: 500 12px var(--mono); color: var(--accent); font-variant-numeric: tabular-nums; }
+.rv-compose textarea { width: 100%; min-height: 84px; resize: vertical; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 10px; font: 14px/1.4 var(--ui); }
+.rv-compose textarea:focus { border-color: var(--accent); outline: none; }
+.rv-compose .rv-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+.rv-compose .rv-status { color: var(--muted); font-size: 12px; flex: 1 1 100px; min-width: 0; }
+.rv-compose .rv-small { height: 30px; font-size: 12px; }
+.rv-gen { display: flex; gap: 6px; align-items: center; font-size: 12px; color: var(--muted); margin-top: 8px; }
+.rv-save { background: var(--fg); color: var(--bg); border: 0; border-radius: 6px; padding: 8px 12px; font-weight: 600; cursor: pointer; }
+
+.rv-list h2 { margin: 0 0 10px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: flex; justify-content: space-between; }
+.rv-notes { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; max-height: 44vh; overflow: auto; }
+.rv-note { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: start; background: var(--raise); border: 1px solid var(--line); border-radius: 6px; padding: 9px 10px; }
+.rv-note.is-active { border-color: var(--accent); }
+.rv-note .rv-tc { font: 500 11px/1.8 var(--mono); color: var(--accent-ink); background: var(--accent); border: 0; border-radius: 4px; padding: 0 6px; cursor: pointer; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rv-note .rv-tc.is-range { background: var(--range); }
+.rv-note .rv-tc.is-gen { background: var(--muted); }
+.rv-note p { margin: 0; overflow-wrap: anywhere; white-space: pre-wrap; }
+.rv-note .rv-x { background: none; border: 0; color: var(--muted); cursor: pointer; font-size: 12px; padding: 2px 4px; }
+.rv-note .rv-x.is-armed { color: var(--head); }
+.rv-empty { color: var(--muted); font-size: 13px; padding: 6px 2px; }
+.rv-sendbox { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.rv-sendbox pre { margin: 0; max-height: 160px; overflow: auto; background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px; font: 12px/1.5 var(--mono); white-space: pre-wrap; }
+
+.rv-tlhead { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.rv-tlhead h2 { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.rv-tlhead input[type=range] { width: 120px; accent-color: var(--accent); }
+.rv-tlhead .rv-zl { font-size: 12px; color: var(--muted); margin-left: auto; }
+.rv-tlgrid { display: grid; grid-template-columns: 84px minmax(0, 1fr); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel); }
+.rv-labels { border-right: 1px solid var(--line); }
+.rv-labels div { height: 30px; display: flex; align-items: center; padding: 0 10px; font-size: 11px; color: var(--muted); border-bottom: 1px solid var(--line); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rv-labels div.rv-rl { height: 26px; }
+.rv-labels div.rv-tall { height: 40px; }
+.rv-scroll { overflow-x: auto; overflow-y: hidden; position: relative; }
+.rv-lanes { position: relative; min-width: 100%; touch-action: pan-y; user-select: none; cursor: col-resize; }
+@media (max-width: 860px) { .rv-lanes { min-width: 820px; } }
+.rv-ruler { position: relative; height: 26px; border-bottom: 1px solid var(--line); }
+.rv-ruler span { position: absolute; top: 0; height: 100%; border-left: 1px solid var(--line); font: 10px/26px var(--mono); color: var(--muted); padding-left: 4px; font-variant-numeric: tabular-nums; }
+.rv-ruler span.rv-minor { height: 6px; top: 20px; }
+.rv-lane { position: relative; height: 30px; border-bottom: 1px solid var(--line); }
+.rv-lane.rv-tall { height: 40px; }
+.rv-lane.rv-cmt { cursor: crosshair; background: repeating-linear-gradient(90deg, transparent 0 39px, rgba(255,255,255,.03) 39px 40px); }
+.rv-blk { position: absolute; top: 4px; bottom: 4px; border-radius: 4px; font-size: 10.5px; line-height: 1; padding: 0 5px; display: flex; align-items: center; overflow: hidden; white-space: nowrap; color: #0e0d0c; cursor: pointer; border: 1px solid rgba(0,0,0,.35); background: var(--speech); }
+.rv-lane.rv-film { background-repeat: no-repeat; background-size: 100% 100%; }
+.rv-lane.rv-film i { position: absolute; top: 0; bottom: 0; border-left: 2px solid var(--bg); }
+.rv-lane.rv-wave { background-size: 100% 100%; background-repeat: no-repeat; }
+.rv-pin { position: absolute; top: 4px; height: calc(100% - 8px); min-width: 10px; margin-left: -1px; border-radius: 3px; background: var(--accent); border: 0; cursor: pointer; padding: 0; }
+.rv-pin.is-range { background: color-mix(in srgb, var(--range) 55%, transparent); border: 1px solid var(--range); border-left: 4px solid var(--accent); }
+.rv-pin.is-gen { background: var(--muted); }
+.rv-sel { position: absolute; top: 2px; bottom: 2px; background: color-mix(in srgb, var(--range) 40%, transparent); border: 1px dashed var(--range); border-radius: 3px; pointer-events: none; }
+.rv-head { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--head); pointer-events: none; z-index: 3; }
+.rv-head::before { content: ""; position: absolute; top: 0; left: -5px; border: 6px solid transparent; border-top: 8px solid var(--head); }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+
+<header class="rv-top">
+  <h1>{{HEADING}}</h1>
+  <span class="rv-chip is-live" id="rv-stage-chip">Brief · nothing edited yet</span>
+  <span class="rv-chip">{{W}}×{{H}} · {{FPS}} fps · {{DUR_LABEL}}</span>
+  <span class="rv-spacer"></span>
+  <button class="rv-done" id="rv-done" type="button">Done, start editing</button>
+</header>
+
+<main class="rv-app">
+  <section class="rv-viewer" aria-label="Video">
+    <div class="rv-stagebox" id="rv-stagebox">
+      <video id="rv-video" playsinline preload="auto"></video>
+      <button class="rv-bigplay" id="rv-bigplay" type="button" aria-label="Play with sound"><span><svg viewBox="0 0 24 24"><path d="M6 4l14 8-14 8z"/></svg></span></button>
+    </div>
+    <div class="rv-speech" id="rv-speech" aria-live="off"></div>
+    <div class="rv-transport">
+      <button class="rv-btn" id="rv-play" type="button" aria-label="Play"><svg viewBox="0 0 24 24" id="rv-playicon"><path d="M6 4l14 8-14 8z"/></svg></button>
+      <button class="rv-btn" id="rv-back" type="button" aria-label="Back one frame"><svg viewBox="0 0 24 24"><path d="M11 6v12l-8.5-6zM20 6v12l-8.5-6z"/></svg></button>
+      <button class="rv-btn" id="rv-fwd" type="button" aria-label="Forward one frame"><svg viewBox="0 0 24 24"><path d="M13 6v12l8.5-6zM4 6v12l8.5-6z"/></svg></button>
+      <span class="rv-time" id="rv-time"><b>00:00.00</b> <i>/ {{DUR_TC}}</i></span>
+      <button class="rv-btn" id="rv-rate" type="button" aria-label="Playback speed">1×</button>
+      <button class="rv-btn" id="rv-mute" type="button" aria-label="Mute">Sound on</button>
+      <span class="rv-hint">Space play · ←/→ frame · C comment · I / O in / out</span>
+    </div>
+  </section>
+
+  <aside class="rv-side" aria-label="Comments">
+    <section class="rv-compose rv-card">
+      <div class="rv-at"><span id="rv-atlabel">Comment at</span> <b id="rv-attc">00:00.00</b></div>
+      <textarea id="rv-note" maxlength="1500" placeholder="Say what should change here. Typing pauses the video; Enter posts the comment and playback carries on."></textarea>
+      <div class="rv-row">
+        <button class="rv-btn rv-small" id="rv-in" type="button">Set in</button>
+        <button class="rv-btn rv-small" id="rv-out" type="button">Set out</button>
+        <button class="rv-btn rv-small" id="rv-clear" type="button" hidden>Clear range</button>
+      </div>
+      <label class="rv-gen" for="rv-general"><input type="checkbox" id="rv-general"> Applies to the whole video (style, tone, music, captions)</label>
+      <div class="rv-row">
+        <span class="rv-status" id="rv-status">Drag on the Comments lane to mark a range.</span>
+        <button class="rv-save" id="rv-save" type="button">Comment</button>
+      </div>
+    </section>
+    <section class="rv-list rv-card" aria-label="All comments">
+      <h2><span>Comments</span><span id="rv-count">0</span></h2>
+      <ul class="rv-notes" id="rv-notes"></ul>
+      <div class="rv-sendbox" id="rv-sendbox" hidden>
+        <span id="rv-sendmsg"></span>
+        <pre id="rv-sendtext"></pre>
+        <button class="rv-btn" id="rv-copy" type="button">Copy comments</button>
+      </div>
+    </section>
+  </aside>
+
+  <section class="rv-tl" aria-label="Timeline">
+    <div class="rv-tlhead"><h2>Timeline</h2><span class="rv-zl">Zoom</span><input type="range" id="rv-zoom" min="1" max="8" step="0.25" value="1" aria-label="Timeline zoom"></div>
+    <div class="rv-tlgrid">
+      <div class="rv-labels" id="rv-labels"></div>
+      <div class="rv-scroll" id="rv-scroll"><div class="rv-lanes" id="rv-lanes"></div></div>
+    </div>
+  </section>
+</main>
+
+<script type="application/json" id="rv-meta">{{META}}</script>
+<script>
+(function () {
+  "use strict";
+  const META = JSON.parse(document.getElementById("rv-meta").textContent);
+  const $ = (id) => document.getElementById(id);
+  const DUR = META.dur, FPS = META.fps || 25, PARTS = META.parts, LINES = META.lines || [];
+  const video = $("rv-video");
+  const STORE_KEY = "rv-brief-" + META.key;
+  let t = 0, playing = false, started = false, rate = 1, composing = false, noteT = 0, sel = null, notes = [], db = null, sent = false;
+  let curPart = -1, loading = false;
+
+  const tc = (x) => { x = Math.max(0, x); const m = Math.floor(x / 60), s = x - m * 60; return String(m).padStart(2, "0") + ":" + s.toFixed(2).padStart(5, "0"); };
+  const partAt = (x) => { for (let i = PARTS.length - 1; i >= 0; i--) if (x >= PARTS[i].start - 0.0005) return i; return 0; };
+
+  // ---------- playback across proxy parts ----------
+  function loadPart(i, local, play) {
+    curPart = i; loading = true;
+    video.src = PARTS[i].src;
+    const go = () => { video.removeEventListener("loadedmetadata", go); video.currentTime = Math.max(0, local); loading = false; if (play) video.play().catch(() => { playing = false; syncButtons(); }); };
+    video.addEventListener("loadedmetadata", go);
+    video.load();
+  }
+  function seek(x, forcePlay) {
+    x = Math.max(0, Math.min(DUR - 0.001, x));
+    const i = partAt(x);
+    if (i !== curPart) loadPart(i, x - PARTS[i].start, forcePlay === undefined ? playing : forcePlay);
+    else video.currentTime = x - PARTS[i].start;
+    render(x);
+  }
+  function now() { return loading ? t : PARTS[curPart].start + video.currentTime; }
+  function loop() {
+    if (playing && !loading) render(now());
+    requestAnimationFrame(loop);
+  }
+  video.addEventListener("ended", () => {
+    if (curPart < PARTS.length - 1) loadPart(curPart + 1, 0, true);
+    else setPlaying(false);
+  });
+  video.addEventListener("seeked", () => { if (!playing && !loading) render(now()); });
+  function setPlaying(on) {
+    if (on) {
+      if (t >= DUR - 0.05) seek(0, false);
+      video.playbackRate = rate;
+      if (!loading) { const p = video.play(); if (p && p.catch) p.catch(() => { playing = false; syncButtons(); }); }
+      playing = true;
+    } else { video.pause(); playing = false; if (!loading) render(now()); }
+    syncButtons();
+  }
+  function syncButtons() {
+    $("rv-playicon").innerHTML = playing ? '<path d="M6 4h4v16H6zM14 4h4v16h-4z"/>' : '<path d="M6 4l14 8-14 8z"/>';
+    $("rv-play").setAttribute("aria-label", playing ? "Pause" : "Play");
+    $("rv-bigplay").hidden = playing || started;
+  }
+  function startWithSound() { started = true; video.muted = false; $("rv-mute").textContent = "Sound on"; setPlaying(true); }
+  $("rv-bigplay").addEventListener("click", startWithSound);
+  $("rv-play").addEventListener("click", () => { if (!started) return startWithSound(); setPlaying(!playing); });
+  $("rv-back").addEventListener("click", () => { setPlaying(false); seek(t - 1 / FPS); });
+  $("rv-fwd").addEventListener("click", () => { setPlaying(false); seek(t + 1 / FPS); });
+  $("rv-rate").addEventListener("click", () => { rate = rate === 1 ? 0.5 : rate === 0.5 ? 0.25 : rate === 0.25 ? 2 : 1; video.playbackRate = rate; $("rv-rate").textContent = rate + "×"; });
+  $("rv-mute").addEventListener("click", () => { video.muted = !video.muted; $("rv-mute").textContent = video.muted ? "Muted" : "Sound on"; });
+
+  function render(x) {
+    t = Math.max(0, Math.min(DUR, x));
+    $("rv-time").firstElementChild.textContent = tc(t);
+    if (!composing) $("rv-attc").textContent = atText();
+    head.style.left = (t / DUR) * lanesW() + "px";
+    const ln = LINES.find((l) => t >= l.s && t < l.e);
+    const sp = $("rv-speech");
+    sp.textContent = ln ? ln.text : "";
+    if (ln && ln.alt && ln.alt !== ln.text) { const s = document.createElement("small"); s.textContent = ln.alt; sp.appendChild(s); }
+    const near = cur().findIndex((n) => !n.general && t >= n.t - 0.25 && t <= (n.end != null ? n.end : n.t) + 0.25);
+    document.querySelectorAll(".rv-note").forEach((li, i) => li.classList.toggle("is-active", i === near));
+  }
+
+  // ---------- timeline ----------
+  const lanesEl = $("rv-lanes"), labelsEl = $("rv-labels");
+  const lanesW = () => lanesEl.clientWidth;
+  const head = document.createElement("div"); head.className = "rv-head";
+  const pct = (x) => (x / DUR) * 100 + "%";
+  function buildLanes() {
+    lanesEl.innerHTML = ""; labelsEl.innerHTML = "";
+    const lab = (txt, cls) => { const d = document.createElement("div"); d.textContent = txt; if (cls) d.className = cls; labelsEl.appendChild(d); };
+    lab("", "rv-rl");
+    const ruler = document.createElement("div"); ruler.className = "rv-ruler"; lanesEl.appendChild(ruler);
+    const pxPerS = lanesEl.clientWidth / DUR;
+    const major = [1, 2, 5, 10, 15, 30, 60, 120, 300, 600].find((m) => pxPerS * m >= 56) || 600;
+    for (let s = 0; s <= DUR; s += 1) {
+      if (DUR > 600 && s % 10) continue;
+      const sp = document.createElement("span"); sp.style.left = pct(s);
+      if (s % major === 0) sp.textContent = tc(s).slice(0, 5); else sp.className = "rv-minor";
+      ruler.appendChild(sp);
+    }
+    lab("Comments"); const cl = document.createElement("div"); cl.className = "rv-lane rv-cmt"; cl.id = "rv-cmtlane"; lanesEl.appendChild(cl);
+    if (LINES.length) {
+      lab("Speech"); const sl = document.createElement("div"); sl.className = "rv-lane";
+      LINES.forEach((l) => {
+        const b = document.createElement("div"); b.className = "rv-blk"; b.style.left = pct(l.s); b.style.width = "calc(" + pct(Math.max(0.08, l.e - l.s)) + " - 1px)";
+        b.textContent = l.text; b.title = tc(l.s) + "–" + tc(l.e) + "  " + l.text; b.dataset.s = l.s; sl.appendChild(b);
+      });
+      lanesEl.appendChild(sl);
+    }
+    lab("Footage", "rv-tall"); const fl = document.createElement("div"); fl.className = "rv-lane rv-tall rv-film";
+    fl.style.backgroundImage = "url(" + META.strip.src + ")";
+    (META.cuts || []).forEach((c) => { const i = document.createElement("i"); i.style.left = pct(c); fl.appendChild(i); });
+    lanesEl.appendChild(fl);
+    if (META.wave) { lab("Audio", "rv-tall"); const wl = document.createElement("div"); wl.className = "rv-lane rv-tall rv-wave"; wl.style.backgroundImage = "url(" + META.wave + ")"; lanesEl.appendChild(wl); }
+    lanesEl.appendChild(head);
+    drawPins(); render(t);
+  }
+  function drawPins() {
+    const cl = $("rv-cmtlane"); if (!cl) return; cl.innerHTML = "";
+    cur().forEach((n) => {
+      const p = document.createElement("button"); p.type = "button"; p.className = "rv-pin" + (n.end != null ? " is-range" : "") + (n.general ? " is-gen" : "");
+      p.style.left = pct(n.t); if (n.end != null) p.style.width = pct(n.end - n.t); else p.style.width = "10px";
+      p.title = label(n) + "  " + n.text; p.dataset.s = n.t; p.setAttribute("aria-label", "Comment at " + label(n)); cl.appendChild(p);
+    });
+    if (sel) { const d = document.createElement("div"); d.className = "rv-sel"; d.style.left = pct(sel.s); d.style.width = pct(Math.max(0.05, (sel.e == null ? sel.s : sel.e) - sel.s)); cl.appendChild(d); }
+  }
+  $("rv-zoom").addEventListener("input", (e) => { lanesEl.style.width = +e.target.value * 100 + "%"; buildLanes(); });
+  let scrub = false, drag = null;
+  const xToT = (ev) => { const r = lanesEl.getBoundingClientRect(); return Math.max(0, Math.min(DUR, ((ev.clientX - r.left) / r.width) * DUR)); };
+  lanesEl.addEventListener("pointerdown", (ev) => {
+    const hit = ev.target.closest(".rv-blk, .rv-pin");
+    if (playing) setPlaying(false);
+    if (hit) { seek(+hit.dataset.s + 0.001); return; }
+    lanesEl.setPointerCapture(ev.pointerId);
+    if (ev.target.closest("#rv-cmtlane")) { drag = { from: xToT(ev), moved: false }; seek(drag.from); }
+    else { scrub = true; seek(xToT(ev)); }
+  });
+  lanesEl.addEventListener("pointermove", (ev) => {
+    if (scrub) seek(xToT(ev));
+    else if (drag) {
+      const x = xToT(ev);
+      if (drag.moved || Math.abs(x - drag.from) > 0.2) {
+        drag.moved = true; sel = { s: Math.min(drag.from, x), e: Math.max(drag.from, x) }; rangeChanged(); drawPins();
+      }
+    }
+  });
+  const endDrag = () => {
+    scrub = false;
+    if (drag && drag.moved && sel && sel.e - sel.s < 0.2) { sel = null; rangeChanged(); drawPins(); }
+    else if (drag && drag.moved) { seek(sel.s); ta.focus(); }
+    drag = null;
+  };
+  lanesEl.addEventListener("pointerup", endDrag);
+  lanesEl.addEventListener("pointercancel", endDrag);
+
+  // ---------- comments ----------
+  const ta = $("rv-note");
+  const status = (m) => { $("rv-status").textContent = m; };
+  const label = (n) => n.general ? "General" : n.end != null ? tc(n.t) + "–" + tc(n.end) : tc(n.t);
+  function atText() { return sel ? (sel.e == null ? "In " + tc(sel.s) : tc(sel.s) + " → " + tc(sel.e)) : tc(composing ? noteT : t); }
+  function rangeChanged() {
+    $("rv-clear").hidden = !sel;
+    $("rv-atlabel").textContent = sel ? (sel.e == null ? "Range starts" : "Range") : composing ? "Paused · comment at" : "Comment at";
+    $("rv-attc").textContent = atText();
+    $("rv-in").classList.toggle("is-on", !!sel);
+  }
+  function loadLocal() { try { return JSON.parse(localStorage.getItem(STORE_KEY) || "[]"); } catch (e) { return []; } }
+  function saveLocal() { try { localStorage.setItem(STORE_KEY, JSON.stringify(notes)); } catch (e) {} }
+  const mine = () => notes.filter((n) => n.key === META.key);
+  const cur = () => mine().filter((n) => (n.round || 0) === 0).sort((a, b) => (a.general ? -1 : 0) - (b.general ? -1 : 0) || a.t - b.t || a.createdAt.localeCompare(b.createdAt));
+  function renderNotes() {
+    const ul = $("rv-notes"); ul.innerHTML = "";
+    const list = cur();
+    $("rv-count").textContent = list.length;
+    if (!list.length) { const li = document.createElement("li"); li.className = "rv-empty"; li.textContent = "No comments yet. Play the video and type wherever something should change. Nothing is edited until you press Done."; ul.appendChild(li); }
+    list.forEach((n) => {
+      const li = document.createElement("li"); li.className = "rv-note";
+      const b = document.createElement("button"); b.type = "button"; b.className = "rv-tc" + (n.general ? " is-gen" : n.end != null ? " is-range" : ""); b.textContent = label(n);
+      b.addEventListener("click", () => { if (n.general) return; setPlaying(false); seek(n.t); });
+      const p = document.createElement("p"); p.textContent = n.text;
+      const x = document.createElement("button"); x.type = "button"; x.className = "rv-x"; x.textContent = "Delete"; x.setAttribute("aria-label", "Delete comment at " + label(n));
+      x.addEventListener("click", () => {
+        if (!x.classList.contains("is-armed")) { x.classList.add("is-armed"); x.textContent = "Confirm"; setTimeout(() => { x.classList.remove("is-armed"); x.textContent = "Delete"; }, 2500); return; }
+        removeNote(n.id);
+      });
+      li.append(b, p, x); ul.appendChild(li);
+    });
+    drawPins(); render(t);
+  }
+  function beginNote() {
+    if (composing) return;
+    composing = true; noteT = playing ? now() : t;
+    if (playing) setPlaying(false);
+    rangeChanged();
+  }
+  function endNote(resume) {
+    composing = false; ta.value = ""; ta.blur(); sel = null; $("rv-general").checked = false; rangeChanged(); drawPins();
+    if (resume && started) setPlaying(true);
+  }
+  async function submitNote() {
+    const text = ta.value.trim();
+    if (!text) { endNote(true); return; }
+    const general = $("rv-general").checked;
+    const n = { id: "n" + Date.now().toString(36) + Math.floor(Math.random() * 1e4).toString(36), key: META.key, round: 0, text, createdAt: new Date().toISOString(), t: 0 };
+    if (general) n.general = true;
+    else if (sel) { n.t = Math.round(sel.s * 100) / 100; if (sel.e != null && sel.e > sel.s) n.end = Math.round(sel.e * 100) / 100; }
+    else n.t = Math.round(noteT * 100) / 100;
+    notes.push(n); saveLocal(); endNote(true); renderNotes();
+    status("Posted " + label(n) + (db ? "" : " (on this device)"));
+    if (db) { try { await db.collection("notes").doc(n.id).set(n); status("Posted " + label(n)); } catch (e) { status("Saved on this device; sync failed (" + (e.code || "error") + ")"); } }
+  }
+  async function removeNote(id) {
+    notes = notes.filter((n) => n.id !== id); saveLocal(); renderNotes();
+    if (db) { try { await db.collection("notes").doc(id).delete(); } catch (e) {} }
+  }
+  ta.addEventListener("focus", beginNote);
+  ta.addEventListener("input", beginNote);
+  ta.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { e.preventDefault(); submitNote(); }
+    else if (e.key === "Escape") { e.preventDefault(); endNote(true); }
+  });
+  $("rv-save").addEventListener("click", submitNote);
+  $("rv-in").addEventListener("click", () => { const x = playing ? now() : t; sel = { s: x, e: sel && sel.e != null && sel.e > x ? sel.e : null }; rangeChanged(); drawPins(); });
+  $("rv-out").addEventListener("click", () => { const x = playing ? now() : t; sel = sel ? (x > sel.s ? { s: sel.s, e: x } : { s: x, e: sel.e }) : { s: Math.max(0, x - 1), e: x }; rangeChanged(); drawPins(); });
+  $("rv-clear").addEventListener("click", () => { sel = null; rangeChanged(); drawPins(); });
+  document.addEventListener("keydown", (e) => {
+    if (e.target === ta || e.target.tagName === "INPUT" || e.metaKey || e.ctrlKey) return;
+    if (e.key === " ") { e.preventDefault(); if (!started) startWithSound(); else setPlaying(!playing); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); setPlaying(false); seek(t - (e.shiftKey ? 1 : 1 / FPS)); }
+    else if (e.key === "ArrowRight") { e.preventDefault(); setPlaying(false); seek(t + (e.shiftKey ? 1 : 1 / FPS)); }
+    else if (e.key === "i" || e.key === "I") { e.preventDefault(); $("rv-in").click(); }
+    else if (e.key === "o" || e.key === "O") { e.preventDefault(); $("rv-out").click(); }
+    else if (e.key === "c" || e.key === "C" || e.key === "n" || e.key === "N") { e.preventDefault(); ta.focus(); }
+  });
+
+  // ---------- done ----------
+  function notesText() {
+    const list = cur();
+    const lines = list.map((n) => "[" + (n.general ? "general" : n.end != null ? tc(n.t) + "-" + tc(n.end) : tc(n.t)) + "] " + n.text.replace(/\s+/g, " "));
+    return "Edit brief for " + META.key + " (" + META.title + "), " + list.length + " comment" + (list.length === 1 ? "" : "s") + ":\n" + lines.join("\n");
+  }
+  let armed = 0;
+  $("rv-done").addEventListener("click", async () => {
+    const btn = $("rv-done");
+    if (!cur().length && !armed) { armed = 1; btn.textContent = "No comments. Click again to let Claude decide"; setTimeout(() => { armed = 0; btn.textContent = sent ? "Send again" : "Done, start editing"; }, 4000); return; }
+    armed = 0; btn.disabled = true;
+    if (playing) setPlaying(false);
+    let text = notesText();
+    if (text.length > 3800) text = text.slice(0, 3700) + "\n… (list cut short here; every comment is in the notes store)";
+    $("rv-sendtext").textContent = text; $("rv-sendbox").hidden = false;
+    if (db) { try { await db.doc("review/" + META.key).set({ status: "brief-done", key: META.key, round: 0, count: cur().length, at: new Date().toISOString() }); } catch (e) {} }
+    let ok = false;
+    try {
+      const cm = await window.claude?.use?.("comments");
+      if (cm && (await cm.canSendToClaude()) === "available") {
+        await cm.sendToClaude({ anchor: await cm.anchorFor(btn), text: text + "\n\nThis is the first brief. Nothing has been edited yet: build the edit from these comments now." });
+        ok = true;
+      }
+    } catch (e) { /* fall through to copy */ }
+    sent = sent || ok;
+    $("rv-sendmsg").textContent = ok ? "Sent to Claude. Editing starts now; the first cut arrives in this room for review." : (db ? "Comments are saved for Claude. Say “done” in the chat, or copy them below." : "Copy these comments and paste them into the chat.");
+    $("rv-stage-chip").textContent = ok ? "Brief sent · editing" : "Brief ready to send";
+    status(ok ? "Sent to Claude." : "Comments ready to send.");
+    btn.textContent = ok ? "Send again" : "Done, start editing"; btn.disabled = false;
+  });
+  $("rv-copy").addEventListener("click", async () => {
+    const pre = $("rv-sendtext");
+    try { await navigator.clipboard.writeText(pre.textContent); $("rv-copy").textContent = "Copied"; }
+    catch (e) { const r = document.createRange(); r.selectNodeContents(pre); const s = getSelection(); s.removeAllRanges(); s.addRange(r); $("rv-copy").textContent = "Selected, press copy"; }
+  });
+
+  // ---------- boot ----------
+  notes = loadLocal(); renderNotes();
+  video.muted = true;
+  loadPart(0, 0, false);
+  buildLanes(); requestAnimationFrame(loop);
+  new ResizeObserver(() => { head.style.left = (t / DUR) * lanesW() + "px"; }).observe(lanesEl);
+  (async () => {
+    try {
+      db = await window.claude?.use?.("db");
+      if (!db) return;
+      const local = notes.slice();
+      db.collection("notes").onSnapshot((snap) => {
+        const remote = snap.docs.map((d) => d.data()).filter(Boolean);
+        const ids = new Set(remote.map((n) => n.id));
+        notes = remote.concat(notes.filter((n) => !ids.has(n.id) && local.some((l) => l.id === n.id)));
+        saveLocal(); renderNotes();
+      }, () => { status("Comments stay on this device for now."); });
+      for (const n of local) { try { await db.collection("notes").doc(n.id).set(n); } catch (e) { break; } }
+    } catch (e) { db = null; }
+  })();
+})();
+</script>

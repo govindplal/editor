@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# usage: editkit/bin/brief <key> [--heading H] [--title T] [--webm]
+#  After ingest and BEFORE any edit: runs/<key> -> runs/<key>/brief/index.html + assets, a frame.io-style room where the
+#  user plays the raw upload on a timeline, leaves timecoded (or in/out range) comments, and presses Done.
+#  Publish: Artifact file_path=runs/<key>/brief/index.html, files={assets/...} as printed, capabilities {"db":{}, "comments":{}}.
+#  Comments land in the `notes` collection with round 0 (key == <key>); Done also arrives as an artifact comment.
+set -euo pipefail
+. "$(dirname "$0")/_common.sh"
+KEY=$1; shift; RUN=$ROOT/runs/$KEY
+[ -f "$RUN/meta.json" ] || die "ingest first: editkit/bin/ingest <video> $KEY"
+python3 "$KIT/py/brief.py" "$RUN" "$RUN/brief" --key "$KEY" "$@"
