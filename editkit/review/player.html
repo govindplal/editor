@@ -22,6 +22,10 @@ button { font: inherit; color: inherit; }
 .rv-top .rv-spacer { flex: 1 1 auto; }
 .rv-done { background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 6px; padding: 9px 14px; font-weight: 600; cursor: pointer; }
 .rv-done:disabled { opacity: .5; cursor: default; }
+.rv-fin { background: none; color: var(--fg); border: 1px solid var(--line); border-radius: 6px; padding: 9px 14px; font-weight: 600; cursor: pointer; }
+.rv-fin:hover { border-color: var(--accent); }
+.rv-fin.is-armed { border-color: var(--head); color: var(--head); }
+.rv-fin:disabled { opacity: .5; cursor: default; }
 
 .rv-app { display: grid; grid-template-columns: minmax(0, 1fr) minmax(280px, 360px); grid-template-areas: "viewer compose" "viewer list" "tl tl"; grid-template-rows: auto minmax(0, 1fr) auto; gap: 12px 16px; padding-inline: 16px; padding-block: 12px 24px; }
 .rv-viewer { grid-area: viewer; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
@@ -109,6 +113,7 @@ button { font: inherit; color: inherit; }
   <span class="rv-chip" id="rv-round">{{ROUND_LABEL}}</span>
   <span class="rv-chip">{{W}}×{{H}} · {{FPS}} fps · {{DUR_LABEL}}</span>
   <span class="rv-spacer"></span>
+  <button class="rv-fin" id="rv-fin" type="button">Finalize</button>
   <button class="rv-done" id="rv-done" type="button">Done, send notes</button>
 </header>
 
@@ -393,6 +398,28 @@ button { font: inherit; color: inherit; }
     $("rv-sendmsg").textContent = sent ? "Sent to Claude. The next cut changes only what these notes ask for." : (db ? "Notes are saved for Claude. Say “done” in the chat, or copy them below." : "Copy these notes and paste them into the chat.");
     status(sent ? "Sent to Claude." : "Notes ready to send.");
     btn.disabled = false;
+  });
+  // ---------- finalize: the cut is approved, render the master ----------
+  let finArmed = null;
+  $("rv-fin").addEventListener("click", async () => {
+    const btn = $("rv-fin"), n = cur().length;
+    if (!finArmed) {
+      btn.classList.add("is-armed"); btn.textContent = n ? "Finalize and ignore " + n + (n === 1 ? " note?" : " notes?") : "Click again to finalize";
+      finArmed = setTimeout(() => { finArmed = null; btn.classList.remove("is-armed"); btn.textContent = "Finalize"; }, 4000); return;
+    }
+    clearTimeout(finArmed); finArmed = null; btn.classList.remove("is-armed"); btn.disabled = true;
+    if (playing) setPlaying(false);
+    const text = "FINALIZE " + META.key + " (" + (META.title || META.key) + "), " + META.roundLabel + " approved. Render the final master now.";
+    $("rv-sendtext").textContent = text; $("rv-sendbox").hidden = false;
+    if (db) { try { await db.doc("review/" + META.key).set({ status: "finalized", key: META.key, round: META.round, at: new Date().toISOString() }); } catch (e) {} }
+    let ok = false;
+    try {
+      const cm = await window.claude?.use?.("comments");
+      if (cm && (await cm.canSendToClaude()) === "available") { await cm.sendToClaude({ anchor: await cm.anchorFor(btn), text }); ok = true; }
+    } catch (e) { /* fall through to copy */ }
+    $("rv-sendmsg").textContent = ok ? "Finalize sent. Claude is rendering the final master." : "Say “finalize” in the chat, or copy this line to Claude.";
+    status(ok ? "Finalize sent." : "Finalize ready to send."); $("rv-round").textContent = ok ? "Finalizing" : $("rv-round").textContent;
+    btn.textContent = ok ? "Finalized" : "Finalize"; btn.disabled = ok;
   });
   $("rv-copy").addEventListener("click", async () => {
     const pre = $("rv-sendtext");

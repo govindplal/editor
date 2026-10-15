@@ -77,8 +77,8 @@ def main():
             elif ln.lstrip().startswith("~") and lines:
                 lines[-1]["alt"] = ln.lstrip()[1:].strip()
 
-    title = a.title or a.key
-    heading = a.heading or title
+    title = a.title or "Brief Room"
+    heading = a.heading or a.key
     page = open(os.path.join(KIT, "review", "brief.html"), encoding="utf-8").read()
     bm = {"key": a.key, "title": heading, "w": W, "h": H, "fps": fps, "dur": DUR, "parts": parts, "round": 0,
           "strip": {"src": "assets/strip.jpg", "tiles": tiles}, "wave": "assets/wave.png" if has_audio else None,

@@ -2,7 +2,7 @@
 
 The user first briefs the edit in **one shared room** (an Artifact timeline player): they play the raw upload and
 comment on the moments that need work, and **nothing is edited until they press Done**. Afterwards they review every cut
-in the same room, leave timestamped notes, and only the approved cut is rendered. Commands live in `editkit/bin/`. Start from
+in the same room (the Artifact is named **Brief Room**), leave timestamped notes, and only the cut they **Finalize** is rendered. Commands live in `editkit/bin/`. Start from
 `editkit/hf/template.html` (via `hfnew`) and `editkit/hf/snippets/` (stickman gag, b-roll card).
 
 ## Flow (per video)
@@ -46,7 +46,7 @@ in the same room, leave timestamped notes, and only the approved cut is rendered
    Critique against CRAFT.md §7: is any face covered, any caption under a graphic, anything clipped at the edge? Fix
    the worst problems and re-snapshot only those moments.
 5. **Review room** (the first thing the user sees; never a rendered MP4):
-   - `editkit/bin/review <key> --round N --title "Video Review Room" --heading "<Show · Guest · what>"`
+   - `editkit/bin/review <key> --round N --heading "<Show · Guest · what>"`
    - Publish **to the shared room URL**: `https://claude.ai/artifact/8X495UNS4JvcNDt2dDWfM7`.
      - From a new session: `Artifact read` it first, then `Artifact publish` with `url` = the room,
        `file_path` = `runs/<key>/review/index.html`, `files` = every printed asset, and `capabilities`
@@ -61,8 +61,9 @@ in the same room, leave timestamped notes, and only the approved cut is rendered
    headed "Review notes for <your key>"; leave other keys' threads to their sessions (no reply). Once your video's
    master is committed, stop watching the room (`ArtifactComments watch` with `on: false`). Read the notes; `ArtifactData query notes where key == <key>, round == N` has the same list. Change
    **only** what the notes ask for. Rebuild with `--round N+1`, republish, then reply in the comment thread and resolve
-   it. "Round N (0 notes)" means the cut is approved.
-7. **Final**: `editkit/bin/hfrender <key>` (background, ~7 min per minute of video). It renders the picture and
+   it. A Done with 0 notes is not approval: ask whether to finalize. The loop ends only when the user presses **Finalize** (a
+   comment headed "FINALIZE <key> ..."); the room's `review/<key>` doc then has `status == "finalized"`.
+7. **Final** (on the Finalize message only): `editkit/bin/hfrender <key>` (background, ~7 min per minute of video). It renders the picture and
    stream-copies the source audio, so the audio stays bit-identical. Check it with
    `ffmpeg -i X -map 0:a -c copy -f md5 -` on the source and on the output, then `editkit/bin/qa <key> --cover <t>`.
    Commit `videos/<key>/` (master MP4 + hf project + source) on the session branch. **Don't upload the MP4 to the

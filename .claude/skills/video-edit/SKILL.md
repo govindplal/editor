@@ -1,6 +1,6 @@
 ---
 name: video-edit
-description: Edit an uploaded video in this repo (brief room first: the user comments on the raw video, edits start only on Done) — captions, zooms/punch-ins, grading, b-roll, animated illustrations, motion graphics — as a HyperFrames composition reviewed in the shared review room (timestamped notes) before the final render; editkit for quick jobs. Use for any request to caption, edit, style, restyle or revise a video (shorts, podcasts, YouTube, long-form). Cheapest path; prefer it over open-edit/hyperframes docs.
+description: Edit an uploaded video in this repo (brief room first: the user comments on the raw video, edits start only on Done) — captions, zooms/punch-ins, grading, b-roll, animated illustrations, motion graphics — as a HyperFrames composition reviewed in the Brief Room (timestamped notes) before the final render; editkit for quick jobs. Use for any request to caption, edit, style, restyle or revise a video (shorts, podcasts, YouTube, long-form). Cheapest path; prefer it over open-edit/hyperframes docs.
 ---
 
 # video-edit (editkit)
@@ -40,7 +40,7 @@ only when choosing; `grep -i <name>` is enough) · `editkit/brands/<name>.md` (c
    file + `qa/master.jpg`, 12 frames — view once; + `videos/<key>/cover.jpg` thumbnail). Fix any PROBLEM line.
 9. **Deliver**: SendUserFile the path the render prints after `send-to-user:`. Commit `videos/<key>/` and push.
    Tell the user in a few lines: what was added, any caption lines you were unsure of, anything not delivered.
-   If they stated a lasting preference, update/create their `editkit/brands/<name>.md` and merge it to frame.io (this setup's base branch).
+   If they stated a lasting preference, update/create their `editkit/brands/<name>.md` and merge it to main.
 
 ## Default flow: HyperFrames + review room (every new video, unless the user asks for a quick editkit edit)
 Read `editkit/HYPERFRAMES.md` once per session and follow it:
@@ -48,8 +48,8 @@ ingest → `editkit/bin/asr` for unclear spans → **`editkit/bin/brief <key>` a
 no plan, no render until the user's comments arrive with Done** → `editkit/bin/hfnew <key>` → plan beats (grade, camera, captions for
 everything, hero type, **b-roll from the internet whenever someone or something is named**, **animated line-art
 illustrations for visual or funny moments**, end CTA) → build + snapshot critique → `editkit/bin/review` and publish to
-the **shared review room** → apply only the user's notes, round by round → after an approved round (0 notes),
-`editkit/bin/hfrender <key>` → commit the master MP4 to `videos/<key>/`. Don't upload it to the chat and don't make a
+the **Brief Room** → apply only the user's notes, round by round, until the user presses **Finalize** (a Done with 0 notes is not
+approval) → `editkit/bin/hfrender <key>` → commit the master MP4 to `videos/<key>/`. Don't upload it to the chat and don't make a
 compressed copy unless asked. Ask the user when a name, photo or caption is doubtful.
 The editkit `edit.json` path below stays for quick caption-only jobs or when the user asks for it.
 

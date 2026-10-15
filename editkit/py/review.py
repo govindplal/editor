@@ -129,11 +129,11 @@ def main():
                 it["e"] = DUR
     order = data.get("laneOrder") or ["Captions", "Graphics", "B-roll", "Camera", "Grade", "Footage", "Audio"]
     lanes.sort(key=lambda l: order.index(l["name"]) if l["name"] in order else len(order))
-    title = a.title or a.key
-    meta = {"title": a.heading or title, "key": a.key, "round": a.round, "roundLabel": f"Round {a.round}", "fps": fps, "lanes": lanes, "unsure": unsure}
+    title = a.title or "Brief Room"
+    meta = {"title": a.heading or a.key, "key": a.key, "round": a.round, "roundLabel": f"Round {a.round}", "fps": fps, "lanes": lanes, "unsure": unsure}
     page = open(os.path.join(KIT, "review", "player.html"), encoding="utf-8").read()
     rep = {
-        "{{TITLE}}": html.escape(title), "{{HEADING}}": html.escape(a.heading or title),
+        "{{TITLE}}": html.escape(title), "{{HEADING}}": html.escape(a.heading or a.key),
         "{{ROUND_LABEL}}": f"Cut v{a.round} · Round {a.round}", "{{W}}": str(W), "{{H}}": str(H), "{{FPS}}": str(fps),
         "{{DUR_LABEL}}": f"{DUR:.1f} s", "{{DUR_TC}}": tc(DUR), "{{COMP_CSS}}": css, "{{COMP_DOM}}": dom,
         "{{META}}": json.dumps(meta).replace("</", "<\\/"), "{{COMP_SCRIPTS}}": "\n".join(scripts),
