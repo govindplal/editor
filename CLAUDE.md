@@ -43,11 +43,11 @@ transcription models, python env, ffmpeg, Chrome), so sessions don't re-download
 
 Branches and global changes
 - Each session works only on its own session branch (the one it was given; never reuse another session's branch, and if
-  that branch's PR is already merged, restart it from `origin/main`). Never read, check out or compare other branches:
-  `main` is the only source of truth.
+  that branch's PR is already merged, restart it from `origin/frame.io`). Never read, check out or compare other branches:
+  `frame.io` is the only source of truth for this setup (the brief-room flow lives there; `main` does not have it).
 - Anything that should outlive the session (a new or changed skill, rule, style, graphic component, script, or edit to
   `CLAUDE.md`/`editkit/`/`.claude/`) must be made global before the session ends: commit it, push the session branch,
-  open a PR into `main` and merge it. The user has given standing permission for these merges; ask only if the merge
-  conflicts or CI fails. Say so in the final reply ("merged to main: ...").
-- Finished videos and `videos/<key>/` records stay on the session branch unless the user asks for them on `main`.
+  open a PR into `frame.io` (not `main`) and merge it. The user has given standing permission for these merges; ask only if the merge
+  conflicts or CI fails. Say so in the final reply ("merged to frame.io: ...").
+- Finished videos and `videos/<key>/` records stay on the session branch unless the user asks for them on `frame.io`.
 

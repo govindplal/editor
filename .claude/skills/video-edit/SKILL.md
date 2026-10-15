@@ -40,7 +40,7 @@ only when choosing; `grep -i <name>` is enough) · `editkit/brands/<name>.md` (c
    file + `qa/master.jpg`, 12 frames — view once; + `videos/<key>/cover.jpg` thumbnail). Fix any PROBLEM line.
 9. **Deliver**: SendUserFile the path the render prints after `send-to-user:`. Commit `videos/<key>/` and push.
    Tell the user in a few lines: what was added, any caption lines you were unsure of, anything not delivered.
-   If they stated a lasting preference, update/create their `editkit/brands/<name>.md` and merge it to main.
+   If they stated a lasting preference, update/create their `editkit/brands/<name>.md` and merge it to frame.io (this setup's base branch).
 
 ## Default flow: HyperFrames + review room (every new video, unless the user asks for a quick editkit edit)
 Read `editkit/HYPERFRAMES.md` once per session and follow it:
