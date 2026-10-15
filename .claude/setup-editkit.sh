@@ -16,4 +16,5 @@ nohup bash -c '
   [ "${EDITKIT_WHISPER:-1}" = 0 ] || "$VENV/bin/python" -I -c "import sys; sys.path.insert(0, \"'"$ROOT"'/editkit/py\"); import transcribe; transcribe.ensure(\"sherpa-onnx-whisper-large-v3\")"
 ' >"$HOME/.cache/editkit/setup.log" 2>&1 &
 [ "${EDITKIT_HYPERFRAMES:-1}" = 0 ] || bash "$ROOT/.claude/setup-hyperframes.sh"
+bash "$ROOT/.claude/setup-router.sh" || true
 echo "editkit: video toolkit ready — use the video-edit skill (.claude/skills/video-edit/SKILL.md)."
