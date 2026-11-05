@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en" data-resolution="portrait">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1080, height=1920" />
+    <title>How Transformers Work</title>
+    <script src="assets/gsap.min.js"></script>
+    <style data-page>
+      html, body { margin: 0; width: 1080px; height: 1920px; overflow: hidden; background: #050505; }
+    </style>
+    <style>
+      @font-face { font-family: "Patrick Hand"; src: url("assets/fonts/PatrickHand-Regular.ttf") format("truetype"); font-display: block; }
+      @font-face { font-family: "Caveat"; src: url("assets/fonts/Caveat.ttf") format("truetype"); font-weight: 400 700; font-display: block; }
+      #root { --ch: #f1efe8; --ac: #f4d35e; --bg: #050505; position: relative; width: 100%; height: 100%; overflow: hidden; background: var(--bg); color: var(--ch); font-family: "Patrick Hand", cursive; }
+      #root .clip { position: absolute; inset: 0; }
+      #root .layer { position: absolute; inset: 0; pointer-events: none; }
+      #aroll { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; }
+      #root svg.sc { position: absolute; left: 0; top: 0; width: 1080px; height: 1920px; overflow: visible; }
+      #root .ch { fill: none; stroke: var(--ch); stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+      #root .t2 { stroke-width: 3; }
+      #root .th { stroke-width: 8; }
+      #root .acs { stroke: var(--ac); }
+      #root .dash { stroke-dasharray: 14 14; }
+      #root text { fill: var(--ch); font-family: "Patrick Hand", cursive; }
+      #root text.cv { font-family: "Caveat", cursive; font-weight: 700; }
+      #root text.acf { fill: var(--ac); }
+      #root .fill { fill: var(--ch); stroke: none; }
+      #root .ink { fill: var(--bg); stroke: none; }
+      #grain { opacity: 0.06; mix-blend-mode: screen; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='360'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' seed='7' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.6  0 0 0 0 0.6  0 0 0 0 0.6  0 0 0 1.4 -0.4'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); background-size: 360px 360px; }
+      #vig { background: radial-gradient(ellipse 80% 65% at 50% 45%, rgba(0,0,0,0) 60%, rgba(0,0,0,0.55) 100%); }
+      /* captions: handwritten, lower-left, never centred */
+      #caps .cap { position: absolute; left: 80px; top: 1652px; max-width: 900px; visibility: hidden; display: flex; flex-wrap: wrap; align-items: baseline; column-gap: 0.26em; font-family: "Patrick Hand", cursive; font-size: 70px; line-height: 1.08; color: var(--ch); text-shadow: 0 0 14px rgba(241, 239, 232, 0.18); }
+      #caps .cap .w { display: inline-block; overflow: hidden; padding: 0.04em 0.04em 0.14em; margin: -0.04em -0.04em -0.14em; }
+      #caps .cap .wi { display: inline-block; }
+      #caps .cap .k { color: var(--ac); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="90.06" data-width="1080" data-height="1920">
+      <video id="aroll" class="clip" src="assets/source.mp4" muted playsinline data-start="0" data-duration="90.06" data-track-index="0" data-review-skip></video>
+      <svg width="0" height="0" style="position:absolute">
+        <defs>
+          <filter id="chalk" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">
+            <feTurbulence id="tb" type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="2" result="n" />
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="6" xChannelSelector="R" yChannelSelector="G" result="d" />
+            <feTurbulence type="fractalNoise" baseFrequency="0.95" numOctaves="1" seed="5" result="g" />
+            <feColorMatrix in="g" type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  -1.6 0 0 0 1.55" result="gm" />
+            <feComposite in="d" in2="gm" operator="in" result="c" />
+            <feGaussianBlur in="c" stdDeviation="2.4" result="gl" />
+            <feMerge><feMergeNode in="gl" /><feMergeNode in="c" /><feMergeNode in="c" /></feMerge>
+          </filter>
+        </defs>
+      </svg>
+      <div id="scenes"></div>
+      <div id="vig" class="layer"></div>
+      <div id="grain" class="layer"></div>
+      <div id="caps" class="clip" data-start="0" data-duration="90.06" data-track-index="5" data-review-skip></div>
+    </div>
+    <script type="application/json" id="caps-data">[{"s": 0.32, "e": 2.24, "w": [["Type", 0.32, 0], ["\"the", 0.8, 0], ["cat", 0.96, 1], ["sat", 1.28, 0], ["on", 1.52, 0], ["the...\"", 1.68, 0]]}, {"s": 2.24, "e": 3.68, "w": [["and", 2.24, 0], ["an", 2.4, 0], ["AI", 2.56, 0], ["finishes", 3.04, 0], ["it:", 3.44, 0]]}, {"s": 3.68, "e": 4.4, "w": [["mat.", 3.68, 1]]}, {"s": 4.4, "e": 5.44, "w": [["but", 4.4, 0], ["how", 4.56, 0], ["does", 4.72, 0], ["it", 4.96, 0], ["know?", 5.12, 0]]}, {"s": 5.44, "e": 7.6, "w": [["meet", 5.44, 0], ["the", 5.76, 0], ["Transformer.", 5.92, 1]]}, {"s": 7.6, "e": 10.48, "w": [["First,", 7.6, 0], ["your", 8.08, 0], ["sentence", 8.32, 0], ["gets", 8.8, 0], ["chopped", 9.04, 0], ["into", 9.52, 0], ["pieces,", 9.76, 0]]}, {"s": 10.48, "e": 11.84, "w": [["called", 10.48, 0], ["tokens.", 10.8, 1]]}, {"s": 11.84, "e": 14.64, "w": [["Each", 11.84, 0], ["token", 12.16, 0], ["gets", 12.64, 0], ["an", 12.96, 0], ["ID", 13.12, 1], ["number.", 13.6, 1]]}, {"s": 14.64, "e": 16.32, "w": [["Every", 14.64, 0], ["token", 14.96, 0], ["then", 15.52, 0], ["becomes", 15.76, 0], ["a", 16.08, 0]]}, {"s": 16.32, "e": 17.76, "w": [["long", 16.32, 0], ["list", 16.56, 0], ["of", 16.88, 0], ["numbers,", 17.04, 1]]}, {"s": 17.76, "e": 18.64, "w": [["a", 17.76, 0], ["point", 18.0, 0], ["on", 18.32, 0], ["a", 18.48, 0]]}, {"s": 18.64, "e": 20.32, "w": [["giant", 18.64, 0], ["map", 19.04, 0], ["of", 19.36, 0], ["meaning.", 19.6, 1]]}, {"s": 20.32, "e": 22.08, "w": [["Cat", 20.32, 1], ["lands", 20.8, 0], ["near", 21.12, 0], ["dog", 21.44, 1], ["and", 21.84, 0]]}, {"s": 22.08, "e": 24.0, "w": [["far", 22.08, 0], ["away", 22.4, 0], ["from", 22.72, 0], ["car.", 23.04, 1]]}, {"s": 24.0, "e": 25.92, "w": [["Word", 24.0, 0], ["order", 24.48, 0], ["matters", 24.88, 0], ["too,", 25.28, 0]]}, {"s": 25.92, "e": 27.28, "w": [["so", 25.92, 0], ["each", 26.16, 0], ["token", 26.48, 0], ["also", 27.04, 0]]}, {"s": 27.28, "e": 28.56, "w": [["gets", 27.28, 0], ["a", 27.68, 0], ["stamp,", 27.84, 1]]}, {"s": 28.56, "e": 29.68, "w": [["saying", 28.56, 0], ["where", 28.88, 0], ["it", 29.12, 0], ["sits", 29.28, 0]]}, {"s": 29.68, "e": 31.12, "w": [["in", 29.68, 0], ["the", 29.84, 0], ["line.", 30.16, 0]]}, {"s": 31.12, "e": 32.72, "w": [["Now", 31.12, 0], ["the", 31.44, 0], ["magic", 31.6, 0], ["part.", 32.16, 0]]}, {"s": 32.72, "e": 33.84, "w": [["Attention.", 32.72, 1]]}, {"s": 33.84, "e": 35.12, "w": [["Every", 33.84, 0], ["word", 34.08, 0], ["looks", 34.48, 0], ["at", 34.72, 0], ["every", 34.88, 0]]}, {"s": 35.12, "e": 36.64, "w": [["other", 35.12, 0], ["word", 35.36, 0], ["and", 35.76, 0], ["asks,", 35.92, 0]]}, {"s": 36.64, "e": 38.24, "w": [["who", 36.64, 0], ["matters", 36.88, 0], ["to", 37.36, 0], ["me?", 37.6, 0]]}, {"s": 38.24, "e": 39.92, "w": [["Sat", 38.24, 0], ["looks", 38.72, 0], ["hard", 38.96, 0], ["at", 39.2, 0], ["cat", 39.36, 1]]}, {"s": 39.92, "e": 41.36, "w": [["because", 39.92, 0], ["cats", 40.16, 0], ["do", 40.72, 0], ["the", 40.88, 0], ["sitting", 40.96, 0]]}, {"s": 41.36, "e": 43.68, "w": [["and", 41.36, 0], ["barely", 41.6, 0], ["glances", 42.0, 0], ["at", 42.56, 0], ["\"the\".", 42.8, 0]]}, {"s": 43.68, "e": 44.88, "w": [["Here's", 43.68, 0], ["how.", 44.16, 0]]}, {"s": 44.88, "e": 46.24, "w": [["Each", 44.88, 0], ["word", 45.12, 0], ["sends", 45.44, 0], ["out", 45.76, 0], ["a", 45.92, 0]]}, {"s": 46.24, "e": 47.92, "w": [["question", 46.24, 0], ["called", 46.56, 0], ["a", 46.8, 0], ["query.", 46.96, 1]]}, {"s": 47.92, "e": 49.28, "w": [["Every", 47.92, 0], ["other", 48.24, 0], ["word", 48.4, 0], ["holds", 48.8, 0], ["up", 49.12, 0]]}, {"s": 49.28, "e": 51.04, "w": [["a", 49.28, 0], ["label", 49.44, 0], ["called", 49.92, 0], ["a", 50.08, 0], ["key.", 50.32, 1]]}, {"s": 51.04, "e": 52.48, "w": [["Where", 51.04, 0], ["they", 51.28, 0], ["match", 51.44, 0], ["the", 51.92, 0], ["word", 52.08, 0]]}, {"s": 52.48, "e": 54.28, "w": [["soaks", 52.48, 0], ["up", 52.88, 0], ["their", 53.04, 0], ["value.", 53.2, 1]]}, {"s": 54.28, "e": 55.16, "w": [["And", 54.28, 0], ["it", 54.6, 0], ["does", 54.76, 0], ["this", 55.0, 0]]}, {"s": 55.16, "e": 56.92, "w": [["many", 55.16, 0], ["times", 55.48, 0], ["in", 55.8, 0], ["parallel.", 56.04, 1]]}, {"s": 56.92, "e": 60.04, "w": [["One", 56.92, 0], ["head", 57.24, 0], ["tracks", 57.56, 0], ["grammar,", 57.96, 1], ["another", 58.76, 0], ["meaning,", 59.24, 1]]}, {"s": 60.04, "e": 61.72, "w": [["another", 60.04, 0], ["position.", 60.44, 1]]}, {"s": 61.72, "e": 63.4, "w": [["Then", 61.72, 0], ["it", 61.96, 0], ["all", 62.12, 0], ["gets", 62.36, 0], ["stacked,", 62.6, 0]]}, {"s": 63.4, "e": 65.16, "w": [["layer", 63.4, 1], ["upon", 63.88, 0], ["layer.", 64.28, 1]]}, {"s": 65.16, "e": 66.6, "w": [["Big", 65.16, 0], ["models", 65.48, 0], ["repeat", 66.04, 0], ["this", 66.44, 0]]}, {"s": 66.6, "e": 68.44, "w": [["nearly", 66.6, 0], ["a", 67.0, 0], ["hundred", 67.16, 1], ["times,", 67.72, 0]]}, {"s": 68.44, "e": 69.96, "w": [["understanding", 68.44, 0], ["a", 69.16, 0], ["little", 69.32, 0], ["deeper", 69.48, 0]]}, {"s": 69.96, "e": 71.72, "w": [["on", 69.96, 0], ["every", 70.2, 0], ["floor.", 70.52, 0]]}, {"s": 71.72, "e": 72.44, "w": [["At", 71.72, 0], ["the", 71.88, 0], ["top,", 72.04, 0]]}, {"s": 72.44, "e": 73.56, "w": [["the", 72.44, 0], ["model", 72.52, 0], ["scores", 72.92, 0], ["every", 73.4, 0]]}, {"s": 73.56, "e": 74.84, "w": [["word", 73.56, 0], ["it", 73.88, 0], ["knows.", 74.12, 0]]}, {"s": 74.84, "e": 76.84, "w": [["Mat,", 74.84, 1], ["62%.", 75.4, 1]]}, {"s": 76.84, "e": 78.2, "w": [["Sofa", 76.84, 0], ["18%.", 77.48, 0]]}, {"s": 78.2, "e": 79.24, "w": [["Roof,", 78.2, 0], ["nine.", 78.68, 0]]}, {"s": 79.24, "e": 80.47, "w": [["It", 79.24, 0], ["picks", 79.4, 0], ["one.", 79.72, 0]]}, {"s": 80.47, "e": 81.67, "w": [["Then", 80.47, 0], ["the", 80.95, 0], ["new", 81.11, 0], ["word", 81.35, 0]]}, {"s": 81.67, "e": 82.79, "w": [["joins", 81.67, 0], ["the", 82.07, 0], ["sentence,", 82.23, 0]]}, {"s": 82.79, "e": 84.95, "w": [["and", 82.79, 0], ["the", 83.03, 0], ["whole", 83.19, 0], ["thing", 83.51, 0], ["runs", 83.75, 0], ["again.", 84.31, 0]]}, {"s": 84.95, "e": 86.47, "w": [["One", 84.95, 0], ["word", 85.27, 0], ["at", 85.67, 0], ["a", 85.83, 0], ["time,", 85.99, 0]]}, {"s": 86.47, "e": 89.25, "w": [["that's", 86.47, 0], ["a", 86.71, 0], ["Transformer.", 86.87, 1]]}]</script>
+    <script>
+      (function () {
+        const q = (s) => document.querySelector(s);
+        const qa = (s) => Array.from(document.querySelectorAll(s));
+        const tl = gsap.timeline({ paused: true });
+        const DUR = 90.06;
+
+        // ---------- SVG builders ----------
+        const T = (x, y, txt, o = {}) => `<text ${o.id ? `id="${o.id}"` : ""} class="${o.c || ""} wr" x="${x}" y="${y}" font-size="${o.s || 64}" ${o.a ? `text-anchor="${o.a}"` : ""}>${txt}</text>`;
+        const grass = (x, y) => `<path class="ch t2" d="M${x} ${y} l-7 -22 M${x + 9} ${y} l1 -32 M${x + 18} ${y} l7 -26 M${x + 27} ${y} l12 -15 M${x - 10} ${y} l-12 -12" />`;
+        const ground = (y, x0, x1, id) => `<g ${id ? `id="${id}"` : ""}><path class="ch gr" d="M${x0} ${y} C${x0 + (x1 - x0) * 0.3} ${y - 4} ${x0 + (x1 - x0) * 0.7} ${y + 4} ${x1} ${y}" />` +
+          `<path class="ch t2 gr" d="${Array.from({ length: 9 }, (_, i) => { const x = x0 + 30 + i * ((x1 - x0 - 60) / 8); return `M${x} ${y + 12} l${-14 + (i % 3) * 6} ${26 + (i % 4) * 10}`; }).join(" ")}" />` +
+          grass(x1 - 120, y) + grass(x0 + 60, y) + `<ellipse class="ch t2" cx="${x0 + (x1 - x0) * 0.55}" cy="${y - 5}" rx="9" ry="5" /><ellipse class="ch t2" cx="${x0 + (x1 - x0) * 0.6}" cy="${y - 4}" rx="6" ry="4" /></g>`;
+        // stickman, feet at (x,y); parts: #id (pop), #id-al/#id-ar arms, #id-pp pupils
+        const man = (id, x, y, s, o = {}) => {
+          const girl = o.girl;
+          const hair = girl
+            ? `<circle class="ch" cx="24" cy="-246" r="17" /><path class="ch" d="M-40 -196 Q-30 -246 22 -232 M-36 -214 Q-10 -230 30 -210" />`
+            : `<path class="ch t2" d="M-30 -226 l-12 -20 M-18 -236 l-6 -28 M-4 -240 l0 -30 M10 -238 l8 -28 M24 -230 l14 -22 M-26 -232 l-20 -8" />`;
+          const body = girl ? `<path class="ch" d="M0 -160 L-34 -72 H34 Z" /><path class="ch" d="M-12 -72 L-14 0 M12 -72 L14 0" />` : `<path class="ch" d="M0 -160 L0 -76 M0 -76 L-24 0 M0 -76 L24 0" />`;
+          return `<g transform="translate(${x} ${y}) scale(${s})"><g id="${id}">${o.under || ""}
+            <circle class="ch" cx="0" cy="-200" r="40" />${hair}
+            <circle class="fill" cx="-14" cy="-204" r="12" /><circle class="fill" cx="14" cy="-204" r="12" />
+            <g id="${id}-pp"><circle class="ink" cx="-12" cy="-202" r="5.5" /><circle class="ink" cx="16" cy="-202" r="5.5" /></g>
+            <path class="ch t2" d="M-9 -178 Q2 -171 11 -179" />
+            <path class="ch" d="M0 -160 L0 -158" />${body}
+            <path id="${id}-al" class="ch" d="M0 -146 L-40 -96" /><path id="${id}-ar" class="ch" d="M0 -146 L40 -96" />${o.extra || ""}
+          </g></g>`;
+        };
+        const box = (id, x, y, word, o = {}) => {
+          const w = o.w || 160, h = o.h || 120;
+          return `<g id="${id}"><rect class="ch bx" x="${x - w / 2}" y="${y - h / 2}" width="${w}" height="${h}" rx="18" />${T(x, y + (o.s || 70) * 0.3, word, { s: o.s || 70, a: "middle" })}</g>`;
+        };
+        const label = (n, txt) => `<g class="lbl">${T(80, 170, `${n} · ${txt}`, { s: 48 })}<path class="ch t2 acs lu" d="M80 192 Q240 186 ${100 + txt.length * 22} 194" /></g>`;
+        const P = [140, 340, 540, 740, 940];
+        const W = ["the", "cat", "sat", "on", "the"];
+
+        const S = [];
+        const scene = (id, a, b, svg) => { S.push([id, a, b]); return `<div id="${id}" class="clip" data-start="${a}" data-duration="${(b - a).toFixed(2)}" data-track-index="2" data-track-name="Graphics" data-label="${id}"><svg class="sc" viewBox="0 0 1080 1920"><g filter="url(#chalk)"><g id="${id}w">${svg}</g></g></svg></div>`; };
+
+        let H = "";
+        // 1 · hook
+        H += scene("s1", 0, 7.35, label("01", "the question") +
+          ground(1330, 70, 1010) + man("b1", 250, 1330, 1.25) +
+          `<g id="s1b"><rect class="ch" x="430" y="760" width="580" height="360" rx="10" /><path class="ch" d="M520 1120 L470 1330 M920 1120 L970 1330 M720 1120 V1330" /></g>` +
+          T(470, 900, "the cat sat", { s: 92, id: "s1l1" }) + T(470, 1030, "on the", { s: 92, id: "s1l2" }) +
+          `<path id="s1bl" class="ch" d="M730 1040 Q840 1034 960 1042" />` + T(745, 1030, "mat", { s: 110, c: "cv acf", id: "s1mat" }) +
+          T(205, 1000, "?", { s: 150, c: "cv", id: "s1q" }) +
+          T(80, 360, "meet the", { s: 70, id: "s1m" }) + T(70, 520, "Transformer", { s: 190, c: "cv", id: "s1t" }) +
+          `<path id="s1u" class="ch th acs" d="M90 560 Q480 540 940 566" />`);
+        // 2 · tokens
+        H += scene("s2", 7.35, 14.45, label("02", "tokens") +
+          W.map((w, i) => `<g id="t2-${i}">` + box(`t2b-${i}`, 160 + i * 185, 960, w, { w: 164, h: 130, s: 92 }) + "</g>").join("") +
+          [252, 437, 622, 807].map((x, i) => `<path id="cut-${i}" class="ch t2 dash" d="M${x} 870 V1050" />`).join("") +
+          `<g id="scis"><g id="scis-r"><circle class="ch" cx="-46" cy="-20" r="18" /><circle class="ch" cx="-46" cy="20" r="18" /><path class="ch" d="M-30 -12 L44 10 M-30 12 L44 -10" /></g></g>` +
+          P.map((x, i) => T(x, 1120, ["#279", "#3797", "#7731", "#389", "#279"][i], { s: 52, a: "middle", c: "acf id2" })).join("") +
+          T(540, 740, "1 token", { s: 56, a: "middle", id: "t2tk" }) + `<path id="t2ar" class="ch t2" d="M560 760 Q600 820 560 880 M542 860 L560 884 L582 866" />`);
+        // 3 · embeddings
+        const nums = [["0.12", "-0.8", "0.33"], ["0.91", "0.24", "-0.4"], ["-0.2", "0.67", "0.05"], ["0.4", "-0.1", "0.9"], ["0.12", "-0.8", "0.33"]];
+        H += scene("s3", 14.45, 23.9, label("03", "embeddings") +
+          W.map((w, i) => box(`t3b-${i}`, P[i], 520, w, { w: 150, h: 100, s: 60 })).join("") +
+          `<g id="s3n">` + nums.map((c, i) => c.map((n, j) => T(P[i], 650 + j * 56, n, { s: 42, a: "middle", c: "nm3" })).join("") + T(P[i], 650 + 3 * 56, "…", { s: 42, a: "middle", c: "nm3" }) + `<path class="ch t2 nb3" d="M${P[i] - 62} 610 q-14 0 -14 14 V820 q0 14 14 14 M${P[i] + 62} 610 q14 0 14 14 V820 q0 14 -14 14" />`).join("") + `</g>` +
+          `<g id="s3m"><path class="ch mp" d="M140 1560 V650 M124 676 L140 646 L156 676" /><path class="ch mp" d="M140 1560 H1000 M972 1544 L1002 1560 L972 1576" />` +
+          [[260, 760], [640, 720], [820, 900], [600, 1260], [280, 1380], [940, 1140], [720, 1480]].map(([x, y]) => `<circle class="fill dt" cx="${x}" cy="${y}" r="7" opacity="0.6" />`).join("") +
+          T(960, 700, "meaning map", { s: 56, a: "end", c: "acf", id: "s3ml" }) +
+          `<g id="s3cat"><circle class="fill" cx="360" cy="880" r="11" />${T(380, 870, "cat", { s: 60 })}<g transform="translate(300 820)"><circle class="ch t2" r="28" /><path class="ch t2" d="M-24 -14 L-20 -42 L-4 -27 M4 -27 L20 -42 L24 -14 M-38 6 H-16 M16 6 H38" /></g></g>` +
+          `<g id="s3dog"><circle class="fill" cx="480" cy="980" r="11" />${T(500, 1000, "dog", { s: 60 })}<g transform="translate(560 900)"><circle class="ch t2" r="28" /><path class="ch t2" d="M-24 -14 Q-44 10 -32 28 M24 -14 Q44 10 32 28" /><circle class="fill" cx="0" cy="8" r="6" /></g></g>` +
+          `<ellipse id="s3e" class="ch acs" cx="440" cy="910" rx="210" ry="130" />` +
+          `<g id="s3car"><circle class="fill" cx="860" cy="1400" r="11" />${T(880, 1460, "car", { s: 60 })}<g transform="translate(840 1350)"><path class="ch t2" d="M-56 0 H56 V-24 L34 -24 L20 -46 H-24 L-36 -24 H-56 Z" /><circle class="ch t2" cx="-30" cy="4" r="12" /><circle class="ch t2" cx="30" cy="4" r="12" /></g></g>` +
+          `<path id="s3a" class="ch t2 dash" d="M560 1030 Q780 1100 820 1290" /><path id="s3ah" class="ch t2" d="M800 1268 L820 1294 L838 1264" />` + T(720, 1160, "far", { s: 56, id: "s3far" }) + `</g>`);
+        // 4 · position
+        H += scene("s4", 23.9, 31.05, label("04", "position") +
+          W.map((w, i) => `<g id="t4-${i}">` + box(`t4b-${i}`, P[i], 980, w, { w: 160, h: 120, s: 74 }) + "</g>").join("") +
+          T(540, 760, "?!", { s: 130, a: "middle", c: "cv", id: "s4q" }) +
+          P.map((x, i) => `<g id="bd-${i}"><circle class="ch acs" cx="${x}" cy="820" r="44" />${T(x, 842, i + 1, { s: 64, a: "middle", c: "acf" })}</g>`).join("") +
+          `<g id="stp"><rect class="ch" x="-44" y="-56" width="88" height="40" rx="8" /><path class="ch" d="M-12 -56 V-128 M12 -56 V-128" /><circle class="ch" cx="0" cy="-150" r="26" /></g>` +
+          `<path id="s4ar" class="ch t2" d="M90 1110 Q540 1100 1000 1112 M972 1094 L1002 1112 L972 1128" />` + T(540, 1180, "word order", { s: 56, a: "middle", id: "s4wo" }));
+        // 5 · attention
+        let arcs = "";
+        for (let i = 0; i < 5; i++) for (let j = i + 1; j < 5; j++) arcs += `<path class="ch t2 arc5" d="M${P[i]} 1170 Q${(P[i] + P[j]) / 2} ${1170 - (j - i) * 95} ${P[j]} 1170" />`;
+        H += scene("s5", 31.05, 43.55, label("05", "attention") +
+          [[200, 640], [880, 600], [760, 820], [300, 860]].map(([x, y]) => `<path class="ch t2 acs spk" d="M${x} ${y - 26} V${y + 26} M${x - 26} ${y} H${x + 26}" />`).join("") +
+          T(80, 470, "Attention", { s: 200, c: "cv", id: "s5t" }) + `<path id="s5u" class="ch th acs" d="M90 510 Q420 494 760 516" />` +
+          ground(1400, 40, 1040) + W.map((w, i) => man(`m5-${i}`, P[i], 1400, 0.85, { girl: i === 1 }) + T(P[i], 1535, w, { s: 60, a: "middle", c: "w5" })).join("") +
+          arcs + P.map((x, i) => T(x + 40, 1150, "?", { s: 64, c: "cv q5" })).join("") +
+          `<path id="s5cat" class="ch acs" style="stroke-width:13" d="M540 1170 Q440 1050 340 1170" />` + T(440, 1092, "0.7", { s: 66, a: "middle", c: "acf", id: "s5w1" }) +
+          `<path id="s5the" class="ch t2 dash" d="M540 1170 Q340 760 140 1170" />` + T(340, 945, "0.05", { s: 50, a: "middle", id: "s5w2" }));
+        // 6 · query / key / value
+        H += scene("s6", 43.55, 54.15, label("06", "query · key · value") +
+          ground(1450, 60, 1020) + man("b6", 290, 1450, 1.35) + man("g6", 790, 1450, 1.35, { girl: true }) +
+          T(290, 1530, "sat", { s: 62, a: "middle" }) + T(790, 1530, "cat", { s: 62, a: "middle" }) +
+          `<path id="s6bub" class="ch" d="M180 760 Q140 760 140 800 V920 Q140 960 180 960 H270 L300 1030 L320 960 H440 Q480 960 480 920 V800 Q480 760 440 760 Z" />` +
+          T(310, 900, "?", { s: 130, a: "middle", c: "cv", id: "s6q" }) + T(150, 720, "query", { s: 84, c: "cv acf", id: "s6ql" }) +
+          `<path id="s6st" class="ch" d="M745 1150 L745 940" /><rect id="s6sg" class="ch" x="600" y="760" width="380" height="180" rx="12" />` +
+          T(790, 838, "animal,", { s: 54, a: "middle", id: "s6s1" }) + T(790, 900, "does things", { s: 54, a: "middle", id: "s6s2" }) + T(980, 720, "key", { s: 84, a: "end", c: "cv acf", id: "s6kl" }) +
+          `<path id="s6m" class="ch t2 dash" d="M484 860 H596" /><path id="s6ok" class="ch acs th" d="M520 800 L540 822 L578 772" />` +
+          `<path id="s6path" d="M735 1180 Q540 1080 345 1180" fill="none" stroke="none" />` +
+          Array.from({ length: 8 }, (_, i) => `<circle class="fill vd" cx="0" cy="0" r="${7 + (i % 3) * 3}" style="fill:var(--ac)" />`).join("") +
+          T(540, 1290, "value", { s: 84, a: "middle", c: "cv acf", id: "s6vl" }));
+        // 7 · heads
+        const glasses = `<path class="ch t2" d="M-30 -204 a16 16 0 1 0 32 0 a16 16 0 1 0 -32 0 M2 -204 a16 16 0 1 0 32 0 a16 16 0 1 0 -32 0" transform="translate(-2 0)" />`;
+        const bulb = `<g class="bulb"><circle class="ch acs" cx="0" cy="-292" r="22" /><path class="ch t2 acs" d="M-10 -266 H10 M-8 -258 H8 M-40 -300 l-12 -6 M40 -300 l12 -6 M0 -326 v-14" /></g>`;
+        const ruler = `<g transform="translate(40 -96) rotate(-30)"><rect class="ch t2" x="-8" y="-80" width="22" height="120" /><path class="ch t2" d="M-8 -60 h10 M-8 -40 h6 M-8 -20 h10 M-8 0 h6 M-8 20 h10" /></g>`;
+        H += scene("s7", 54.15, 61.6, label("07", "many heads") +
+          W.map((w, i) => box(`t7b-${i}`, P[i], 560, w, { w: 150, h: 100, s: 60 })).join("") +
+          ground(1460, 60, 1020) +
+          man("h1", 220, 1460, 1, { extra: glasses }) + man("h2", 540, 1460, 1, { extra: bulb }) + man("h3", 860, 1460, 1, { extra: ruler }) +
+          `<path id="l1" class="ch acs" d="M220 1210 L340 612 M220 1210 L540 612" />` + T(220, 1540, "grammar", { s: 58, a: "middle", id: "hl1" }) +
+          `<path id="l2" class="ch dash" d="M540 1210 L540 612 M540 1210 L740 612" />` + T(540, 1540, "meaning", { s: 58, a: "middle", id: "hl2" }) +
+          `<path id="l3" class="ch t2" d="M860 1210 L740 612 M860 1210 L940 612" /><path id="l3b" class="ch t2 acs" d="M140 506 Q240 450 340 506 M340 506 Q440 450 540 506 M540 506 Q640 450 740 506 M740 506 Q840 450 940 506" />` + T(860, 1540, "position", { s: 58, a: "middle", id: "hl3" }));
+        // 8 · layers
+        let floors = "";
+        for (let i = 0; i < 12; i++) {
+          const y = 1500 - (i + 1) * 105;
+          floors += `<g class="fl"><rect class="ch" x="300" y="${y}" width="480" height="105" rx="6" />${T(272, y + 66, i < 5 ? i + 1 : i === 5 ? "⋮" : i === 11 ? 96 : "", { s: 46, a: "end" })}</g>`;
+        }
+        H += scene("s8", 61.6, 71.7, label("08", "layers") + ground(1500, 40, 1040) + floors +
+          T(540, 1462, "attention + feed-forward", { s: 34, a: "middle", id: "s8ff" }) +
+          `<g id="trow">${[0, 1, 2, 3, 4].map((i) => `<rect class="ch t2 tr" x="${440 + i * 42}" y="1430" width="30" height="30" rx="5" />`).join("")}</g>` +
+          `<g id="lcg">${T(810, 1458, "layer 1", { s: 46, id: "lc" })}</g>` +
+          man("b8", 150, 1500, 0.95) + T(1000, 1585, "GPT-3: 96 layers", { s: 42, a: "end", c: "acf", id: "s8g" }));
+        // 9 · next word
+        const rows = [["mat", 62, "62%"], ["sofa", 18, "18%"], ["roof", 9, "9%"], ["banana", 0.4, "0.1%"]];
+        H += scene("s9", 71.7, 80.35, label("09", "next word") +
+          T(80, 440, "the cat sat on the", { s: 86, id: "s9s" }) + `<path id="s9bl" class="ch" d="M720 452 Q830 446 940 454" />` + T(740, 440, "mat", { s: 100, c: "cv acf", id: "s9mat" }) +
+          `<path id="s9ax" class="ch" d="M300 620 V1330" />` +
+          rows.map(([w, p, t], i) => { const y = 720 + i * 170; return `<g class="r9" ${i === 3 ? 'opacity="0.55"' : ""}>${T(270, y + 24, w, { s: 70, a: "end", c: `rw${i}` })}<rect id="bar${i}" class="ch" x="300" y="${y - 40}" width="${Math.max(4, p * 9)}" height="80" rx="6" style="fill:rgba(241,239,232,0.16)" />${T(320 + Math.max(4, p * 9), y + 24, t, { s: 64, c: `rp${i}` + (i === 0 ? " acf" : "") })}</g>`; }).join("") +
+          `<path id="s9c" class="ch acs th" d="M110 690 Q120 640 560 640 Q1010 640 1000 720 Q990 800 560 800 Q100 800 120 700" />` +
+          ground(1530, 760, 1040) + man("b9", 900, 1530, 0.9));
+        // 10 · repeat + end
+        const sx = [80, 215, 350, 485, 580];
+        H += scene("s10", 80.35, DUR, label("10", "repeat") +
+          `<g id="s10s">` + W.map((w, i) => T(sx[i], 640, w, { s: 88, c: "s10w" })).join("") + T(718, 640, "mat", { s: 100, c: "cv acf", id: "s10mat" }) +
+          T(80, 790, "and", { s: 88, id: "s10a" }) + T(225, 790, "purred.", { s: 100, c: "cv acf", id: "s10p" }) +
+          `<path id="s10lp" class="ch acs" d="M940 860 A70 70 0 1 1 880 750 M864 726 L882 750 L854 764" />` + `</g>` +
+          T(80, 1080, "That's a", { s: 120, c: "cv", id: "s10t1" }) + T(70, 1250, "Transformer.", { s: 190, c: "cv", id: "s10t2" }) +
+          `<path id="s10u" class="ch th acs" d="M90 1290 Q480 1272 960 1296" />` +
+          ground(1585, 600, 1050) + man("b10", 740, 1585, 0.9) + man("g10", 920, 1585, 0.9, { girl: true }));
+        q("#scenes").innerHTML = H;
+
+        // split writable text into per-letter tspans
+        qa("text.wr").forEach((el) => { const s = el.textContent; el.textContent = ""; for (const ch of s) { const t = document.createElementNS("http://www.w3.org/2000/svg", "tspan"); t.textContent = ch; el.appendChild(t); } });
+
+        // ---------- helpers ----------
+        const draw = (sel, t, d = 0.6, st = 0.08) => {
+          const els = typeof sel === "string" ? qa(sel) : [].concat(sel);
+          els.forEach((p) => { p.setAttribute("pathLength", "1"); p.style.strokeDasharray = p.classList.contains("dash") ? "0.03 0.03" : "1"; });
+          const solid = els.filter((p) => !p.classList.contains("dash")), dashed = els.filter((p) => p.classList.contains("dash"));
+          if (solid.length) tl.fromTo(solid, { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: d, ease: "power2.inOut", stagger: st }, t);
+          if (dashed.length) tl.fromTo(dashed, { opacity: 0 }, { opacity: 1, duration: d * 0.6, ease: "none", stagger: st }, t);
+        };
+        const write = (sel, t, d = 0.5) => {
+          const ls = qa(sel).flatMap((el) => Array.from(el.querySelectorAll("tspan")));
+          tl.fromTo(ls, { attr: { "fill-opacity": 0 } }, { attr: { "fill-opacity": 1 }, duration: 0.04, ease: "none", stagger: d / Math.max(1, ls.length) }, t);
+        };
+        const pop = (sel, t, d = 0.45, st = 0) => tl.fromTo(sel, { scale: 0, opacity: 0, transformOrigin: "50% 100%" }, { scale: 1, opacity: 1, duration: d, ease: "back.out(1.8)", stagger: st }, t);
+        const popc = (sel, t, d = 0.4, st = 0) => tl.fromTo(sel, { scale: 0, opacity: 0, transformOrigin: "50% 50%" }, { scale: 1, opacity: 1, duration: d, ease: "back.out(2)", stagger: st }, t);
+        const out = (sel, t, d = 0.3) => tl.to(sel, { opacity: 0, duration: d, ease: "power1.in" }, t);
+        const armR = (id, t, r, d = 0.3) => tl.to(`#${id}-ar`, { rotation: r, transformOrigin: "0% 0%", duration: d, ease: "power2.out" }, t);
+        const armL = (id, t, r, d = 0.3) => tl.to(`#${id}-al`, { rotation: r, transformOrigin: "100% 0%", duration: d, ease: "power2.out" }, t);
+        const look = (id, t, x, y = 0, d = 0.2) => tl.to(`#${id}-pp`, { x, y, duration: d, ease: "power2.out" }, t);
+        const blink = (id, t) => tl.fromTo(`#${id}-pp`, { scaleY: 1 }, { scaleY: 0.1, transformOrigin: "50% 50%", duration: 0.06, yoyo: true, repeat: 1 }, t);
+
+        // scene fades + slow camera push (like the reference's gentle zooms)
+        S.forEach(([id, a, b]) => {
+          tl.fromTo(`#${id}`, { opacity: 0 }, { opacity: 1, duration: 0.35, ease: "power1.out" }, a);
+          if (b < DUR) tl.to(`#${id}`, { opacity: 0, duration: 0.3, ease: "power1.in" }, b - 0.3);
+          tl.fromTo(`#${id}w`, { scale: 1, transformOrigin: "50% 55%" }, { scale: 1.045, duration: b - a, ease: "none" }, a);
+          const lbl = q(`#${id} .lbl`); if (lbl) { write(`#${id} .lbl text`, a + 0.15, 0.5); draw(`#${id} .lu`, a + 0.5, 0.4); }
+          qa(`#${id} .gr`).length && draw(`#${id} .gr`, a, 0.5, 0.05);
+        });
+        // chalk "boil": the line wobble changes 8x a second, like hand-drawn frames
+        for (let k = 0; k * 0.125 < DUR; k++) tl.set("#tb", { attr: { seed: (k % 4) + 1 } }, k * 0.125);
+
+        // ---------- 1 · hook (0-7.35) ----------
+        pop("#b1", 0.05, 0.5); draw("#s1b path, #s1b rect", 0.1, 0.6);
+        write("#s1l1", 0.8, 0.5); write("#s1l2", 1.4, 0.3); draw("#s1bl", 1.75, 0.3);
+        armR("b1", 1.0, -55); look("b1", 1.0, 5, -3);
+        write("#s1mat", 3.62, 0.3); tl.fromTo("#s1mat", { y: -14 }, { y: 0, duration: 0.3, ease: "bounce.out" }, 3.62);
+        armR("b1", 4.3, 0); armL("b1", 4.5, 150, 0.35); look("b1", 4.5, -3, -5); popc("#s1q", 4.6, 0.4);
+        tl.to("#s1q", { rotation: 12, transformOrigin: "50% 80%", yoyo: true, repeat: 3, duration: 0.18 }, 5.0);
+        tl.to("#b1-al", { rotation: 135, yoyo: true, repeat: 5, duration: 0.12, transformOrigin: "100% 0%" }, 4.85);
+        write("#s1m", 5.44, 0.3); write("#s1t", 5.8, 0.75); draw("#s1u", 6.55, 0.4);
+        armL("b1", 5.9, 0); look("b1", 5.9, 0, -6); blink("b1", 6.7);
+
+        // ---------- 2 · tokens (7.35-14.45) ----------
+        write("#t2-0 text, #t2-1 text, #t2-2 text, #t2-3 text, #t2-4 text", 7.55, 0.9);
+        tl.set("#scis", { x: 40, y: 960, opacity: 1 }, 7.35);
+        tl.fromTo("#scis", { opacity: 0 }, { opacity: 1, duration: 0.2 }, 8.7);
+        [252, 437, 622, 807].forEach((x, i) => {
+          const t = 9.0 + i * 0.25;
+          tl.to("#scis", { x: x - 40, duration: 0.18, ease: "power2.inOut" }, t - 0.18);
+          tl.fromTo("#scis-r", { scaleY: 1 }, { scaleY: 0.35, transformOrigin: "50% 50%", duration: 0.07, yoyo: true, repeat: 1 }, t);
+          draw(`#cut-${i}`, t + 0.02, 0.15);
+        });
+        out("#scis", 10.15, 0.2); out("[id^=cut-]", 10.4, 0.25);
+        W.forEach((_, i) => tl.to(`#t2-${i}`, { x: P[i] - (160 + i * 185), duration: 0.45, ease: "back.out(1.6)" }, 10.45 + i * 0.03));
+        draw("#s2 .bx", 10.7, 0.5, 0.07);
+        write("#t2tk", 11.2, 0.3); draw("#t2ar", 11.3, 0.35);
+        out("#t2tk, #t2ar", 12.9, 0.25);
+        write("#s2 .id2", 13.1, 0.6);
+        tl.fromTo("#s2 .id2", { y: 10 }, { y: 0, duration: 0.3, stagger: 0.12, ease: "power2.out" }, 13.1);
+
+        // ---------- 3 · embeddings (14.45-23.9) ----------
+        draw("#s3 .bx", 14.5, 0.4, 0.05); write("#s3 [id^=t3b] text", 14.55, 0.4);
+        draw("#s3 .nb3", 16.5, 0.35, 0.05); write("#s3 .nm3", 16.6, 0.8);
+        out("#s3n", 17.75, 0.3);
+        draw("#s3 .mp", 17.95, 0.6, 0.15); popc("#s3 .dt", 18.4, 0.3, 0.06); write("#s3ml", 19.0, 0.5);
+        popc("#s3cat", 20.3, 0.45); popc("#s3dog", 21.4, 0.45); draw("#s3e", 21.75, 0.5);
+        draw("#s3a", 22.4, 0.5); draw("#s3ah", 22.85, 0.15); write("#s3far", 22.3, 0.2); popc("#s3car", 22.95, 0.45);
+
+        // ---------- 4 · position (23.9-31.05) ----------
+        draw("#s4 .bx", 23.95, 0.4, 0.04); write("#s4 [id^=t4b] text", 23.95, 0.4);
+        const shuf = [2, 4, 0, 3, 1]; // "sat ... the cat" nonsense order
+        W.forEach((_, i) => tl.to(`#t4-${i}`, { x: P[shuf[i]] - P[i], y: (i % 2 ? -30 : 30), duration: 0.4, ease: "power2.inOut" }, 24.5 + i * 0.03));
+        popc("#s4q", 25.0, 0.35); out("#s4q", 25.75, 0.2);
+        W.forEach((_, i) => tl.to(`#t4-${i}`, { x: 0, y: 0, duration: 0.45, ease: "back.out(1.4)" }, 25.9 + i * 0.03));
+        tl.set("#stp", { x: P[0], y: 560, opacity: 0 }, 23.9);
+        tl.to("#stp", { opacity: 1, duration: 0.2 }, 27.4);
+        P.forEach((x, i) => {
+          const t = 27.84 + i * 0.34;
+          tl.to("#stp", { x, y: 600, duration: 0.12, ease: "power2.out" }, t - 0.2);
+          tl.to("#stp", { y: 820, duration: 0.08, ease: "power3.in" }, t - 0.08);
+          popc(`#bd-${i}`, t, 0.25);
+          tl.fromTo(`#t4-${i}`, { y: 0 }, { y: 8, duration: 0.06, yoyo: true, repeat: 1 }, t);
+          tl.to("#stp", { y: 600, duration: 0.12, ease: "power2.out" }, t + 0.04);
+        });
+        out("#stp", 29.6, 0.2);
+        draw("#s4ar", 29.4, 0.6); write("#s4wo", 29.8, 0.4);
+
+        // ---------- 5 · attention (31.05-43.55) ----------
+        draw("#s5 .spk", 31.6, 0.25, 0.06); out("#s5 .spk", 32.5, 0.25);
+        write("#s5t", 32.7, 0.6); draw("#s5u", 33.3, 0.35);
+        pop("[id^=m5-]:not([id$=pp]):not([id$=al]):not([id$=ar])", 32.9, 0.45, 0.1); write("#s5 .w5", 33.0, 0.6);
+        P.forEach((_, i) => look(`m5-${i}`, 34.2 + i * 0.06, i < 2 ? 5 : i > 2 ? -5 : 0, -4));
+        draw("#s5 .arc5", 34.1, 0.5, 0.11);
+        popc("#s5 .q5", 36.6, 0.3, 0.08); out("#s5 .q5", 38.0, 0.25);
+        tl.to("#s5 .arc5", { opacity: 0.16, duration: 0.4 }, 38.25);
+        look("m5-2", 38.3, -6, 0); look("m5-1", 38.6, 6, 0);
+        draw("#s5cat", 38.75, 0.55); popc("#s5w1", 39.35, 0.35);
+        tl.fromTo("#s5w", { scale: 1 }, { scale: 1.12, transformOrigin: "40% 62%", duration: 4.5, ease: "sine.inOut" }, 38.4);
+        draw("#s5the", 41.65, 0.6); write("#s5w2", 42.2, 0.3); look("m5-2", 41.9, -7, -2, 0.15); look("m5-2", 42.5, -6, 0, 0.15);
+        armR("m5-2", 39.4, -40); armL("m5-1", 39.7, 40);
+
+        // ---------- 6 · query / key / value (43.55-54.15) ----------
+        pop("#b6", 43.6, 0.4); pop("#g6", 43.75, 0.4); write("#s6 text:not([id])", 43.8, 0.4);
+        armR("b6", 44.9, -125, 0.35); look("b6", 44.9, 0, -6); draw("#s6bub", 45.3, 0.6); write("#s6q", 46.1, 0.25);
+        write("#s6ql", 46.9, 0.4);
+        armL("g6", 47.9, 70, 0.35); draw("#s6st", 48.1, 0.3); draw("#s6sg", 48.35, 0.5); write("#s6s1, #s6s2", 48.8, 0.6);
+        write("#s6kl", 50.25, 0.4); look("g6", 50.4, -6, -4);
+        draw("#s6m", 51.4, 0.3); draw("#s6ok", 51.7, 0.3);
+        const vp = q("#s6path"), vl = vp.getTotalLength();
+        qa("#s6 .vd").forEach((c, i) => {
+          const pts = [0, 0.25, 0.5, 0.75, 1].map((f) => vp.getPointAtLength(vl * f));
+          tl.set(c, { x: pts[0].x, y: pts[0].y, opacity: 0 }, 43.55);
+          tl.to(c, { opacity: 1, duration: 0.05 }, 52.45 + i * 0.12);
+          tl.to(c, { keyframes: pts.slice(1).map((p) => ({ x: p.x, y: p.y, duration: 0.14, ease: "none" })) }, 52.45 + i * 0.12);
+          tl.to(c, { opacity: 0, duration: 0.08 }, 52.45 + i * 0.12 + 0.56);
+        });
+        write("#s6vl", 53.15, 0.4); look("b6", 52.6, 6, 0); blink("b6", 53.5);
+
+        // ---------- 7 · heads (54.15-61.6) ----------
+        draw("#s7 .bx", 54.2, 0.4, 0.04); write("#s7 [id^=t7b] text", 54.2, 0.4);
+        pop("#h1", 55.15, 0.4); pop("#h2", 55.45, 0.4); pop("#h3", 55.75, 0.4);
+        ["h1", "h2", "h3"].forEach((h, i) => look(h, 56.2 + i * 0.05, 0, -6));
+        draw("#l1", 57.9, 0.4); write("#hl1", 57.95, 0.4);
+        draw("#l2", 59.2, 0.4); write("#hl2", 59.25, 0.4); tl.fromTo("#s7 .bulb", { opacity: 0.2 }, { opacity: 1, duration: 0.1, yoyo: true, repeat: 3 }, 59.2);
+        draw("#l3", 60.4, 0.4); draw("#l3b", 60.5, 0.45, 0.06); write("#hl3", 60.45, 0.4);
+
+        // ---------- 8 · layers (61.6-71.7) ----------
+        pop("#b8", 61.65, 0.4); look("b8", 62.0, 6, -6);
+        qa("#s8 .fl").forEach((f, i) => { draw(f.querySelector("rect"), 62.35 + i * 0.17, 0.25); write(Array.from(f.querySelectorAll("text")).map((t) => "#" + (t.id || (t.id = "fl" + i))).join(","), 62.4 + i * 0.17, 0.1); });
+        write("#s8ff", 63.0, 0.5); draw("#s8 .tr", 64.3, 0.3, 0.04);
+        write("#lc", 64.6, 0.2);
+        const lcObj = { v: 1 }, lc = q("#lc");
+        const setLc = () => { const n = Math.round(lcObj.v), ts = lc.querySelectorAll("tspan"); const s = "layer " + n; ts.forEach((t, i) => (t.textContent = s[i] || "")); if (ts.length < s.length) { const t = document.createElementNS("http://www.w3.org/2000/svg", "tspan"); t.textContent = s.slice(ts.length); lc.appendChild(t); } };
+        for (let i = 1; i < 12; i++) {
+          const t = 65.2 + (i - 1) * 0.5;
+          tl.to("#trow, #lcg", { y: -i * 105, duration: 0.42, ease: "power2.inOut" }, t);
+        }
+        tl.fromTo(lcObj, { v: 1 }, { v: 96, duration: 5.5, ease: "power1.in", onUpdate: setLc }, 65.2);
+        tl.to("#s8 .tr", { stroke: "#f4d35e", strokeWidth: 6, duration: 5.5, ease: "none" }, 65.2);
+        out("#s8ff", 65.2, 0.2); write("#s8g", 66.6, 0.5);
+        tl.to("#b8-pp", { y: -9, duration: 5, ease: "none" }, 65.2);
+
+        // ---------- 9 · next word (71.7-80.35) ----------
+        write("#s9s", 71.75, 0.5); draw("#s9bl", 72.2, 0.3); draw("#s9ax", 72.9, 0.4);
+        [74.84, 76.84, 78.2, 78.75].forEach((t, i) => {
+          write(`#s9 .rw${i}`, t - 0.05, 0.25);
+          tl.fromTo(`#bar${i}`, { attr: { width: 0 } }, { attr: { width: q(`#bar${i}`).getAttribute("width") }, duration: 0.5, ease: "power2.out" }, t);
+          write(`#s9 .rp${i}`, t + 0.5, 0.25);
+        });
+        pop("#b9", 73.0, 0.4); armL("b9", 73.3, 100); look("b9", 73.3, -6, -5);
+        draw("#s9c", 79.35, 0.5); write("#s9mat", 79.85, 0.3); tl.fromTo("#s9mat", { y: -30 }, { y: 0, duration: 0.4, ease: "bounce.out" }, 79.85);
+
+        // ---------- 10 · repeat + end (80.35-90.06) ----------
+        write("#s10 .s10w", 80.4, 0.5);
+        tl.fromTo("#s10mat", { x: 320, y: -260, rotation: 20, opacity: 0 }, { x: 0, y: 0, rotation: 0, opacity: 1, duration: 0.55, ease: "back.out(1.5)" }, 81.2);
+        draw("#s10lp", 82.8, 0.6); tl.to("#s10lp", { rotation: 360, svgOrigin: "930 800", duration: 1.6, ease: "power1.inOut" }, 83.4);
+        write("#s10a", 84.95, 0.3); write("#s10p", 85.6, 0.4);
+        tl.to("#s10s", { opacity: 0.35, duration: 0.4 }, 86.4);
+        write("#s10t1", 86.45, 0.35); write("#s10t2", 86.8, 0.8); draw("#s10u", 87.6, 0.45);
+        pop("#b10", 86.6, 0.45); pop("#g10", 86.75, 0.45);
+        armR("g10", 87.6, -130, 0.3); tl.to("#g10-ar", { rotation: -100, yoyo: true, repeat: 5, duration: 0.2, transformOrigin: "0% 0%" }, 87.9);
+        armL("b10", 88.0, 120, 0.3); look("b10", 87.5, 5, -2); look("g10", 87.5, -5, -2); blink("b10", 89.2);
+
+        // ---------- captions ----------
+        const CAPS = JSON.parse(q("#caps-data").textContent), caps = q("#caps");
+        CAPS.forEach((c) => {
+          const el = document.createElement("div"); el.className = "cap";
+          c.w.forEach(([word, t, k]) => {
+            const w = document.createElement("span"); w.className = "w";
+            const wi = document.createElement("span"); wi.className = "wi" + (k ? " k" : ""); wi.textContent = word;
+            w.appendChild(wi); el.appendChild(w);
+            tl.fromTo(wi, { yPercent: 115 }, { yPercent: 0, duration: 0.18, ease: "power3.out" }, Math.max(c.s, t - 0.04));
+          });
+          caps.appendChild(el);
+          tl.set(el, { visibility: "visible", opacity: 1, y: 0 }, c.s - 0.04);
+          tl.to(el, { opacity: 0, y: -10, duration: 0.12, ease: "power2.in" }, c.e - 0.12);
+          tl.set(el, { visibility: "hidden" }, c.e);
+        });
+        tl.set({}, {}, DUR);
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = tl;
+      })();
+    </script>
+  </body>
+</html>

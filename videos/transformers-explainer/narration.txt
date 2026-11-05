@@ -1,0 +1,10 @@
+Type, the cat sat on the... and an AI finishes it: mat. But how does it know? Meet the Transformer.
+First, your sentence gets chopped into pieces, called tokens. Each token gets an ID number.
+Every token then becomes a long list of numbers: a point on a giant map of meaning. Cat lands near dog, and far away from car.
+Word order matters too, so each token also gets a stamp, saying where it sits in the line.
+Now, the magic part. Attention. Every word looks at every other word, and asks: who matters to me? Sat looks hard at cat, because cats do the sitting, and barely glances at the.
+Here's how. Each word sends out a question, called a query. Every other word holds up a label, called a key. Where they match, the word soaks up their value.
+And it does this many times in parallel. One head tracks grammar. Another, meaning. Another, position.
+Then it all gets stacked, layer upon layer. Big models repeat this nearly a hundred times, understanding a little deeper on every floor.
+At the top, the model scores every word it knows. Mat, sixty two percent. Sofa, eighteen. Roof, nine. It picks one.
+Then the new word joins the sentence, and the whole thing runs again. One word at a time. That's a Transformer.

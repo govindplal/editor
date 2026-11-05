@@ -1,0 +1,21 @@
+0.32-7.28 | Type the cat sat on the and an AI finishes it matt, but how does it know meet the transformer?
+7.60-11.84 | First, your sentence gets chopped into pieces, called tokens.
+11.84-14.32 | Each token gets an ID number.
+14.64-20.32 | Every token then becomes a long list of numbers, a point on a giant map of meaning.
+20.32-23.76 | Cat lands near dog and far away from car.
+24.00-31.12 | Word order matters too, so each token also gets a stamp, saying where it sits in the line.
+31.12-32.72 | Now the magic part.
+32.72-38.24 | Attention. Every word looks at every other word and asks, who matters to me?
+38.24-43.36 | Sat looks hard at cat because cats do the sitting and barely glances at the.
+43.68-47.92 | Here's how. Each word sends out a question called a query.
+47.92-51.04 | Every other word holds up a label called a key.
+51.04-53.76 | Where they match the word soaks up their value.
+54.28-56.92 | And it does this many times in parallel.
+56.92-61.40 | One head tracks grammar, another meaning, another position.
+61.72-65.16 | Then it all gets stacked, layer upon layer.
+65.16-71.72 | Big models repeat this nearly a hundred times, understanding a little deeper on every floor.
+71.72-74.84 | At the top, the model scores every word it knows.
+74.84-76.84 | Mat 62%.
+76.84-80.12 | Sofa 18%. Roof 9, it picks 1.
+80.47-84.95 | Then the new word joins the sentence, and the whole thing runs again.
+84.95-88.55 | One word at a time, that's a transformer.
