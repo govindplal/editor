@@ -21,7 +21,7 @@ DUR=$(meta "$RUN/meta.json" duration)
 
 # shots (scene cuts on a downscaled copy)
 ffmpeg -hide_banner -i "$RUN/source.$EXT" -vf "scale=160:-2,select='gt(scene,0.3)',showinfo" -an -f null - 2>&1 \
- | grep -o 'pts_time:[0-9.]*' | cut -d: -f2 | python3 -c "
+ | { grep -o 'pts_time:[0-9.]*' || true; } | cut -d: -f2 | python3 -c "
 import sys,json; c=[0.0]+[float(x) for x in sys.stdin.read().split()]+[$DUR]; s=[]
 for a,b in zip(c,c[1:]):
   if s and b-a<0.4: s[-1][1]=round(b,3)
